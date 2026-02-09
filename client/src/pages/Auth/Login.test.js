@@ -72,7 +72,7 @@ describe('Login Component', () => {
       });
     
       it('should allow typing email and password', () => {
-        const { getByText, getByPlaceholderText } = render(
+          const { getByText, getByPlaceholderText } = render(
           <MemoryRouter initialEntries={['/login']}>
             <Routes>
               <Route path="/login" element={<Login />} />
@@ -93,6 +93,7 @@ describe('Login Component', () => {
                 token: 'mockToken'
             }
         });
+        axios.get.mockResolvedValueOnce({ data: [] });
 
         const { getByPlaceholderText, getByText } = render(
             <MemoryRouter initialEntries={['/login']}>
@@ -119,6 +120,7 @@ describe('Login Component', () => {
 
     it('should display error message on failed login', async () => {
         axios.post.mockRejectedValueOnce({ message: 'Invalid credentials' });
+        axios.get.mockResolvedValueOnce({ data: [] });
 
         const { getByPlaceholderText, getByText } = render(
             <MemoryRouter initialEntries={['/login']}>

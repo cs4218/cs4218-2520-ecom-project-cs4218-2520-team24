@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="plantuml">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/client/node_modules/@markbind/core/src/plugins/default/plantuml.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
