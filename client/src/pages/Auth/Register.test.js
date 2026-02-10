@@ -52,6 +52,7 @@ describe('Register Component', () => {
   it('should register the user successfully', async () => {
     axios.get.mockResolvedValueOnce({ data: { category: [] } });
     axios.post.mockResolvedValueOnce({ data: { success: true } });
+    axios.get.mockResolvedValueOnce({ data: [] });
 
     const { getByText, getByPlaceholderText } = render(
       <MemoryRouter initialEntries={['/register']}>
@@ -78,6 +79,7 @@ describe('Register Component', () => {
   it('should display error message on failed registration', async () => {
     axios.get.mockResolvedValueOnce({ data: { category: [] } });
     axios.post.mockRejectedValueOnce({ message: 'User already exists' });
+    axios.get.mockResolvedValueOnce({ data: [] });
 
     const { getByText, getByPlaceholderText } = render(
       <MemoryRouter initialEntries={['/register']}>
