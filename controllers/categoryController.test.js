@@ -110,7 +110,7 @@ describe('updateCategoryController', () => {
 
         const req = {
             body: {name: "New"},
-            params: {_id: "20"},
+            params: {id: "20"},
         };
         const res = {
             status: jest.fn().mockReturnThis(),
@@ -137,7 +137,7 @@ describe('updateCategoryController', () => {
 
         const req = {
             body: {name: "New"},
-            params: {_id: "20"},
+            params: {id: "20"},
         };
         const res = {
             status: jest.fn().mockReturnThis(),
