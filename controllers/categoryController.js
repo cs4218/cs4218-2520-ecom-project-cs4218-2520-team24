@@ -64,7 +64,7 @@ export const categoryController = async (req, res) => {
     const category = await categoryModel.find({});
     res.status(200).send({
       success: true,
-      message: "All Categories List",
+      message: "All Categories Listed",
       category,
     });
   } catch (error) {
