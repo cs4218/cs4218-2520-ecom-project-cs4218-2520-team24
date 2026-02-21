@@ -32,14 +32,17 @@ const CartPage = () => {
       console.log(error);
     }
   };
-  //detele item
+  //detele item 
+  // FIX: add guard against removing last item incorrectly
   const removeCartItem = (pid) => {
     try {
       let myCart = [...cart];
       let index = myCart.findIndex((item) => item._id === pid);
-      myCart.splice(index, 1);
-      setCart(myCart);
-      localStorage.setItem("cart", JSON.stringify(myCart));
+      if (index !== -1) { // Guard against removing last item incorrectly
+        myCart.splice(index, 1);
+        setCart(myCart);
+        localStorage.setItem("cart", JSON.stringify(myCart));
+      }
     } catch (error) {
       console.log(error);
     }
@@ -162,7 +165,7 @@ const CartPage = () => {
                         })
                       }
                     >
-                      Plase Login to checkout
+                      Please Login to checkout
                     </button>
                   )}
                 </div>
