@@ -12,6 +12,10 @@ export default {
   collectCoverage: true,
   collectCoverageFrom: ["controllers/**"],
   coverageThreshold: {
+    "./controllers/authController.js": {
+      lines: 95,
+      functions: 95,
+    },
     "./controllers/productController.js": {
       lines: 100,
       functions: 100,
