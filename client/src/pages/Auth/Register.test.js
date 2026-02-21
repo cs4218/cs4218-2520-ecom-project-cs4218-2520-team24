@@ -76,6 +76,45 @@ describe('Register Component', () => {
     expect(toast.success).toHaveBeenCalledWith('Register Successfully, please login');
   });
 
+  it('should display error message when registration success is false', async () => {
+    // 1. Mock the GET request for categories to avoid the destructuring error
+    axios.get.mockResolvedValue({ data: { success: true, category: [] } });
+
+    // 2. Mock a successful HTTP response but with application-level failure
+    axios.post.mockResolvedValueOnce({
+      data: {
+        success: false,
+        message: 'Email is already registered',
+      },
+    });
+
+    const { getByText, getByPlaceholderText } = render(
+      <MemoryRouter initialEntries={['/register']}>
+        <Routes>
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    // 3. Fill out the form
+    fireEvent.change(getByPlaceholderText('Enter Your Name'), { target: { value: 'John Doe' } });
+    fireEvent.change(getByPlaceholderText('Enter Your Email'), { target: { value: 'test@example.com' } });
+    fireEvent.change(getByPlaceholderText('Enter Your Password'), { target: { value: 'password123' } });
+    fireEvent.change(getByPlaceholderText('Enter Your Phone'), { target: { value: '1234567890' } });
+    fireEvent.change(getByPlaceholderText('Enter Your Address'), { target: { value: '123 Street' } });
+    fireEvent.change(getByPlaceholderText('Enter Your DOB'), { target: { value: '2000-01-01' } });
+    fireEvent.change(getByPlaceholderText('What is Your Favorite sports'), { target: { value: 'Football' } });
+
+    // 4. Submit
+    fireEvent.click(getByText('REGISTER'));
+
+    // 5. Assertions
+    await waitFor(() => expect(axios.post).toHaveBeenCalled());
+    
+    // This specifically targets the 'else' block: toast.error(res.data.message)
+    expect(toast.error).toHaveBeenCalledWith('Email is already registered');
+  });
+
   it('should display error message on failed registration', async () => {
     axios.get.mockResolvedValueOnce({ data: { category: [] } });
     axios.post.mockRejectedValueOnce({ message: 'User already exists' });
