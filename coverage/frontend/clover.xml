@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1771769611490" clover="3.2.0">
-  <project timestamp="1771769611490" name="All files">
-    <metrics statements="585" coveredstatements="585" conditionals="136" coveredconditionals="136" methods="168" coveredmethods="168" elements="889" coveredelements="889" complexity="0" loc="585" ncloc="585" packages="9" files="37" classes="37"/>
+<coverage generated="1771786473491" clover="3.2.0">
+  <project timestamp="1771786473492" name="All files">
+    <metrics statements="584" coveredstatements="584" conditionals="136" coveredconditionals="136" methods="168" coveredmethods="168" elements="888" coveredelements="888" complexity="0" loc="584" ncloc="584" packages="9" files="37" classes="37"/>
     <package name="components">
       <metrics statements="30" coveredstatements="30" conditionals="7" coveredconditionals="7" methods="12" coveredmethods="12"/>
-      <file name="AdminMenu.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/components/AdminMenu.js">
+      <file name="AdminMenu.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/components/AdminMenu.js">
         <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
         <line num="3" count="1" type="stmt"/>
         <line num="4" count="2" type="stmt"/>
       </file>
-      <file name="Footer.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/components/Footer.js">
+      <file name="Footer.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/components/Footer.js">
         <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
         <line num="4" count="22" type="stmt"/>
         <line num="5" count="283" type="stmt"/>
       </file>
-      <file name="Header.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/components/Header.js">
+      <file name="Header.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/components/Header.js">
         <metrics statements="10" coveredstatements="10" conditionals="4" coveredconditionals="4" methods="3" coveredmethods="3"/>
         <line num="10" count="22" type="stmt"/>
         <line num="11" count="287" type="stmt"/>
@@ -27,17 +27,17 @@
         <line num="23" count="287" type="stmt"/>
         <line num="64" count="4" type="stmt"/>
       </file>
-      <file name="Layout.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/components/Layout.js">
+      <file name="Layout.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/components/Layout.js">
         <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
         <line num="8" count="22" type="stmt"/>
         <line num="9" count="282" type="stmt"/>
         <line num="28" count="22" type="stmt"/>
       </file>
-      <file name="Prices.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/components/Prices.js">
+      <file name="Prices.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/components/Prices.js">
         <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="2" type="stmt"/>
       </file>
-      <file name="Spinner.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/components/Spinner.js">
+      <file name="Spinner.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/components/Spinner.js">
         <metrics statements="10" coveredstatements="10" conditionals="3" coveredconditionals="3" methods="5" coveredmethods="5"/>
         <line num="3" count="1" type="cond" truecount="1" falsecount="0"/>
         <line num="4" count="9" type="stmt"/>
@@ -50,7 +50,7 @@
         <line num="15" count="9" type="stmt"/>
         <line num="17" count="9" type="stmt"/>
       </file>
-      <file name="UserMenu.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/components/UserMenu.js">
+      <file name="UserMenu.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/components/UserMenu.js">
         <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
         <line num="3" count="1" type="stmt"/>
         <line num="4" count="2" type="stmt"/>
@@ -58,31 +58,31 @@
     </package>
     <package name="components.Form">
       <metrics statements="15" coveredstatements="15" conditionals="0" coveredconditionals="0" methods="5" coveredmethods="5"/>
-      <file name="CategoryForm.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/components/Form/CategoryForm.js">
+      <file name="CategoryForm.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/components/Form/CategoryForm.js">
         <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
         <line num="3" count="1" type="stmt"/>
         <line num="4" count="8" type="stmt"/>
         <line num="13" count="1" type="stmt"/>
       </file>
-      <file name="SearchInput.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/components/Form/SearchInput.js">
+      <file name="SearchInput.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/components/Form/SearchInput.js">
         <metrics statements="12" coveredstatements="12" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
         <line num="5" count="14" type="stmt"/>
-        <line num="6" count="120" type="stmt"/>
-        <line num="7" count="120" type="stmt"/>
-        <line num="9" count="120" type="stmt"/>
+        <line num="6" count="121" type="stmt"/>
+        <line num="7" count="121" type="stmt"/>
+        <line num="9" count="121" type="stmt"/>
         <line num="10" count="2" type="stmt"/>
         <line num="11" count="2" type="stmt"/>
         <line num="12" count="2" type="stmt"/>
         <line num="15" count="1" type="stmt"/>
         <line num="16" count="1" type="stmt"/>
         <line num="18" count="1" type="stmt"/>
-        <line num="21" count="120" type="stmt"/>
+        <line num="21" count="121" type="stmt"/>
         <line num="30" count="1" type="stmt"/>
       </file>
     </package>
     <package name="components.Routes">
       <metrics statements="20" coveredstatements="20" conditionals="12" coveredconditionals="12" methods="6" coveredmethods="6"/>
-      <file name="AdminRoute.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/components/Routes/AdminRoute.js">
+      <file name="AdminRoute.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/components/Routes/AdminRoute.js">
         <metrics statements="10" coveredstatements="10" conditionals="6" coveredconditionals="6" methods="3" coveredmethods="3"/>
         <line num="8" count="5" type="stmt"/>
         <line num="9" count="5" type="stmt"/>
@@ -95,7 +95,7 @@
         <line num="20" count="4" type="cond" truecount="2" falsecount="0"/>
         <line num="23" count="5" type="cond" truecount="2" falsecount="0"/>
       </file>
-      <file name="Private.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/components/Routes/Private.js">
+      <file name="Private.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/components/Routes/Private.js">
         <metrics statements="10" coveredstatements="10" conditionals="6" coveredconditionals="6" methods="3" coveredmethods="3"/>
         <line num="8" count="4" type="stmt"/>
         <line num="9" count="4" type="stmt"/>
@@ -111,7 +111,7 @@
     </package>
     <package name="context">
       <metrics statements="24" coveredstatements="24" conditionals="4" coveredconditionals="4" methods="8" coveredmethods="8"/>
-      <file name="auth.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/context/auth.js">
+      <file name="auth.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/context/auth.js">
         <metrics statements="11" coveredstatements="11" conditionals="2" coveredconditionals="2" methods="3" coveredmethods="3"/>
         <line num="4" count="1" type="stmt"/>
         <line num="6" count="1" type="stmt"/>
@@ -125,7 +125,7 @@
         <line num="27" count="5" type="stmt"/>
         <line num="35" count="5" type="stmt"/>
       </file>
-      <file name="cart.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/context/cart.js">
+      <file name="cart.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/context/cart.js">
         <metrics statements="8" coveredstatements="8" conditionals="2" coveredconditionals="2" methods="3" coveredmethods="3"/>
         <line num="3" count="1" type="stmt"/>
         <line num="4" count="1" type="stmt"/>
@@ -136,7 +136,7 @@
         <line num="12" count="5" type="stmt"/>
         <line num="20" count="5" type="stmt"/>
       </file>
-      <file name="search.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/context/search.js">
+      <file name="search.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/context/search.js">
         <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
         <line num="3" count="1" type="stmt"/>
         <line num="4" count="1" type="stmt"/>
@@ -147,7 +147,7 @@
     </package>
     <package name="hooks">
       <metrics statements="9" coveredstatements="9" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
-      <file name="useCategory.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/hooks/useCategory.js">
+      <file name="useCategory.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/hooks/useCategory.js">
         <metrics statements="9" coveredstatements="9" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
         <line num="5" count="29" type="stmt"/>
         <line num="8" count="29" type="stmt"/>
@@ -161,29 +161,29 @@
       </file>
     </package>
     <package name="pages">
-      <metrics statements="177" coveredstatements="177" conditionals="49" coveredconditionals="49" methods="55" coveredmethods="55"/>
-      <file name="About.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/About.js">
+      <metrics statements="176" coveredstatements="176" conditionals="49" coveredconditionals="49" methods="55" coveredmethods="55"/>
+      <file name="About.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/About.js">
         <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
         <line num="4" count="1" type="stmt"/>
         <line num="5" count="1" type="stmt"/>
       </file>
-      <file name="CartPage.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/CartPage.js">
+      <file name="CartPage.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/CartPage.js">
         <metrics statements="49" coveredstatements="49" conditionals="24" coveredconditionals="24" methods="14" coveredmethods="14"/>
         <line num="12" count="1" type="stmt"/>
-        <line num="13" count="35" type="stmt"/>
-        <line num="14" count="35" type="stmt"/>
-        <line num="15" count="35" type="stmt"/>
-        <line num="16" count="35" type="stmt"/>
-        <line num="17" count="35" type="stmt"/>
-        <line num="18" count="35" type="stmt"/>
-        <line num="21" count="35" type="stmt"/>
-        <line num="22" count="35" type="stmt"/>
-        <line num="23" count="35" type="stmt"/>
-        <line num="24" count="35" type="stmt"/>
-        <line num="25" count="58" type="stmt"/>
-        <line num="27" count="33" type="stmt"/>
+        <line num="13" count="36" type="stmt"/>
+        <line num="14" count="36" type="stmt"/>
+        <line num="15" count="36" type="stmt"/>
+        <line num="16" count="36" type="stmt"/>
+        <line num="17" count="36" type="stmt"/>
+        <line num="18" count="36" type="stmt"/>
+        <line num="21" count="36" type="stmt"/>
+        <line num="22" count="36" type="stmt"/>
+        <line num="23" count="36" type="stmt"/>
+        <line num="24" count="36" type="stmt"/>
+        <line num="25" count="60" type="stmt"/>
+        <line num="27" count="34" type="stmt"/>
         <line num="32" count="2" type="stmt"/>
-        <line num="37" count="35" type="stmt"/>
+        <line num="37" count="36" type="stmt"/>
         <line num="38" count="3" type="stmt"/>
         <line num="39" count="3" type="stmt"/>
         <line num="40" count="3" type="stmt"/>
@@ -192,14 +192,14 @@
         <line num="43" count="1" type="stmt"/>
         <line num="44" count="1" type="stmt"/>
         <line num="47" count="1" type="stmt"/>
-        <line num="52" count="35" type="stmt"/>
+        <line num="52" count="36" type="stmt"/>
         <line num="53" count="15" type="stmt"/>
         <line num="54" count="15" type="stmt"/>
         <line num="55" count="14" type="stmt"/>
         <line num="57" count="1" type="stmt"/>
-        <line num="60" count="35" type="stmt"/>
+        <line num="60" count="36" type="stmt"/>
         <line num="61" count="15" type="stmt"/>
-        <line num="65" count="35" type="stmt"/>
+        <line num="65" count="36" type="stmt"/>
         <line num="66" count="2" type="stmt"/>
         <line num="67" count="2" type="stmt"/>
         <line num="68" count="2" type="stmt"/>
@@ -211,22 +211,22 @@
         <line num="77" count="1" type="stmt"/>
         <line num="79" count="1" type="stmt"/>
         <line num="80" count="1" type="stmt"/>
-        <line num="83" count="35" type="stmt"/>
-        <line num="106" count="58" type="stmt"/>
+        <line num="83" count="36" type="stmt"/>
+        <line num="106" count="60" type="stmt"/>
         <line num="124" count="3" type="stmt"/>
         <line num="144" count="1" type="stmt"/>
         <line num="155" count="1" type="stmt"/>
         <line num="163" count="1" type="stmt"/>
-        <line num="185" count="2" type="stmt"/>
+        <line num="185" count="3" type="stmt"/>
       </file>
-      <file name="Categories.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/Categories.js">
+      <file name="Categories.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/Categories.js">
         <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
         <line num="5" count="1" type="stmt"/>
         <line num="6" count="2" type="stmt"/>
         <line num="7" count="2" type="stmt"/>
         <line num="12" count="2" type="stmt"/>
       </file>
-      <file name="CategoryProduct.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/CategoryProduct.js">
+      <file name="CategoryProduct.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/CategoryProduct.js">
         <metrics statements="16" coveredstatements="16" conditionals="2" coveredconditionals="2" methods="5" coveredmethods="5"/>
         <line num="6" count="1" type="stmt"/>
         <line num="7" count="8" type="stmt"/>
@@ -245,33 +245,33 @@
         <line num="36" count="2" type="stmt"/>
         <line num="58" count="1" type="stmt"/>
       </file>
-      <file name="Contact.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/Contact.js">
+      <file name="Contact.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/Contact.js">
         <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
         <line num="4" count="1" type="stmt"/>
         <line num="5" count="1" type="stmt"/>
       </file>
-      <file name="HomePage.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/HomePage.js">
-        <metrics statements="71" coveredstatements="71" conditionals="17" coveredconditionals="17" methods="21" coveredmethods="21"/>
+      <file name="HomePage.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/HomePage.js">
+        <metrics statements="70" coveredstatements="70" conditionals="17" coveredconditionals="17" methods="21" coveredmethods="21"/>
         <line num="12" count="1" type="stmt"/>
         <line num="13" count="64" type="stmt"/>
         <line num="14" count="64" type="stmt"/>
         <line num="15" count="64" type="stmt"/>
-        <line num="16" count="64" type="stmt"/>
-        <line num="17" count="64" type="stmt"/>
-        <line num="18" count="64" type="stmt"/>
-        <line num="19" count="64" type="stmt"/>
-        <line num="20" count="64" type="stmt"/>
-        <line num="21" count="64" type="stmt"/>
-        <line num="24" count="64" type="stmt"/>
+        <line num="16" count="63" type="stmt"/>
+        <line num="17" count="63" type="stmt"/>
+        <line num="18" count="63" type="stmt"/>
+        <line num="19" count="63" type="stmt"/>
+        <line num="20" count="63" type="stmt"/>
+        <line num="21" count="63" type="stmt"/>
+        <line num="24" count="63" type="stmt"/>
         <line num="25" count="16" type="stmt"/>
         <line num="26" count="16" type="stmt"/>
         <line num="27" count="15" type="cond" truecount="2" falsecount="0"/>
         <line num="28" count="14" type="stmt"/>
         <line num="31" count="1" type="stmt"/>
-        <line num="35" count="64" type="stmt"/>
+        <line num="35" count="63" type="stmt"/>
         <line num="36" count="16" type="stmt"/>
         <line num="37" count="16" type="stmt"/>
-        <line num="40" count="64" type="stmt"/>
+        <line num="40" count="63" type="stmt"/>
         <line num="41" count="19" type="stmt"/>
         <line num="42" count="19" type="stmt"/>
         <line num="43" count="19" type="stmt"/>
@@ -279,62 +279,61 @@
         <line num="45" count="17" type="stmt"/>
         <line num="46" count="17" type="cond" truecount="2" falsecount="0"/>
         <line num="47" count="16" type="stmt"/>
-        <line num="49" count="1" type="stmt"/>
-        <line num="52" count="2" type="stmt"/>
+        <line num="48" count="16" type="stmt"/>
+        <line num="50" count="1" type="stmt"/>
         <line num="53" count="2" type="stmt"/>
-        <line num="58" count="64" type="stmt"/>
-        <line num="59" count="16" type="stmt"/>
-        <line num="60" count="16" type="stmt"/>
-        <line num="61" count="15" type="stmt"/>
-        <line num="63" count="1" type="stmt"/>
-        <line num="69" count="64" type="stmt"/>
-        <line num="70" count="4" type="stmt"/>
-        <line num="71" count="4" type="cond" truecount="2" falsecount="0"/>
-        <line num="72" count="3" type="stmt"/>
-        <line num="74" count="1" type="stmt"/>
-        <line num="76" count="4" type="stmt"/>
+        <line num="54" count="2" type="stmt"/>
+        <line num="59" count="63" type="stmt"/>
+        <line num="60" count="32" type="stmt"/>
+        <line num="61" count="32" type="stmt"/>
+        <line num="62" count="30" type="stmt"/>
+        <line num="64" count="2" type="stmt"/>
+        <line num="70" count="63" type="stmt"/>
+        <line num="71" count="4" type="stmt"/>
+        <line num="72" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="73" count="3" type="stmt"/>
+        <line num="75" count="1" type="stmt"/>
         <line num="77" count="4" type="stmt"/>
         <line num="78" count="4" type="stmt"/>
-        <line num="81" count="64" type="stmt"/>
-        <line num="82" count="26" type="cond" truecount="4" falsecount="0"/>
-        <line num="83" count="19" type="stmt"/>
-        <line num="88" count="64" type="stmt"/>
-        <line num="89" count="7" type="stmt"/>
+        <line num="79" count="4" type="stmt"/>
+        <line num="82" count="63" type="stmt"/>
+        <line num="83" count="26" type="cond" truecount="4" falsecount="0"/>
+        <line num="84" count="19" type="stmt"/>
+        <line num="89" count="63" type="stmt"/>
         <line num="90" count="7" type="stmt"/>
-        <line num="95" count="6" type="stmt"/>
+        <line num="91" count="7" type="stmt"/>
         <line num="96" count="6" type="cond" truecount="2" falsecount="0"/>
-        <line num="99" count="5" type="stmt"/>
-        <line num="102" count="1" type="stmt"/>
-        <line num="104" count="6" type="stmt"/>
-        <line num="105" count="6" type="stmt"/>
-        <line num="107" count="1" type="stmt"/>
-        <line num="110" count="64" type="stmt"/>
-        <line num="125" count="27" type="stmt"/>
-        <line num="127" count="4" type="stmt"/>
-        <line num="137" count="3" type="stmt"/>
-        <line num="138" count="3" type="stmt"/>
-        <line num="139" count="3" type="stmt"/>
-        <line num="142" count="384" type="stmt"/>
-        <line num="151" count="1" type="stmt"/>
-        <line num="161" count="19" type="stmt"/>
-        <line num="183" count="1" type="stmt"/>
-        <line num="190" count="1" type="stmt"/>
+        <line num="97" count="5" type="stmt"/>
+        <line num="99" count="1" type="stmt"/>
+        <line num="101" count="6" type="stmt"/>
+        <line num="103" count="1" type="stmt"/>
+        <line num="106" count="63" type="stmt"/>
+        <line num="121" count="27" type="stmt"/>
+        <line num="123" count="4" type="stmt"/>
+        <line num="133" count="3" type="stmt"/>
+        <line num="134" count="3" type="stmt"/>
+        <line num="135" count="3" type="stmt"/>
+        <line num="138" count="378" type="stmt"/>
+        <line num="147" count="1" type="stmt"/>
+        <line num="157" count="19" type="stmt"/>
+        <line num="179" count="1" type="stmt"/>
+        <line num="186" count="1" type="stmt"/>
+        <line num="187" count="1" type="stmt"/>
         <line num="191" count="1" type="stmt"/>
-        <line num="195" count="1" type="stmt"/>
-        <line num="210" count="3" type="stmt"/>
-        <line num="211" count="3" type="stmt"/>
+        <line num="206" count="3" type="stmt"/>
+        <line num="207" count="3" type="stmt"/>
       </file>
-      <file name="Pagenotfound.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/Pagenotfound.js">
+      <file name="Pagenotfound.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/Pagenotfound.js">
         <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
         <line num="5" count="1" type="stmt"/>
         <line num="6" count="1" type="stmt"/>
       </file>
-      <file name="Policy.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/Policy.js">
+      <file name="Policy.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/Policy.js">
         <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
         <line num="4" count="1" type="stmt"/>
         <line num="5" count="1" type="stmt"/>
       </file>
-      <file name="ProductDetails.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/ProductDetails.js">
+      <file name="ProductDetails.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/ProductDetails.js">
         <metrics statements="25" coveredstatements="25" conditionals="4" coveredconditionals="4" methods="7" coveredmethods="7"/>
         <line num="9" count="1" type="stmt"/>
         <line num="10" count="13" type="stmt"/>
@@ -362,7 +361,7 @@
         <line num="91" count="2" type="stmt"/>
         <line num="113" count="1" type="stmt"/>
       </file>
-      <file name="Search.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/Search.js">
+      <file name="Search.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/Search.js">
         <metrics statements="4" coveredstatements="4" conditionals="2" coveredconditionals="2" methods="2" coveredmethods="2"/>
         <line num="4" count="1" type="stmt"/>
         <line num="5" count="2" type="stmt"/>
@@ -372,7 +371,7 @@
     </package>
     <package name="pages.Auth">
       <metrics statements="49" coveredstatements="49" conditionals="12" coveredconditionals="12" methods="14" coveredmethods="14"/>
-      <file name="Login.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/Auth/Login.js">
+      <file name="Login.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/Auth/Login.js">
         <metrics statements="22" coveredstatements="22" conditionals="8" coveredconditionals="8" methods="5" coveredmethods="5"/>
         <line num="9" count="1" type="stmt"/>
         <line num="10" count="15" type="stmt"/>
@@ -397,7 +396,7 @@
         <line num="73" count="4" type="stmt"/>
         <line num="85" count="1" type="stmt"/>
       </file>
-      <file name="Register.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/Auth/Register.js">
+      <file name="Register.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/Auth/Register.js">
         <metrics statements="27" coveredstatements="27" conditionals="4" coveredconditionals="4" methods="9" coveredmethods="9"/>
         <line num="7" count="1" type="stmt"/>
         <line num="8" count="24" type="stmt"/>
@@ -430,13 +429,13 @@
     </package>
     <package name="pages.admin">
       <metrics statements="211" coveredstatements="211" conditionals="36" coveredconditionals="36" methods="51" coveredmethods="51"/>
-      <file name="AdminDashboard.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/admin/AdminDashboard.js">
+      <file name="AdminDashboard.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/admin/AdminDashboard.js">
         <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
         <line num="5" count="1" type="stmt"/>
         <line num="6" count="1" type="stmt"/>
         <line num="7" count="1" type="stmt"/>
       </file>
-      <file name="AdminOrders.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/admin/AdminOrders.js">
+      <file name="AdminOrders.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/admin/AdminOrders.js">
         <metrics statements="22" coveredstatements="22" conditionals="4" coveredconditionals="4" methods="8" coveredmethods="8"/>
         <line num="9" count="1" type="stmt"/>
         <line num="11" count="1" type="stmt"/>
@@ -461,7 +460,7 @@
         <line num="76" count="25" type="stmt"/>
         <line num="91" count="5" type="stmt"/>
       </file>
-      <file name="CreateCategory.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/admin/CreateCategory.js">
+      <file name="CreateCategory.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/admin/CreateCategory.js">
         <metrics statements="52" coveredstatements="52" conditionals="8" coveredconditionals="8" methods="10" coveredmethods="10"/>
         <line num="8" count="1" type="stmt"/>
         <line num="9" count="36" type="stmt"/>
@@ -516,7 +515,7 @@
         <line num="129" count="3" type="stmt"/>
         <line num="141" count="1" type="stmt"/>
       </file>
-      <file name="CreateProduct.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/admin/CreateProduct.js">
+      <file name="CreateProduct.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/admin/CreateProduct.js">
         <metrics statements="47" coveredstatements="47" conditionals="8" coveredconditionals="8" methods="12" coveredmethods="12"/>
         <line num="8" count="1" type="stmt"/>
         <line num="10" count="1" type="stmt"/>
@@ -566,7 +565,7 @@
         <line num="152" count="1" type="stmt"/>
         <line num="163" count="1" type="stmt"/>
       </file>
-      <file name="Products.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/admin/Products.js">
+      <file name="Products.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/admin/Products.js">
         <metrics statements="12" coveredstatements="12" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="4"/>
         <line num="7" count="1" type="stmt"/>
         <line num="8" count="3" type="stmt"/>
@@ -581,7 +580,7 @@
         <line num="25" count="3" type="stmt"/>
         <line num="35" count="2" type="stmt"/>
       </file>
-      <file name="UpdateProduct.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/admin/UpdateProduct.js">
+      <file name="UpdateProduct.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/admin/UpdateProduct.js">
         <metrics statements="73" coveredstatements="73" conditionals="16" coveredconditionals="16" methods="15" coveredmethods="15"/>
         <line num="8" count="1" type="stmt"/>
         <line num="10" count="1" type="stmt"/>
@@ -657,7 +656,7 @@
         <line num="200" count="1" type="stmt"/>
         <line num="211" count="1" type="stmt"/>
       </file>
-      <file name="Users.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/admin/Users.js">
+      <file name="Users.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/admin/Users.js">
         <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
         <line num="5" count="1" type="stmt"/>
         <line num="6" count="1" type="stmt"/>
@@ -665,13 +664,13 @@
     </package>
     <package name="pages.user">
       <metrics statements="50" coveredstatements="50" conditionals="16" coveredconditionals="16" methods="14" coveredmethods="14"/>
-      <file name="Dashboard.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/user/Dashboard.js">
+      <file name="Dashboard.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/user/Dashboard.js">
         <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
         <line num="5" count="1" type="stmt"/>
         <line num="6" count="1" type="stmt"/>
         <line num="7" count="1" type="stmt"/>
       </file>
-      <file name="Orders.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/user/Orders.js">
+      <file name="Orders.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/user/Orders.js">
         <metrics statements="13" coveredstatements="13" conditionals="4" coveredconditionals="4" methods="5" coveredmethods="5"/>
         <line num="8" count="1" type="stmt"/>
         <line num="9" count="6" type="stmt"/>
@@ -687,7 +686,7 @@
         <line num="33" count="2" type="stmt"/>
         <line num="59" count="1" type="stmt"/>
       </file>
-      <file name="Profile.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/user/Profile.js">
+      <file name="Profile.js" path="/mnt/f/Work/NUS/Y4S2/CS4218/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/user/Profile.js">
         <metrics statements="34" coveredstatements="34" conditionals="12" coveredconditionals="12" methods="8" coveredmethods="8"/>
         <line num="7" count="1" type="stmt"/>
         <line num="9" count="20" type="stmt"/>

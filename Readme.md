@@ -17,6 +17,10 @@ Leroy Chiu, A0273083E
 - Wrote unit tests for categoryController.js
 - Helped to set up CI
 
+Carsten Joe Ng, A0255763W
+ - Wrote unit tests for controller/authController.js
+ - Wrote unit tests for client/src/context
+
 ## MSI CI URL
 [Link to Milestone 1 CI](https://github.com/cs4218/cs4218-2520-ecom-project-cs4218-2520-team24/actions/runs/22278931150/job/64445985837)
 
