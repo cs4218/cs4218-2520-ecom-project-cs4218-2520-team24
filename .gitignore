@@ -9,3 +9,6 @@ node_modules
 .vscode
 
 .env
+
+sonar-project.properties
+.scannerwork/
