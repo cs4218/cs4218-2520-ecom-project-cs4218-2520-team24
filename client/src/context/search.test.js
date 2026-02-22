@@ -1,3 +1,5 @@
+// Carsten Joe Ng, A0255764W
+
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { SearchProvider, useSearch } from "./search";
