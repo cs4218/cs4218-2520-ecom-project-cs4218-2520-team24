@@ -208,7 +208,7 @@ describe('CreateCategory Page', () => {
         const { getByText, getByLabelText } = render(<MemoryRouter><CreateCategory /></MemoryRouter>);
         fireEvent.change(getByLabelText('category-input'), { target: { value: 'New' } });
         fireEvent.click(getByText('Submit'));
-        await waitFor(() => expect(toast.error).toHaveBeenCalledWith('something went wrong in input form'));
+        await waitFor(() => expect(toast.error).toHaveBeenCalledWith('Something went wrong in input form'));
     });
 
     it('handles data.success false in handleUpdate', async () => {

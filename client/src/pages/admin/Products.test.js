@@ -61,15 +61,16 @@ describe('Admin Products Page', () => {
         );
 
         await waitFor(() => expect(getByText('Product 1')).toBeInTheDocument());
+        await waitFor(() => expect(getByText(/Desc 1/i)).toBeInTheDocument());
         expect(getByText('Product 2')).toBeInTheDocument();
-        expect(getByText('Desc 1')).toBeInTheDocument();
+        expect(getByText(/Desc 2/i)).toBeInTheDocument();
     });
 
     it('handles error in getAllProducts', async () => {
         axios.get.mockRejectedValue(new Error('Fetch error'));
         const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
         const { getByText } = render(<MemoryRouter><Products /></MemoryRouter>);
-        await waitFor(() => expect(toast.error).toHaveBeenCalledWith('Something Went Wrong'));
+        await waitFor(() => expect(toast.error).toHaveBeenCalledWith('Something went wrong'));
         expect(consoleSpy).toHaveBeenCalled();
         consoleSpy.mockRestore();
     });
