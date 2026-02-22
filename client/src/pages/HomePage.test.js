@@ -359,7 +359,7 @@ describe('HomePage Component', () => {
         await waitFor(() => expect(getByText('Filtered 1')).toBeInTheDocument());
 
         // 2. Trigger "Loadmore" (this sets page to 2)
-        const loadMoreBtn = await waitFor(() => getByText(/Loadmore/i));
+        const loadMoreBtn = await waitFor(() => getByText(/Load More/i));
         fireEvent.click(loadMoreBtn);
 
         // 3. ASSERTION: Check that BOTH products exist (Append Logic)
@@ -398,9 +398,9 @@ describe('HomePage Component', () => {
             </MemoryRouter>
         );
 
-        await waitFor(() => expect(getByText('Loadmore')).toBeInTheDocument());
+        await waitFor(() => expect(getByText('Load More')).toBeInTheDocument());
         
-        fireEvent.click(getByText('Loadmore'));
+        fireEvent.click(getByText('Load More'));
         
         await waitFor(() => {
             expect(getByText('Test Product 2')).toBeInTheDocument();
@@ -430,9 +430,9 @@ describe('HomePage Component', () => {
             </MemoryRouter>
         );
 
-        await waitFor(() => expect(getByText('Loadmore')).toBeInTheDocument());
+        await waitFor(() => expect(getByText('Load More')).toBeInTheDocument());
         
-        fireEvent.click(getByText('Loadmore'));
+        fireEvent.click(getByText('Load More'));
         
         await waitFor(() => {
             expect(console.log).toHaveBeenCalledWith(expect.any(Error));

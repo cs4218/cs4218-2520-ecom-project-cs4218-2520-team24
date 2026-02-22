@@ -62,7 +62,7 @@ export const createProductController = async (req, res) => {
     res.status(500).send({
       success: false,
       error,
-      message: "Error in crearing product",
+      message: "Error in creating product",
     });
   }
 };
@@ -167,6 +167,10 @@ export const updateProductController = async (req, res) => {
         return res.status(500).send({ error: "Category is Required" });
       case !quantity:
         return res.status(500).send({ error: "Quantity is Required" });
+      case !shipping:
+        return res.status(500).send({ error: "Shipping is Required" });
+      case !photo:
+        return res.status(500).send({ error: "Photo is Required" });
       case photo && photo.size > 1000000:
         return res
           .status(500)
@@ -178,10 +182,8 @@ export const updateProductController = async (req, res) => {
       { ...req.fields, slug: slugify(name) },
       { new: true }
     );
-    if (photo) {
-      products.photo.data = fs.readFileSync(photo.path);
-      products.photo.contentType = photo.type;
-    }
+    products.photo.data = fs.readFileSync(photo.path);
+    products.photo.contentType = photo.type;
     await products.save();
     res.status(201).send({
       success: true,

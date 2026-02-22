@@ -224,7 +224,7 @@ describe('createProductController', () => {
 
         expect(res.status).toHaveBeenCalledWith(500);
         expect(res.send).toHaveBeenCalledWith(
-            expect.objectContaining({ success: false, message: "Error in crearing product" })
+            expect.objectContaining({ success: false, message: "Error in creating product" })
         );
         expect(consoleSpy).toHaveBeenCalled();
 
@@ -466,7 +466,7 @@ describe('updateProductController', () => {
         }));
     });
 
-    it("should save even without photo", async () => {
+    it("should return 500 if photo is missing", async () => {
         const saveMock = jest.fn().mockResolvedValue(true);
         req.files.photo = null;
         const mockUpdatedProduct = {
@@ -478,12 +478,10 @@ describe('updateProductController', () => {
 
         await updateProductController(req, res);
 
-        expect(productModel.findByIdAndUpdate).toHaveBeenCalled();
-        expect(saveMock).toHaveBeenCalled();
-        expect(res.status).toHaveBeenCalledWith(201);
-        expect(res.send).toHaveBeenCalledWith(expect.objectContaining({
-            message: "Product Updated Successfully"
-        }));
+        expect(productModel.findByIdAndUpdate).not.toHaveBeenCalled();
+        expect(saveMock).not.toHaveBeenCalled();
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.send).toHaveBeenCalledWith({error: "Photo is Required"});
     })
 
     it('should return 500 if name is missing', async () => {
@@ -541,6 +539,17 @@ describe('updateProductController', () => {
         expect(productModel.findByIdAndUpdate).not.toHaveBeenCalled();
     });
 
+    it('should return 500 if shipping is missing', async () => {
+        req.fields.shipping = ''; // Missing shipping should return 500
+
+        await updateProductController(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.send).toHaveBeenCalledWith({ error: "Shipping is Required" });
+        // Verify the model was never even instantiated
+        expect(productModel.findByIdAndUpdate).not.toHaveBeenCalled();
+    });
+
     it('should return 500 if photo is too large', async () => {
         req.files = { photo: { size: 2000000 } }; // Photo size exceeds 1MB limit
 
@@ -551,6 +560,38 @@ describe('updateProductController', () => {
         // Verify the model was never even instantiated
         expect(productModel.findByIdAndUpdate).not.toHaveBeenCalled();
     });
+
+    it('should correctly process and update the photo if one is provided', async () => {
+        // 1. Setup mock data
+        const mockBinaryData = Buffer.from("new-photo-content");
+        fs.readFileSync.mockReturnValue(mockBinaryData);
+        
+        // Create a mock product object that findByIdAndUpdate will return
+        // It must have a 'photo' object and a 'save' method
+        const mockProduct = {
+            ...req.fields,
+            photo: { data: null, contentType: null },
+            save: jest.fn().mockResolvedValue(true)
+        };
+
+        productModel.findByIdAndUpdate = jest.fn().mockResolvedValue(mockProduct);
+
+        // 2. Execute the controller
+        await updateProductController(req, res);
+
+        // 3. Assertions
+        // Verify fs.readFileSync was called with the correct path from req.files.photo
+        expect(fs.readFileSync).toHaveBeenCalledWith(req.files.photo.path);
+
+        // Verify the photo data and type were assigned correctly
+        expect(mockProduct.photo.data).toEqual(mockBinaryData);
+        expect(mockProduct.photo.contentType).toBe(req.files.photo.type);
+
+        // Verify the document was saved after the photo assignment
+        expect(mockProduct.save).toHaveBeenCalled();
+        expect(res.status).toHaveBeenCalledWith(201);
+    });
+
     it('should handle errors in the catch block', async () => {
         const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => { });
         productModel.findByIdAndUpdate = jest.fn().mockRejectedValue(new Error("Update Error"));

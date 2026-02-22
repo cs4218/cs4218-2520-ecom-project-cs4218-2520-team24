@@ -45,6 +45,7 @@ const HomePage = () => {
       console.log("page: ", page)
       if (page === 1) {
         setProducts(data.products);
+        getTotal();
       } else {
         setProducts((prev) => [...prev, ...data.products]);
       }
@@ -90,18 +91,13 @@ const HomePage = () => {
       const { data } = await axios.post("/api/v1/product/product-filters", {
         checked,
         radio,
-        page, // This will be 1 if reset, or >1 if Load More was clicked
+        page,
       });
-      console.log(data)
       if (page === 1) {
-        // Direct replacement: This clears out the old category results 
-        // when you click a new radio/checkbox
         setProducts(data?.products);
       } else {
-        // Append: Only happens when the user explicitly clicks 'Load More'
         setProducts((prev) => [...prev, ...data?.products]);
       }
-      console.log("Products Length:", data?.products?.length, "Total Count:", data?.total);
       setTotal(data?.total);
     } catch (error) {
       console.log(error);
@@ -216,7 +212,7 @@ const HomePage = () => {
                 ) : (
                   <>
                     {" "}
-                    Loadmore <AiOutlineReload />
+                    Load More <AiOutlineReload />
                   </>
                 )}
               </button>
