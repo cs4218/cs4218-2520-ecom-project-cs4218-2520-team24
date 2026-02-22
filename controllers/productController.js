@@ -30,21 +30,27 @@ export const createProductController = async (req, res) => {
         return res.status(500).send({ error: "Description is Required" });
       case !price:
         return res.status(500).send({ error: "Price is Required" });
+      case price <= 0:
+        return res.status(500).send({ error: "Price must be greater than 0" });
       case !category:
         return res.status(500).send({ error: "Category is Required" });
       case !quantity:
         return res.status(500).send({ error: "Quantity is Required" });
+      case quantity <= 0:
+        return res.status(500).send({ error: "Quantity must be greater than 0" });
+      case !photo:
+        return res.status(500).send({ error: "Photo is Required" });
       case photo && photo.size > 1000000:
         return res
           .status(500)
           .send({ error: "photo is Required and should be less then 1mb" });
+      case !shipping:
+        return res.status(500).send({ error: "Shipping is Required" });
     }
 
     const products = new productModel({ ...req.fields, slug: slugify(name) });
-    if (photo) {
-      products.photo.data = fs.readFileSync(photo.path);
-      products.photo.contentType = photo.type;
-    }
+    products.photo.data = fs.readFileSync(photo.path);
+    products.photo.contentType = photo.type;
     await products.save();
     res.status(201).send({
       success: true,
@@ -196,13 +202,28 @@ export const updateProductController = async (req, res) => {
 export const productFiltersController = async (req, res) => {
   try {
     const { checked, radio } = req.body;
+    // Get page from query or body; default to 1
+    const page = req.body.page ? req.body.page : 1;
+    const perPage = 6; // Match this with your productListController limit
+
     let args = {};
     if (checked.length > 0) args.category = checked;
     if (radio.length) args.price = { $gte: radio[0], $lte: radio[1] };
-    const products = await productModel.find(args);
+
+    // 1. Get the total count of products matching THESE specific filters
+    const total = await productModel.find(args).countDocuments();
+
+    // 2. Fetch the paginated products
+    const products = await productModel
+      .find(args)
+      .skip((page - 1) * perPage)
+      .limit(perPage)
+      .sort({ createdAt: -1 });
+
     res.status(200).send({
       success: true,
       products,
+      total, // Return the filtered total so frontend knows when to hide "Load More"
     });
   } catch (error) {
     console.log(error);

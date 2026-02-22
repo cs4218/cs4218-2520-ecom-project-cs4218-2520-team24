@@ -22,6 +22,15 @@ jest.mock('../../context/search', () => ({
     useSearch: jest.fn(() => [{ keyword: '' }, jest.fn()]) // Mock useSearch hook to return null state and a mock function
   }));  
 
+jest.mock('../../hooks/useCategory', () => jest.fn(() => [])); 
+
+const mockedUsedNavigate = jest.fn();
+
+jest.mock('react-router-dom', () => ({
+   ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockedUsedNavigate,
+}));
+
   Object.defineProperty(window, 'localStorage', {
     value: {
       setItem: jest.fn(),
@@ -40,8 +49,14 @@ window.matchMedia = window.matchMedia || function() {
   };  
 
 describe('Login Component', () => {
+    let consoleSpy;
     beforeEach(() => {
         jest.clearAllMocks();
+        consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      consoleSpy.mockRestore();
     });
 
     it('renders login form', () => {
@@ -117,6 +132,35 @@ describe('Login Component', () => {
             }
         });
     });
+    
+    it('should display error message when success is false in response', async () => {
+        // Mocking a successful HTTP response but a failed application logic
+        axios.post.mockResolvedValueOnce({
+            data: {
+                success: false,
+                message: 'Invalid email or password'
+            }
+        });
+
+        const { getByPlaceholderText, getByText } = render(
+            <MemoryRouter initialEntries={['/login']}>
+                <Routes>
+                    <Route path="/login" element={<Login />} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        // Act: Fill the form and click submit
+        fireEvent.change(getByPlaceholderText('Enter Your Email'), { target: { value: 'wrong@example.com' } });
+        fireEvent.change(getByPlaceholderText('Enter Your Password'), { target: { value: 'wrongpass' } });
+        fireEvent.click(getByText('LOGIN'));
+
+        // Assert: Check if axios was called and the correct toast error appeared
+        await waitFor(() => expect(axios.post).toHaveBeenCalled());
+        
+        // This targets the 'else' block in your handleSubmit
+        expect(toast.error).toHaveBeenCalledWith('Invalid email or password');
+    });
 
     it('should display error message on failed login', async () => {
         axios.post.mockRejectedValueOnce({ message: 'Invalid credentials' });
@@ -136,5 +180,21 @@ describe('Login Component', () => {
 
         await waitFor(() => expect(axios.post).toHaveBeenCalled());
         expect(toast.error).toHaveBeenCalledWith('Something went wrong');
+        await waitFor(() => {
+          expect(consoleSpy).toHaveBeenCalledWith({message: 'Invalid credentials'});
+        });
+    });
+
+    it('should navigate to forgot password page when button is clicked', () => {
+        const { getByText } = render(
+            <MemoryRouter>
+                <Login />
+            </MemoryRouter>
+        );
+
+        fireEvent.click(getByText('Forgot Password'));
+
+        // Check if the navigate function was called with the right path
+        expect(mockedUsedNavigate).toHaveBeenCalledWith('/forgot-password');
     });
 });

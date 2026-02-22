@@ -76,6 +76,8 @@ describe('createCategoryController', () => {
     });
 
     it("should handle errors", async () => {
+        const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {}); 
+        
         categoryModel.findOne.mockRejectedValue(new Error("Category Error"));
 
         const req = { body: {name: "Test"}};
@@ -93,6 +95,8 @@ describe('createCategoryController', () => {
                 message: "Error in category",
             })
         );
+        expect(consoleSpy).toHaveBeenCalled();
+        consoleSpy.mockRestore();
     });
 });
 
@@ -133,6 +137,7 @@ describe('updateCategoryController', () => {
     });
 
     it("should handle errors if update fails", async () => {
+        const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {}); 
         categoryModel.findByIdAndUpdate.mockRejectedValue(new Error("Update error"));
 
         const req = {
@@ -153,6 +158,8 @@ describe('updateCategoryController', () => {
                 message: "Error while updating category",
             })
         );
+        expect(consoleSpy).toHaveBeenCalled();
+        consoleSpy.mockRestore();
     });
 });
 
@@ -186,6 +193,8 @@ describe('categoryController', () => {
     });
 
     it("should handle errors when failing to list all categories", async () => {
+        const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {}); 
+        
         categoryModel.find.mockRejectedValue(new Error("List all error"));
 
         const req = {};
@@ -203,6 +212,8 @@ describe('categoryController', () => {
                 message: "Error while getting all categories",
             })
         );
+        expect(consoleSpy).toHaveBeenCalled();
+        consoleSpy.mockRestore();
     });
 });
 
@@ -238,6 +249,7 @@ describe('singleCategoryController', () => {
     });
 
     it("should handle errors when failing to get a single category", async () => {
+        const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {}); 
        categoryModel.findOne.mockRejectedValue(new Error("Single Category Error"));
 
         const req = {
@@ -257,6 +269,8 @@ describe('singleCategoryController', () => {
                 message: "Error while getting single category",
             })
         );
+        expect(consoleSpy).toHaveBeenCalled();
+        consoleSpy.mockRestore();
     });
 });
 
@@ -264,11 +278,9 @@ describe('deleteCategoryController', () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
-
     it("should delete category successfully", async () => {
-        categoryModel.findByIdAndDelete.mockResolvedValue({
-            _id: "20"
-        });
+        const mockCategory = { _id: "20" };
+        categoryModel.findByIdAndDelete.mockResolvedValue(mockCategory);
 
         const req = {
             params: {id: "20"}
@@ -283,12 +295,14 @@ describe('deleteCategoryController', () => {
         expect(categoryModel.findByIdAndDelete).toHaveBeenCalledWith("20");
         expect(res.status).toHaveBeenCalledWith(200);
         expect(res.send).toHaveBeenCalledWith({
+            category: mockCategory,
             success: true,
             message: "Category deleted successfully",
         });
     });
 
     it("should handle errors when failing to delete category", async () => {
+        const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
         categoryModel.findByIdAndDelete.mockRejectedValue(new Error("Deletion error"));
 
         const req = {
@@ -308,5 +322,7 @@ describe('deleteCategoryController', () => {
                 message: "Error while deleting category",
             })
         );
+        expect(consoleSpy).toHaveBeenCalled();
+        consoleSpy.mockRestore();
     });
 });
