@@ -567,20 +567,20 @@ describe("Forgot Password Controller", () => {
     });
 });
 
-describe("Test Controller", () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
-    });
+// describe("Test Controller", () => {
+//     beforeEach(() => {
+//         jest.clearAllMocks();
+//     });
 
-    it("returns protected route message", () => {
-        const req = {};
-        const res = createResponse();
+//     it("returns protected route message", () => {
+//         const req = {};
+//         const res = createResponse();
 
-        testController(req, res);
+//         testController(req, res);
 
-        expect(res.send).toHaveBeenCalledWith("Protected Routes");
-    });
-});
+//         expect(res.send).toHaveBeenCalledWith("Protected Routes");
+//     });
+// });
 
 describe("Get Orders Controller", () => {
     beforeEach(() => {

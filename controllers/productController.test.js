@@ -108,27 +108,41 @@ describe('createProductController', () => {
         );
     });
 
-    it("should save even without photo", async () => {
-        const saveMock = jest.fn().mockResolvedValue(true);
-        req.files.photo = null;
-        const mockUpdatedProduct = {
-            ...req.fields,
-            save: saveMock
-        };
-
-        productModel.mockImplementation(() => ({
-            save: saveMock,
-            photo: {}
-        }));
+    it('should return 500 if price is less than or equal to 0', async () => {
+        req.fields.price = -1; // -1 to avoid triggering !price (0 is falsy)
 
         await createProductController(req, res);
 
-        expect(saveMock).toHaveBeenCalled();
-        expect(res.status).toHaveBeenCalledWith(201);
-        expect(res.send).toHaveBeenCalledWith(expect.objectContaining({
-            message: "Product Created Successfully"
-        }));
-    })
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.send).toHaveBeenCalledWith({ error: "Price must be greater than 0" });
+    });
+
+    it('should return 500 if quantity is less than or equal to 0', async () => {
+        req.fields.quantity = -5; // -5 to avoid triggering !quantity
+
+        await createProductController(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.send).toHaveBeenCalledWith({ error: "Quantity must be greater than 0" });
+    });
+
+    it('should return 500 if shipping is missing', async () => {
+        req.fields.shipping = '';
+
+        await createProductController(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.send).toHaveBeenCalledWith({ error: "Shipping is Required" });
+    });
+
+    it('should return 500 if photo is missing', async () => {
+        delete req.files.photo;
+
+        await createProductController(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.send).toHaveBeenCalledWith({ error: "Photo is Required" });
+    });
 
     it('should return 500 if name is missing', async () => {
         req.fields.name = ''; // Missing name should return 500
@@ -559,22 +573,32 @@ describe('productFiltersController', () => {
         res = { status: jest.fn().mockReturnThis(), send: jest.fn() };
     });
 
-    it('should filter products based on category and price range', async () => {
+    it('should filter products based on category and price range with pagination', async () => {
         const mockProducts = [{ name: 'Filtered Product' }];
-        productModel.find = jest.fn().mockResolvedValue(mockProducts);
+        req.body.page = 2;
+        
+        productModel.find = jest.fn().mockReturnThis();
+        productModel.countDocuments = jest.fn().mockResolvedValue(10);
+        productModel.skip = jest.fn().mockReturnThis();
+        productModel.limit = jest.fn().mockReturnThis();
+        productModel.sort = jest.fn().mockResolvedValue(mockProducts);
 
         await productFiltersController(req, res);
 
-        expect(productModel.find).toHaveBeenCalledWith({
-            category: ['cat1', 'cat2'],
-            price: { $gte: 100, $lte: 500 }
-        });
+        expect(productModel.skip).toHaveBeenCalledWith(6); // (2-1) * 6
         expect(res.status).toHaveBeenCalledWith(200);
-        expect(res.send).toHaveBeenCalledWith({ success: true, products: mockProducts });
+        expect(res.send).toHaveBeenCalledWith({ 
+            success: true, 
+            products: mockProducts,
+            total: 10
+        });
     });
+
     it('should handle errors in the catch block', async () => {
         const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => { });
-        productModel.find = jest.fn().mockRejectedValue(new Error("Update Error"));
+        productModel.find = jest.fn().mockImplementation(() => {
+            throw new Error("Filter Error");
+        });
 
         await productFiltersController(req, res);
 
@@ -602,6 +626,7 @@ describe('productCountController', () => {
         await productCountController(req, res);
 
         expect(productModel.find).toHaveBeenCalledWith({});
+        expect(productModel.estimatedDocumentCount).toHaveBeenCalled();
         expect(res.status).toHaveBeenCalledWith(200);
         expect(res.send).toHaveBeenCalledWith({ success: true, total: 42 });
     });
