@@ -28,7 +28,7 @@ describe("Prices Array", () => {
       array: [0, 19],
     });
 
-    expect(Prices[Prices.length - 1]).toEqual({
+    expect(Prices.at(-1)).toEqual({
       _id: 4,
       name: "$100 or more",
       array: [100, 9999],

@@ -14,6 +14,7 @@ export default {
 
   // jest code coverage
   collectCoverage: true,
+  coverageDirectory: "coverage/backend",
   collectCoverageFrom: ["controllers/**", "helpers/**", "middlewares/**"],
   coverageThreshold: {
     "./controllers/authController.js": {
