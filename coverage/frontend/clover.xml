@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1771734265877" clover="3.2.0">
-  <project timestamp="1771734265877" name="All files">
+<coverage generated="1771735319425" clover="3.2.0">
+  <project timestamp="1771735319425" name="All files">
     <metrics statements="585" coveredstatements="584" conditionals="136" coveredconditionals="136" methods="168" coveredmethods="167" elements="889" coveredelements="887" complexity="0" loc="585" ncloc="585" packages="9" files="37" classes="37"/>
     <package name="components">
       <metrics statements="30" coveredstatements="30" conditionals="7" coveredconditionals="7" methods="12" coveredmethods="12"/>
@@ -12,25 +12,25 @@
       <file name="Footer.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/components/Footer.js">
         <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
         <line num="4" count="22" type="stmt"/>
-        <line num="5" count="280" type="stmt"/>
+        <line num="5" count="281" type="stmt"/>
       </file>
       <file name="Header.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/components/Header.js">
         <metrics statements="10" coveredstatements="10" conditionals="4" coveredconditionals="4" methods="3" coveredmethods="3"/>
         <line num="10" count="22" type="stmt"/>
-        <line num="11" count="284" type="stmt"/>
-        <line num="12" count="284" type="stmt"/>
-        <line num="13" count="284" type="stmt"/>
-        <line num="14" count="284" type="stmt"/>
+        <line num="11" count="285" type="stmt"/>
+        <line num="12" count="285" type="stmt"/>
+        <line num="13" count="285" type="stmt"/>
+        <line num="14" count="285" type="stmt"/>
         <line num="15" count="1" type="stmt"/>
         <line num="20" count="1" type="stmt"/>
         <line num="21" count="1" type="stmt"/>
-        <line num="23" count="284" type="stmt"/>
+        <line num="23" count="285" type="stmt"/>
         <line num="64" count="4" type="stmt"/>
       </file>
       <file name="Layout.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/components/Layout.js">
         <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
         <line num="8" count="22" type="stmt"/>
-        <line num="9" count="279" type="stmt"/>
+        <line num="9" count="280" type="stmt"/>
         <line num="28" count="22" type="stmt"/>
       </file>
       <file name="Prices.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/components/Prices.js">
@@ -464,12 +464,12 @@
       <file name="CreateCategory.js" path="/Users/nicholasleong/Desktop/cs4218-2520-ecom-project-cs4218-2520-team24/client/src/pages/admin/CreateCategory.js">
         <metrics statements="52" coveredstatements="52" conditionals="8" coveredconditionals="8" methods="10" coveredmethods="10"/>
         <line num="8" count="1" type="stmt"/>
-        <line num="9" count="35" type="stmt"/>
-        <line num="10" count="34" type="stmt"/>
-        <line num="11" count="34" type="stmt"/>
-        <line num="12" count="34" type="stmt"/>
-        <line num="13" count="34" type="stmt"/>
-        <line num="15" count="34" type="stmt"/>
+        <line num="9" count="36" type="stmt"/>
+        <line num="10" count="35" type="stmt"/>
+        <line num="11" count="35" type="stmt"/>
+        <line num="12" count="35" type="stmt"/>
+        <line num="13" count="35" type="stmt"/>
+        <line num="15" count="35" type="stmt"/>
         <line num="16" count="3" type="stmt"/>
         <line num="17" count="3" type="stmt"/>
         <line num="18" count="3" type="stmt"/>
@@ -479,16 +479,16 @@
         <line num="25" count="1" type="stmt"/>
         <line num="28" count="1" type="stmt"/>
         <line num="29" count="1" type="stmt"/>
-        <line num="34" count="34" type="stmt"/>
+        <line num="34" count="35" type="stmt"/>
         <line num="35" count="16" type="stmt"/>
         <line num="36" count="16" type="stmt"/>
         <line num="37" count="15" type="cond" truecount="2" falsecount="0"/>
         <line num="38" count="14" type="stmt"/>
         <line num="41" count="1" type="stmt"/>
         <line num="42" count="1" type="stmt"/>
-        <line num="46" count="34" type="stmt"/>
+        <line num="46" count="35" type="stmt"/>
         <line num="47" count="13" type="stmt"/>
-        <line num="51" count="34" type="stmt"/>
+        <line num="51" count="35" type="stmt"/>
         <line num="52" count="3" type="stmt"/>
         <line num="53" count="3" type="stmt"/>
         <line num="54" count="3" type="stmt"/>
@@ -500,7 +500,7 @@
         <line num="63" count="1" type="stmt"/>
         <line num="65" count="1" type="stmt"/>
         <line num="68" count="1" type="stmt"/>
-        <line num="72" count="34" type="stmt"/>
+        <line num="72" count="35" type="stmt"/>
         <line num="73" count="3" type="stmt"/>
         <line num="74" count="3" type="stmt"/>
         <line num="77" count="2" type="cond" truecount="2" falsecount="0"/>
@@ -508,7 +508,7 @@
         <line num="79" count="1" type="stmt"/>
         <line num="81" count="1" type="stmt"/>
         <line num="84" count="1" type="stmt"/>
-        <line num="87" count="34" type="stmt"/>
+        <line num="87" count="35" type="stmt"/>
         <line num="113" count="34" type="stmt"/>
         <line num="119" count="4" type="stmt"/>
         <line num="120" count="4" type="stmt"/>

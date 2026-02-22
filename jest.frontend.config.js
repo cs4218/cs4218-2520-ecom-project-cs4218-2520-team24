@@ -21,6 +21,7 @@ export default {
 
   // run frontend unit tests
   testMatch: ["<rootDir>/client/src/**/*.test.js"],
+  testPathIgnorePatterns: ["<rootDir>/client/src/_site/"],
 
   // jest code coverage
   collectCoverage: true,
