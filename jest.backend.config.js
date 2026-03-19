@@ -28,4 +28,7 @@ export default {
       functions: 100,
     },
   },
+  transform: {
+    "^.+\\.[t|j]sx?$": "babel-jest",
+  },
 };
