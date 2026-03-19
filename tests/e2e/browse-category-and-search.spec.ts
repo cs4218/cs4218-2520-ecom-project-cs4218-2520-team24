@@ -17,15 +17,17 @@ test.describe('E2E: Discovery Flow', () => {
     await page.getByRole('link', { name: /electronics/i }).click();
     
     // 4. Verification: Check that we are on a category page
-    await expect(page).toHaveURL(/\/category\//);
+    await expect(page).toHaveURL(/\/category\/electronics/);
     // Use a more flexible heading check
-    await expect(page.getByRole('heading', { level: 1 })).toContainText(/category/i);
+    await expect(page.getByRole('heading', { level: 1 })).toContainText(/electronics/i);
 
-    // 5. Product Interaction: Target the "Smartphone" card specifically
-    const productCard = page.locator('.card, .product-item').filter({ hasText: /smartphone/i }).first();
+    // 5. Product Interaction: Find the "Smartphone" product and click its details
+    // Using .card class as the container is a good balance between resilience and specificity
+    const productHeading = page.getByRole('heading', { name: /smartphone/i });
+    const productCard = page.locator('.card').filter({ has: productHeading });
     await productCard.getByRole('button', { name: /more details/i }).click();
     
-    await expect(page).toHaveURL(/\/product\//);
+    await expect(page).toHaveURL(/\/product\/smartphone/);
     await expect(page.getByRole('heading', { name: /product details/i })).toBeVisible();
 
     // 6. Global Search
