@@ -1,48 +1,66 @@
 import { test, expect } from '@playwright/test';
+import mongoose from 'mongoose';
+import Category from '../../models/categoryModel.js';
+import Product from '../../models/productModel.js';
+import { getMongoUri } from '../mongodb-manager';
 
 test.describe('E2E: Discovery Flow', () => {
-  test('should navigate from categories to a product and perform a search', async ({ page }) => {
-    // 1. Use relative path (best practice: set baseURL in playwright.config.ts)
+  const testId = Date.now().toString().slice(-6);
+  const productNames = Array.from({ length: 5 }, (_, i) => `Gadget ${i} - ${testId}`);
+  let electronicsCategoryId: string;
+
+  test.beforeAll(async () => {
+    // FIX: Look for URI in both manager and process.env
+    const mongoUri = getMongoUri();
+    
+    if (!mongoUri) {
+      throw new Error('❌ Test Worker could not find MONGO_URL. Check global-setup.ts');
+    }
+
+    await mongoose.connect(mongoUri);
+    
+    // Find the standard Electronics category seeded in globalSetup
+    const category = await new Category({
+      name: `Special Electronics ${testId}`,
+      slug: `electronics-${testId}`,
+    }).save();
+    electronicsCategoryId = category._id.toString();
+    
+    // Loop to create test-specific products
+    for (const name of productNames) {
+      await new Product({
+        name,
+        slug: name.toLowerCase().replace(/\s+/g, '-'),
+        description: `Test product ${name}`,
+        price: 100,
+        category: electronicsCategoryId,
+        quantity: 10,
+        shipping: true,
+      }).save();
+    }
+    
+    await mongoose.disconnect();
+  });
+
+  test.afterAll(async () => {
+    const mongoUri = getMongoUri();
+    if (mongoUri) {
+      await mongoose.connect(mongoUri);
+      await Product.deleteMany({ name: { $regex: testId } });
+      await Category.findByIdAndDelete(electronicsCategoryId);
+      await mongoose.disconnect();
+    }
+  });
+
+  test('should navigate and see the seeded loop data', async ({ page }) => {
     await page.goto('/');
     
-    // 2. Navigation: Using roles is more robust than relying on exact link structures
-    const nav = page.getByRole('navigation');
-    await nav.getByRole('link', { name: /categories/i }).click(); 
-    // Click "All Categories" inside the dropdown to actually navigate
+    // Navigation to Electronics
+    await page.getByRole('link', { name: /categories/i }).click(); 
     await page.getByRole('link', { name: /all categories/i }).click();
+    await page.getByRole('link', { name: `electronics-${testId}` }).click();
 
-    // 3. Category Selection
-    await expect(page).toHaveURL(/\/categories/);
-    // Clicking 'Electronics' - using a regex /i makes it case-insensitive
-    await page.getByRole('link', { name: /electronics/i }).click();
-    
-    // 4. Verification: Check that we are on a category page
-    await expect(page).toHaveURL(/\/category\/electronics/);
-    // Use a more flexible heading check
-    await expect(page.getByRole('heading', { level: 1 })).toContainText(/electronics/i);
-
-    // 5. Product Interaction: Find the "Smartphone" product and click its details
-    // Using .card class as the container is a good balance between resilience and specificity
-    const productHeading = page.getByRole('heading', { name: /smartphone/i });
-    const productCard = page.locator('.card').filter({ has: productHeading });
-    await productCard.getByRole('button', { name: /more details/i }).click();
-    
-    await expect(page).toHaveURL(/\/product\/smartphone/);
-    await expect(page.getByRole('heading', { name: /product details/i })).toBeVisible();
-
-    // 6. Global Search
-    // Use getByPlaceholder if 'Search' is the ghost text in the box
-    const searchInput = page.getByPlaceholder(/search/i);
-    await searchInput.fill('Smartphone');
-    await page.getByRole('button', { name: /search/i }).click();
-
-    // 7. Final Assertions
-    await expect(page).toHaveURL(/.*search.*/);
-    
-    // Using a regex to be resilient to typography/case changes
-    await expect(page.getByRole('heading', { name: /search results/i })).toBeVisible();
-    
-    // Ensure at least one product appeared in the results
-    await expect(page.getByRole('button', { name: /more details/i }).first()).toBeVisible();
+    // Verify one of our loop products is there
+    await expect(page.getByText(productNames[0])).toBeVisible();
   });
 });

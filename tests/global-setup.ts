@@ -2,12 +2,13 @@ import { startMongo } from './mongodb-manager';
 import mongoose from 'mongoose';
 import Category from '../models/categoryModel.js';
 import Product from '../models/productModel.js';
+import http from 'http';
+import { spawn } from 'child_process';
 
 async function globalSetup() {
   console.log('Starting Global MongoMemoryServer...');
   const mongoServer = await startMongo();
   const uri = mongoServer.getUri();
-  process.env.MONGO_URL = uri;
   console.log(`MongoMemoryServer started at: ${uri}`);
 
   // Seed data
@@ -62,11 +63,38 @@ async function globalSetup() {
     }
     
     console.log('--- SEEDING END ---');
-  } catch (err) {
-    console.error('CRITICAL SEED ERROR:', err);
   } finally {
     await mongoose.disconnect();
   }
+    console.log('🚀 Launching WebServer...');
+    // 1. USE SHELL INJECTION (The most robust way)
+    const serverProcess = spawn(`MONGO_URL=${uri} npm run dev`, {
+      shell: true,
+      stdio: 'inherit',
+      detached: true 
+    });
+
+    // Store the PID globally for teardown
+    (global as any).__SERVER_PID = serverProcess.pid;
+    await Promise.all([
+      waitForServer('http://localhost:3000'), // Check UI
+      waitForServer('http://localhost:6060/api/v1/category/get-category') // Check API
+    ]);
+    console.log('✅ System Ready. Handing over to Playwright...');
+}
+
+// Simple helper to wait for the React/Node app to respond
+function waitForServer(url: string) {
+  return new Promise((resolve) => {
+    const interval = setInterval(() => {
+      http.get(url, (res) => {
+        if (res.statusCode === 200) {
+          clearInterval(interval);
+          resolve(true);
+        }
+      }).on('error', () => {});
+    }, 500);
+  });
 }
 
 export default globalSetup;
