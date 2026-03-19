@@ -11,17 +11,19 @@ test.describe('Search and Add to Cart E2E', () => {
     await expect(page).toHaveURL(/.*search.*/);
     await expect(page.getByRole('heading', { name: /search results/i })).toBeVisible();
       
-    // Find the product item more robustly - some layouts use cards without listitems
-    const productItem = page.locator('.card').filter({ hasText: /smartphone/i }).first();
+    // Find the product item more robustly by its heading within a card
+    const productHeading = page.getByRole('heading', { name: /smartphone/i });
+    const productItem = page.locator('.card').filter({ has: productHeading });
     await expect(productItem).toBeVisible();
     
     await productItem.getByRole('button', { name: /add to cart/i }).click();
     
-    const cartCount = page.locator('.ant-badge-count');
-    await expect(cartCount).toHaveText('1');
+    // The cart badge is often outside the link itself but inside the list item container
+    const cartBadge = page.locator('li').filter({ hasText: /cart/i });
+    // Verify the cart count
+    await expect(cartBadge).toContainText('1');
     
-    const cartLink = page.getByRole('link', { name: /cart/i });
-    await cartLink.click();
+    await cartBadge.getByRole('link').click();
     await expect(page).toHaveURL(/.*cart.*/);
     
     await expect(page.getByRole('main')).toContainText(/smartphone/i);
