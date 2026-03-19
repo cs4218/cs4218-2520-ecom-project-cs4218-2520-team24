@@ -23,10 +23,8 @@ test.describe('Similar Products Add to Cart E2E', () => {
     // If this fails, we know for sure the API returned empty or errored
     await expect(page.getByText(/no similar products found/i)).not.toBeVisible();
 
-    const similarSection = similarHeading.locator('..'); 
-    
-    // 4. Find the "Tablet" within that section
-    const tabletItem = similarSection.locator('div').filter({ hasText: /tablet/i }).last();
+    // 4. Find the "Tablet" card within the similar products section
+    const tabletItem = page.locator('.similar-products .card').filter({ hasText: /tablet/i }).first();
     await expect(tabletItem).toBeVisible();
     
     // 5. Action: Add to Cart

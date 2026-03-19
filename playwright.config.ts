@@ -1,8 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
-import { MongoMemoryServer } from 'mongodb-memory-server';
+import { startMongo } from './tests/mongodb-manager';
 
-// Start MongoMemoryServer at the top level to share URI with webServer
-const mongoServer = await MongoMemoryServer.create();
+// Start MongoMemoryServer using the shared manager
+const mongoServer = await startMongo();
 const mongoUri = mongoServer.getUri();
 process.env.MONGO_URL = mongoUri;
 console.log(`Global MongoMemoryServer started at: ${mongoUri}`);

@@ -21,9 +21,8 @@ test.describe('E2E: Discovery Flow', () => {
     // Use a more flexible heading check
     await expect(page.getByRole('heading', { level: 1 })).toContainText(/category/i);
 
-    // 5. Product Interaction
-    // Instead of .first(), try to find a specific product or a container
-    const productCard = page.locator('.card, .product-item').first(); 
+    // 5. Product Interaction: Target the "Smartphone" card specifically
+    const productCard = page.locator('.card, .product-item').filter({ hasText: /smartphone/i }).first();
     await productCard.getByRole('button', { name: /more details/i }).click();
     
     await expect(page).toHaveURL(/\/product\//);

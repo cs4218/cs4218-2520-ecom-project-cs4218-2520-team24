@@ -292,4 +292,40 @@ describe("Product Details & Related Logic Integration Tests", () => {
       expect(res.body.products).toHaveLength(0);
     });
   });
+
+  describe("GET /api/v1/product/product-photo/:pid", () => {
+    it("should return 404 if product is not found", async () => {
+      const fakeId = new mongoose.Types.ObjectId();
+      const res = await request(app).get(`/api/v1/product/product-photo/${fakeId}`);
+      expect(res.status).toBe(404);
+      expect(res.body.success).toBe(false);
+      expect(res.body.message).toBe("Photo not found");
+    });
+
+    it("should return 404 if product exists but has no photo", async () => {
+      const res = await request(app).get(`/api/v1/product/product-photo/${seededProduct._id}`);
+      expect(res.status).toBe(404);
+      expect(res.body.success).toBe(false);
+      expect(res.body.message).toBe("Photo not found");
+    });
+
+    it("should return 200 and photo data if photo exists", async () => {
+      // Add a photo to the seeded product
+      seededProduct.photo.data = Buffer.from("fake-photo-content");
+      seededProduct.photo.contentType = "image/png";
+      await seededProduct.save();
+
+      const res = await request(app).get(`/api/v1/product/product-photo/${seededProduct._id}`);
+      expect(res.status).toBe(200);
+      expect(res.header["content-type"]).toBe("image/png");
+      expect(res.body.toString()).toBe("fake-photo-content");
+    });
+
+    it("should return 500 if the ID is invalid (CastError)", async () => {
+      const res = await request(app).get("/api/v1/product/product-photo/invalid-id");
+      expect(res.status).toBe(500);
+      expect(res.body.success).toBe(false);
+      expect(res.body.message).toBe("Error while getting photo");
+    });
+  });
 });
