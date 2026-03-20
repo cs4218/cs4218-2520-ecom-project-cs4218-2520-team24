@@ -16,6 +16,10 @@ export const DbStorage = {
   },
 
   cleanup() {
-    if (fs.existsSync(STORAGE_PATH)) fs.unlinkSync(STORAGE_PATH);
+    try {
+      if (fs.existsSync(STORAGE_PATH)) fs.unlinkSync(STORAGE_PATH);
+    } catch (error) {
+      // Ignore error if file already deleted
+    }
   }
 };
