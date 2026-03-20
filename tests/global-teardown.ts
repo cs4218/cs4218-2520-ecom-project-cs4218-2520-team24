@@ -1,9 +1,12 @@
 import { stopMongo } from './mongodb-manager';
 
 async function globalTeardown() {
-  console.log('Stopping Global MongoMemoryServer...');
+  const pid = (global as any).__SERVER_PID;
+  if (pid) {
+    // The minus sign kills the entire process group (npm + node + client)
+    try { process.kill(-pid); } catch (e) {} 
+  }
   await stopMongo();
-  console.log('MongoMemoryServer stopped.');
 }
 
 export default globalTeardown;

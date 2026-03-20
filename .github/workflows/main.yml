@@ -16,7 +16,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: '24'
+          node-version: '22'
 
       - name: Install dependencies
         run: npm install
@@ -29,7 +29,7 @@ jobs:
       - name: setup env files
         env:
           ENV_FILE: ${{ secrets.ENV_FILE }}
-        run: echo $ENV_FILE | base64 --decode > .env
+        run: echo $ENV_FILE | base64 --decode > .env\
 
       - name: Run frontend tests
         run: npm run test:frontend

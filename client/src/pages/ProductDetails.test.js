@@ -152,12 +152,12 @@ describe('ProductDetails Page', () => {
         });
     });
 
-    it('handles cases where API response data is undefined (optional chaining)', async () => {
-        // Mocking a successful response but with no data body
-        axios.get.mockResolvedValueOnce({ data: null });
+    it('handles null product correctly (optional chaining)', async () => {
+        // Mocking a response where product is explicitly null (e.g., slug not found)
+        axios.get.mockResolvedValueOnce({ data: { product: null } });
 
-        render(
-            <MemoryRouter initialEntries={['/product/hammer']}>
+        const { queryByText } = render(
+            <MemoryRouter initialEntries={['/product/non-existent']}>
                 <Routes>
                     <Route path="/product/:slug" element={<ProductDetails />} />
                 </Routes>
@@ -167,7 +167,33 @@ describe('ProductDetails Page', () => {
         await waitFor(() => {
             expect(axios.get).toHaveBeenCalled();
         });
-        // The code should not crash because of the ?. operator
+        
+        // Ensure getSimilarProduct was NOT called (no second axios.get)
+        expect(axios.get).toHaveBeenCalledTimes(1);
+        
+        // Ensure the page doesn't crash and shows empty details or nothing
+        expect(queryByText(/Name :/)).toBeInTheDocument(); // It shows "Name : " because of the text
+    });
+    
+    it('renders correctly with missing product fields (optional chaining)', async () => {
+        const incompleteProduct = {
+            _id: '1',
+            // name, description, price, category missing
+        };
+        axios.get.mockResolvedValueOnce({ data: { product: incompleteProduct } });
+
+        const { getByText } = render(
+            <MemoryRouter initialEntries={['/product/incomplete']}>
+                <Routes>
+                    <Route path="/product/:slug" element={<ProductDetails />} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        await waitFor(() => expect(getByText('Name :')).toBeInTheDocument());
+        expect(getByText('Description :')).toBeInTheDocument();
+        expect(getByText('Price :')).toBeInTheDocument();
+        expect(getByText('Category :')).toBeInTheDocument();
     });
     
 

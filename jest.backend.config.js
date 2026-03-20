@@ -5,6 +5,8 @@ export default {
   // when testing backend
   testEnvironment: "node",
 
+  testTimeout: 30000,
+
   // which test to run
   testMatch: [
     "<rootDir>/controllers/*.test.js",
@@ -12,6 +14,7 @@ export default {
     "<rootDir>/middlewares/*.test.js",
     "<rootDir>/models/*.test.js",
     "<rootDir>/config/*.test.js",
+    "<rootDir>/**/*.test.cjs",
   ],
 
   // jest code coverage
@@ -27,5 +30,8 @@ export default {
       lines: 100,
       functions: 100,
     },
+  },
+  transform: {
+    "^.+\\.[t|j]sx?$": "babel-jest",
   },
 };
