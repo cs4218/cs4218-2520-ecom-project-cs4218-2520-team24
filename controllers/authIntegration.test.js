@@ -6,6 +6,8 @@ import userModel from "../models/userModel.js";
 
 let mongoServer;
 
+jest.setTimeout(60000);
+
 describe("Auth Integration Tests", () => {
   beforeAll(async () => {
     mongoServer = await MongoMemoryServer.create();

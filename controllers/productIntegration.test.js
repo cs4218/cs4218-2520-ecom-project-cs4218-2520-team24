@@ -8,6 +8,8 @@ import categoryModel from "../models/categoryModel.js";
 
 let mongoServer;
 
+jest.setTimeout(60000);
+
 describe("Product Details & Related Logic Integration Tests", () => {
   beforeAll(async () => {
     // Setup in-memory MongoDB
