@@ -25,6 +25,11 @@ jobs:
         run: |
           cd client
           npm install
+      
+      - name: setup env files
+        env:
+          ENV_FILE: ${{ secrets.ENV_FILE }}
+        run: echo $ENV_FILE | base64 --decode > .env
 
       - name: Run frontend tests
         run: npm run test:frontend
