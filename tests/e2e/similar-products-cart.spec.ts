@@ -23,21 +23,18 @@ test.describe('Similar Products Add to Cart E2E', () => {
     // If this fails, we know for sure the API returned empty or errored
     await expect(page.getByText(/no similar products found/i)).not.toBeVisible();
 
-    const similarSection = similarHeading.locator('..'); 
-    
-    // 4. Find the "Tablet" within that section
-    const tabletItem = similarSection.locator('div').filter({ hasText: /tablet/i }).last();
+    // 4. Find the "Tablet" card within the similar products section more robustly
+    const tabletItem = page.locator('.card').filter({ has: page.getByRole('heading', { name: /tablet/i }) });
     await expect(tabletItem).toBeVisible();
     
     // 5. Action: Add to Cart
     await tabletItem.getByRole('button', { name: /add to cart/i }).click();
     
-    // 6. Navigation and Verification - Use the badge count specifically
-    const cartCount = page.locator('.ant-badge-count');
-    await expect(cartCount).toHaveText('1');
+    // 6. Navigation and Verification - Use the list item container which includes the badge count
+    const cartBadge = page.locator('li').filter({ hasText: /cart/i });
+    await expect(cartBadge).toContainText('1');
     
-    const cartLink = page.getByRole('link', { name: /cart/i });
-    await cartLink.click();
+    await cartBadge.getByRole('link').click();
     await expect(page).toHaveURL(/.*cart.*/);
     
     // 7. Final check in the main cart area

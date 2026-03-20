@@ -30,9 +30,6 @@ jobs:
         env:
           ENV_FILE: ${{ secrets.ENV_FILE }}
         run: echo $ENV_FILE | base64 --decode > .env\
-        
-      - name: Debug env file
-        run: cat .env
 
       - name: Run frontend tests
         run: npm run test:frontend
