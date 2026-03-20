@@ -58,9 +58,8 @@ test.describe('E2E: Discovery Flow', () => {
     // Navigation to Electronics
     await page.getByRole('link', { name: /categories/i }).click(); 
     await page.getByRole('link', { name: /all categories/i }).click();
-    await page.getByRole('link', { name: `electronics-${testId}` }).click();
-
+    await page.getByRole('link', { name: `Special Electronics ${testId}` }).click();
     // Verify one of our loop products is there
-    await expect(page.getByText(productNames[0])).toBeVisible();
+    await expect(page.getByRole('heading', { name: productNames[0] })).toBeVisible();
   });
 });
