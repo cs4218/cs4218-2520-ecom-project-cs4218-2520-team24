@@ -935,6 +935,63 @@ describe('productCategoryController', () => {
         expect(res.send).toHaveBeenCalledWith(expect.objectContaining({ category: mockCat }));
     });
 
+    it('should handle missing query object in productCategoryController', async () => {
+        const req = { params: { slug: 'electronics' } }; // req.query is undefined
+        const res = { status: jest.fn().mockReturnThis(), send: jest.fn() };
+        const mockCat = { _id: '123', name: 'Electronics' };
+
+        categoryModel.findOne = jest.fn().mockResolvedValue(mockCat);
+        productModel.find = jest.fn().mockReturnThis();
+        productModel.select = jest.fn().mockReturnThis();
+        productModel.skip = jest.fn().mockReturnThis();
+        productModel.limit = jest.fn().mockReturnThis();
+        productModel.populate = jest.fn().mockResolvedValue([]);
+        productModel.countDocuments = jest.fn().mockResolvedValue(0);
+
+        await productCategoryController(req, res);
+
+        expect(productModel.skip).toHaveBeenCalledWith(0); // (1-1) * 6
+        expect(res.status).toHaveBeenCalledWith(200);
+    });
+
+    it('should handle empty query object in productCategoryController', async () => {
+        const req = { params: { slug: 'electronics' }, query: {} }; // req.query is defined but page is missing
+        const res = { status: jest.fn().mockReturnThis(), send: jest.fn() };
+        const mockCat = { _id: '123', name: 'Electronics' };
+
+        categoryModel.findOne = jest.fn().mockResolvedValue(mockCat);
+        productModel.find = jest.fn().mockReturnThis();
+        productModel.select = jest.fn().mockReturnThis();
+        productModel.skip = jest.fn().mockReturnThis();
+        productModel.limit = jest.fn().mockReturnThis();
+        productModel.populate = jest.fn().mockResolvedValue([]);
+        productModel.countDocuments = jest.fn().mockResolvedValue(0);
+
+        await productCategoryController(req, res);
+
+        expect(productModel.skip).toHaveBeenCalledWith(0);
+        expect(res.status).toHaveBeenCalledWith(200);
+    });
+
+    it('should use provided page number in productCategoryController', async () => {
+        const req = { params: { slug: 'electronics' }, query: { page: 2 } };
+        const res = { status: jest.fn().mockReturnThis(), send: jest.fn() };
+        const mockCat = { _id: '123', name: 'Electronics' };
+
+        categoryModel.findOne = jest.fn().mockResolvedValue(mockCat);
+        productModel.find = jest.fn().mockReturnThis();
+        productModel.select = jest.fn().mockReturnThis();
+        productModel.skip = jest.fn().mockReturnThis();
+        productModel.limit = jest.fn().mockReturnThis();
+        productModel.populate = jest.fn().mockResolvedValue([]);
+        productModel.countDocuments = jest.fn().mockResolvedValue(0);
+
+        await productCategoryController(req, res);
+
+        expect(productModel.skip).toHaveBeenCalledWith(6); // (2-1) * 6
+        expect(res.status).toHaveBeenCalledWith(200);
+    });
+
     it('should handle errors in productCategoryController', async () => {
         const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => { });
         const req = { params: { slug: 'electronics' } };

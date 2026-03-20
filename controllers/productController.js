@@ -332,7 +332,7 @@ export const productCategoryController = async (req, res) => {
   try {
     const category = await categoryModel.findOne({ slug: req.params.slug });
     const perPage = 6;
-    const page = req.query.page ? req.query.page : 1;
+    const page = req.query && req.query.page ? req.query.page : 1;
 
     const products = await productModel
       .find({ category })

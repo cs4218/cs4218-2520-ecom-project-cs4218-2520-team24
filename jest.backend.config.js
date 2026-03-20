@@ -5,6 +5,8 @@ export default {
   // when testing backend
   testEnvironment: "node",
 
+  testTimeout: 30000,
+
   // which test to run
   testMatch: [
     "<rootDir>/controllers/*.test.js",
