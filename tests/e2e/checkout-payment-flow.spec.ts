@@ -51,10 +51,14 @@ test.describe('E2E: Secure Checkout & Payment', () => {
     await page.waitForURL('/');
     
     // 2. Add an item to the cart
+    // Isolate test product by filtering on the uniquely created category
+    const categoryCheckbox = page.getByRole('checkbox', { name: `Cat ${testId}` });
+    await expect(categoryCheckbox).toBeVisible();
+    await categoryCheckbox.check();
+
     // Using robust locator looking for the newly seeded product
-    await page.locator(`text=${testProduct.name}`).scrollIntoViewIfNeeded();
-    // Assuming UI puts "ADD TO CART" inside the same card block as the product name
     const productCard = page.locator('.card', { hasText: testProduct.name });
+    await expect(productCard).toBeVisible();
     await productCard.locator('button:has-text("ADD TO CART")').click();
 
     // Wait for the cart toast/state persistence mechanism

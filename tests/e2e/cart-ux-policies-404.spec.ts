@@ -27,9 +27,15 @@ test.describe('E2E: Cart UX, Policies & Error Handling', () => {
   test('Cart removal interactions and empty state handling', async ({ page }) => {
     await page.goto('/');
 
-    // 1. Add seeded items to cart dynamically
+    // Isolate test products by filtering on the uniquely created category
+    const categoryCheckbox = page.getByRole('checkbox', { name: `UX Cat ${testId}` });
+    await expect(categoryCheckbox).toBeVisible();
+    await categoryCheckbox.check();
+
+    // 1. Add seeded items to cart dynamically (now safely isolated)
     for (const prod of products) {
       const card = page.locator('.card', { hasText: prod.name });
+      await expect(card).toBeVisible();
       await card.locator('button:has-text("ADD TO CART")').click();
       await page.waitForTimeout(500); // UI Toast Wait
     }

@@ -52,24 +52,25 @@ test.describe('HomePage Pagination', () => {
 
   test('should load more products when clicking Load More', async ({ page }) => {
     // Navigate to homepage
-    // Seed has 10 total products (2 Electronics + 8 Gadgets) which is > 6 perPage,
-    // so the Load More button will appear after the initial 6 load.
     await page.goto('/');
 
-    // Wait for categories to load (verifies the page is rendered)
-    await expect(page.getByRole('checkbox', { name: /electronics/i })).toBeVisible();
+    // Isolate test products by filtering on the uniquely created category
+    // This solves the global storage parallel-test pollution
+    const categoryCheckbox = page.getByRole('checkbox', { name: `Gadgets ${testId}` });
+    await expect(categoryCheckbox).toBeVisible();
+    await categoryCheckbox.check();
 
-    // Wait for the initial 6 product cards to load from the real DB
+    // Wait for the initial 6 product cards to load from the filtered DB
     await expect(page.locator('.card:has(.card-img-top)')).toHaveCount(6, { timeout: 10000 });
-
-    // Click "Load More" — real DB call to /api/v1/product/product-list/2
+    
+    // Click "Load More" — real DB call to /api/v1/product/product-filter s
     const loadMoreBtn = page.getByRole('button', { name: /load more/i });
     await expect(loadMoreBtn).toBeVisible();
     await loadMoreBtn.click();
 
-    // After loading page 2, total = 10 products (6 + 4 more).
-    // The button disappears because all 10 are loaded.
-    await expect(page.locator('.card:has(.card-img-top)')).toHaveCount(10, { timeout: 10000 });
+    // After loading page 2, total = 8 products (6 on pg1 + 2 on pg2).
+    // The button disappears because all 8 are loaded.
+    await expect(page.locator('.card:has(.card-img-top)')).toHaveCount(8, { timeout: 10000 });
     await expect(loadMoreBtn).toBeHidden();
   });
 });
