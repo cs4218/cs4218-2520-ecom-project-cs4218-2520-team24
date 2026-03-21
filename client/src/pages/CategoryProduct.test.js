@@ -215,4 +215,67 @@ describe('CategoryProduct Page', () => {
             );
         });
     });
+
+    it('loads more products when "Load More" is clicked', async () => {
+        axios.get.mockResolvedValueOnce({
+            data: {
+                success: true,
+                category: { _id: 'cat1', name: 'Electronics' },
+                products: [{ _id: '1', name: 'Laptop', slug: 'laptop', description: 'Powerful laptop', price: 1000 }],
+                total: 2
+            }
+        });
+
+        render(
+            <MemoryRouter initialEntries={['/category/electronics']}>
+                <Routes>
+                    <Route path="/category/:slug" element={<CategoryProduct />} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        await waitFor(() => expect(screen.getByText('Laptop')).toBeInTheDocument());
+
+        axios.get.mockResolvedValueOnce({
+            data: {
+                success: true,
+                products: [{ _id: '2', name: 'Phone', slug: 'phone', description: 'A good phone', price: 500 }],
+            }
+        });
+
+        const loadMoreBtn = screen.getByText(/Load More/i);
+        fireEvent.click(loadMoreBtn);
+
+        await waitFor(() => expect(screen.getByText('Phone')).toBeInTheDocument());
+        expect(axios.get).toHaveBeenCalledWith('/api/v1/product/product-category/electronics?page=2');
+    });
+
+    it('handles error in loadMore gracefully', async () => {
+        axios.get.mockResolvedValueOnce({
+            data: {
+                success: true,
+                category: { _id: 'cat1', name: 'Electronics' },
+                products: [{ _id: '1', name: 'Laptop', slug: 'laptop', description: 'Powerful laptop', price: 1000 }],
+                total: 2
+            }
+        });
+
+        render(
+            <MemoryRouter initialEntries={['/category/electronics']}>
+                <Routes>
+                    <Route path="/category/:slug" element={<CategoryProduct />} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        await waitFor(() => expect(screen.getByText('Laptop')).toBeInTheDocument());
+
+        axios.get.mockRejectedValueOnce(new Error('Load more error'));
+        console.log = jest.fn();
+
+        const loadMoreBtn = screen.getByText(/Load More/i);
+        fireEvent.click(loadMoreBtn);
+
+        await waitFor(() => expect(console.log).toHaveBeenCalledWith(expect.any(Error)));
+    });
 });
