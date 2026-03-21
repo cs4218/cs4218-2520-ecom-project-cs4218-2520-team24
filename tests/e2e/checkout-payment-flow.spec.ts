@@ -32,9 +32,13 @@ test.describe('E2E: Secure Checkout & Payment', () => {
     if (!mongoUri) throw new Error('Test Worker could not find MONGO_URL.');
     await mongoose.connect(mongoUri);
 
-    // 2. Seed a valid registered user
+    // 2. Seed a valid registered user (upsert to avoid duplicate key on re-runs)
     const hashedPassword = await hashPassword(testUser.password);
-    await new User({ ...testUser, password: hashedPassword }).save();
+    await User.findOneAndUpdate(
+      { email: testUser.email },
+      { ...testUser, password: hashedPassword },
+      { upsert: true, new: true }
+    );
 
     // 3. Seed a category and product
     const category = await new Category({ name: `Cat ${testId}`, slug: `cat-${testId}` }).save();
@@ -115,5 +119,113 @@ test.describe('E2E: Secure Checkout & Payment', () => {
     // 8. Verify Cart is cleared post-payment
     await page.goto('/cart');
     await expect(page.locator('text=Your Cart Is Empty')).toBeVisible();
+  });
+
+  test('Guest user sees login prompt and redirect button instead of checkout', async ({ page }) => {
+    // 1. Add an item to cart as a guest (no login)
+    await page.goto('/');
+    const categoryCheckbox = page.getByRole('checkbox', { name: `Cat ${testId}` });
+    await expect(categoryCheckbox).toBeVisible();
+    await categoryCheckbox.check();
+
+    const productCard = page.locator('.card', { hasText: testProduct.name });
+    await expect(productCard).toBeVisible();
+    await productCard.locator('button:has-text("ADD TO CART")').click();
+    await page.waitForTimeout(1000);
+
+    // 2. Navigate to Cart
+    await page.goto('/cart');
+
+    // 3. Verify guest greeting
+    await expect(page.locator('text=Hello Guest')).toBeVisible();
+
+    // 4. Verify "please login to checkout" messaging within the cart summary text
+    await expect(page.locator('p.text-center', { hasText: 'please login to checkout' })).toBeVisible();
+
+    // 5. Verify the "Please Login to checkout" button is visible
+    const loginBtn = page.locator('button:has-text("Please Login to checkout")');
+    await expect(loginBtn).toBeVisible();
+
+    // 6. Click the login redirect button and verify navigation to /login
+    await loginBtn.click();
+    await page.waitForURL(/\/login/);
+    await expect(page).toHaveURL(/\/login/);
+  });
+
+  test('Cart displays correct total price for items', async ({ page }) => {
+    // 1. Login
+    await page.goto('/login');
+    await page.fill('input[placeholder="Enter Your Email "]', testUser.email);
+    await page.fill('input[placeholder="Enter Your Password"]', testUser.password);
+    await page.click('button:has-text("LOGIN")');
+    await page.waitForURL('/');
+
+    // 2. Add the test product to cart
+    const categoryCheckbox = page.getByRole('checkbox', { name: `Cat ${testId}` });
+    await expect(categoryCheckbox).toBeVisible();
+    await categoryCheckbox.check();
+
+    const productCard = page.locator('.card', { hasText: testProduct.name });
+    await expect(productCard).toBeVisible();
+    await productCard.locator('button:has-text("ADD TO CART")').click();
+    await page.waitForTimeout(1000);
+
+    // 3. Navigate to Cart
+    await page.goto('/cart');
+
+    // 4. Verify the total price is displayed correctly ($99.99)
+    await expect(page.locator('text=Total :')).toBeVisible();
+    await expect(page.locator('h4', { hasText: '$99.99' })).toBeVisible();
+  });
+
+  test('Cart persists items across page reload via localStorage', async ({ page }) => {
+    // 1. Login
+    await page.goto('/login');
+    await page.fill('input[placeholder="Enter Your Email "]', testUser.email);
+    await page.fill('input[placeholder="Enter Your Password"]', testUser.password);
+    await page.click('button:has-text("LOGIN")');
+    await page.waitForURL('/');
+
+    // 2. Add the test product to cart
+    const categoryCheckbox = page.getByRole('checkbox', { name: `Cat ${testId}` });
+    await expect(categoryCheckbox).toBeVisible();
+    await categoryCheckbox.check();
+
+    const productCard = page.locator('.card', { hasText: testProduct.name });
+    await expect(productCard).toBeVisible();
+    await productCard.locator('button:has-text("ADD TO CART")').click();
+    await page.waitForTimeout(1000);
+
+    // 3. Navigate to Cart and verify the item is present
+    await page.goto('/cart');
+    await expect(page.locator(`text=${testProduct.name}`)).toBeVisible();
+
+    // 4. Reload the page entirely
+    await page.reload();
+
+    // 5. Verify that the product still appears after reload (localStorage persistence)
+    await expect(page.locator(`text=${testProduct.name}`)).toBeVisible();
+    await expect(page.locator('text=You Have')).toBeVisible();
+  });
+
+  test('Update Address button navigates to user profile page', async ({ page }) => {
+    // 1. Login
+    await page.goto('/login');
+    await page.fill('input[placeholder="Enter Your Email "]', testUser.email);
+    await page.fill('input[placeholder="Enter Your Password"]', testUser.password);
+    await page.click('button:has-text("LOGIN")');
+    await page.waitForURL('/');
+
+    // 2. Navigate to Cart
+    await page.goto('/cart');
+
+    // 3. Click the "Update Address" button
+    const updateAddressBtn = page.locator('button:has-text("Update Address")');
+    await expect(updateAddressBtn).toBeVisible();
+    await updateAddressBtn.click();
+
+    // 4. Verify navigation to the user profile page
+    await page.waitForURL(/\/dashboard\/user\/profile/);
+    await expect(page).toHaveURL(/\/dashboard\/user\/profile/);
   });
 });

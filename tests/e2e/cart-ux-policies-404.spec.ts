@@ -86,4 +86,50 @@ test.describe('E2E: Cart UX, Policies & Error Handling', () => {
     // 4. Validate routing dropped us safely home
     await expect(page).toHaveURL('/');
   });
+
+  test('Cart items display product details: name, description, price, and image', async ({ page }) => {
+    await page.goto('/');
+
+    // 1. Isolate and add only the first test product
+    const categoryCheckbox = page.getByRole('checkbox', { name: `UX Cat ${testId}` });
+    await expect(categoryCheckbox).toBeVisible();
+    await categoryCheckbox.check();
+
+    const card = page.locator('.card', { hasText: products[0].name });
+    await expect(card).toBeVisible();
+    await card.locator('button:has-text("ADD TO CART")').click();
+    await page.waitForTimeout(500);
+
+    // 2. Navigate to Cart
+    await page.goto('/cart');
+
+    // 3. Verify product name
+    await expect(page.locator(`text=${products[0].name}`)).toBeVisible();
+
+    // 4. Verify product description (truncated to 30 chars in CartPage.js)
+    const expectedDesc = products[0].description.substring(0, 30);
+    await expect(page.locator(`text=${expectedDesc}`)).toBeVisible();
+
+    // 5. Verify product price is displayed
+    await expect(page.locator(`text=Price : ${products[0].price}`)).toBeVisible();
+
+    // 6. Verify product image renders with correct alt text
+    const productImg = page.locator(`img[alt="${products[0].name}"]`);
+    await expect(productImg).toBeVisible();
+  });
+
+  test('Privacy Policy page renders the contact image', async ({ page }) => {
+    await page.goto('/policy');
+
+    // Verify the policy-page image loads and is visible
+    const policyImg = page.locator('img[alt="contactus"]');
+    await expect(policyImg).toBeVisible();
+  });
+
+  test('404 page sets the correct document title', async ({ page }) => {
+    await page.goto(`/nonexistent-page-${testId}`);
+
+    // Verify the document title contains the expected 404 page title
+    await expect(page).toHaveTitle(/page not found/i);
+  });
 });
