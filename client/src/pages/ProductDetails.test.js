@@ -152,12 +152,12 @@ describe('ProductDetails Page', () => {
         });
     });
 
-    it('handles cases where API response data is undefined (optional chaining)', async () => {
-        // Mocking a successful response but with no data body
-        axios.get.mockResolvedValueOnce({ data: null });
+    it('handles null product correctly (optional chaining)', async () => {
+        // Mocking a response where product is explicitly null (e.g., slug not found)
+        axios.get.mockResolvedValueOnce({ data: { product: null } });
 
-        render(
-            <MemoryRouter initialEntries={['/product/hammer']}>
+        const { queryByText } = render(
+            <MemoryRouter initialEntries={['/product/non-existent']}>
                 <Routes>
                     <Route path="/product/:slug" element={<ProductDetails />} />
                 </Routes>
@@ -167,7 +167,33 @@ describe('ProductDetails Page', () => {
         await waitFor(() => {
             expect(axios.get).toHaveBeenCalled();
         });
-        // The code should not crash because of the ?. operator
+        
+        // Ensure getSimilarProduct was NOT called (no second axios.get)
+        expect(axios.get).toHaveBeenCalledTimes(1);
+        
+        // Ensure the page doesn't crash and shows empty details or nothing
+        expect(queryByText(/Name :/)).toBeInTheDocument(); // It shows "Name : " because of the text
+    });
+    
+    it('renders correctly with missing product fields (optional chaining)', async () => {
+        const incompleteProduct = {
+            _id: '1',
+            // name, description, price, category missing
+        };
+        axios.get.mockResolvedValueOnce({ data: { product: incompleteProduct } });
+
+        const { getByText } = render(
+            <MemoryRouter initialEntries={['/product/incomplete']}>
+                <Routes>
+                    <Route path="/product/:slug" element={<ProductDetails />} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        await waitFor(() => expect(getByText('Name :')).toBeInTheDocument());
+        expect(getByText('Description :')).toBeInTheDocument();
+        expect(getByText('Price :')).toBeInTheDocument();
+        expect(getByText('Category :')).toBeInTheDocument();
     });
     
 
@@ -291,6 +317,40 @@ describe('ProductDetails Page', () => {
         expect(mockSetCart).toHaveBeenCalled();
         // Verify local storage update
         expect(storageSpy).toHaveBeenCalledWith('cart', expect.stringContaining('hammer'));
+        
+        storageSpy.mockRestore();
+    });
+
+    it('adds a similar product to cart and updates local storage', async () => {
+        const storageSpy = jest.spyOn(Storage.prototype, 'setItem');
+        axios.get.mockImplementation((url) => {
+            if (url.includes('/api/v1/product/get-product/hammer')) {
+                return Promise.resolve({ data: { product: mockProduct } });
+            }
+            if (url.includes('/api/v1/product/related-product/1/cat1')) {
+                return Promise.resolve({ data: { products: mockRelated } });
+            }
+            return Promise.reject(new Error('not found'));
+        });
+
+        const { getByText, getAllByText } = render(
+            <MemoryRouter initialEntries={['/product/hammer']}>
+                <Routes>
+                    <Route path="/product/:slug" element={<ProductDetails />} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        await waitFor(() => expect(getByText('Drill')).toBeInTheDocument());
+        
+        // There are two "ADD TO CART" buttons: one for Hammer, one for Drill.
+        const addCartButtons = getAllByText('ADD TO CART');
+        // The first one is for main product, second one is for similar product.
+        fireEvent.click(addCartButtons[1]);
+
+        expect(mockSetCart).toHaveBeenCalledWith([mockRelated[0]]);
+        expect(storageSpy).toHaveBeenCalledWith('cart', expect.stringContaining('drill'));
+        expect(toast.success).toHaveBeenCalledWith('Item Added to cart');
         
         storageSpy.mockRestore();
     });

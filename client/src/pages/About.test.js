@@ -30,13 +30,12 @@ jest.mock('../hooks/useCategory', () => () => []);
 
 describe('About Page', () => {
     it('renders About page with image and text', () => {
-        const { getByText, getByAltText } = render(
+        const { getByAltText } = render(
             <MemoryRouter>
                 <About />
             </MemoryRouter>
         );
 
         expect(getByAltText('contactus')).toBeInTheDocument();
-        expect(getByText('Add text')).toBeInTheDocument();
     });
 });

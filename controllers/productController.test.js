@@ -42,7 +42,7 @@ jest.mock("braintree", () => {
 import {
     braintreeTokenController,
     brainTreePaymentController
-} from "./productController";
+} from "./productController.js";
 import productModel from "../models/productModel.js";
 import orderModel from "../models/orderModel.js";
 import categoryModel from "../models/categoryModel.js";
@@ -51,8 +51,9 @@ import { json } from 'stream/consumers';
 // 3. Access the mock object for use in 'it' blocks
 const mockGateway = braintree.internalMockGateway;
 
-jest.mock('../models/productModel');
-jest.mock('../models/orderModel');
+// Use jest.mock with a simpler call or ensure ESM compatibility
+jest.mock('../models/productModel.js');
+jest.mock('../models/orderModel.js');
 jest.mock('fs');
 jest.mock('slugify');
 
@@ -370,14 +371,30 @@ describe('productPhotoController', () => {
         consoleSpy.mockRestore();
     });
 
-    it('should do nothing if product has no photo data', async () => {
-        productModel.findById.mockReturnThis();
-        productModel.select.mockResolvedValue({ photo: {} }); // No .data property
+    it('should return 404 if product is not found', async () => {
+        productModel.findById = jest.fn().mockReturnThis();
+        productModel.select = jest.fn().mockResolvedValue(null);
 
         await productPhotoController(req, res);
 
-        expect(res.set).not.toHaveBeenCalled();
-        expect(res.status).not.toHaveBeenCalledWith(200);
+        expect(res.status).toHaveBeenCalledWith(404);
+        expect(res.send).toHaveBeenCalledWith(expect.objectContaining({
+            success: false,
+            message: "Photo not found",
+        }));
+    });
+
+    it('should return 404 if product has no photo data', async () => {
+        productModel.findById = jest.fn().mockReturnThis();
+        productModel.select = jest.fn().mockResolvedValue({ photo: {} }); // No .data property
+
+        await productPhotoController(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(404);
+        expect(res.send).toHaveBeenCalledWith(expect.objectContaining({
+            success: false,
+            message: "Photo not found",
+        }));
     });
 });
 
@@ -916,6 +933,63 @@ describe('productCategoryController', () => {
 
         expect(res.status).toHaveBeenCalledWith(200);
         expect(res.send).toHaveBeenCalledWith(expect.objectContaining({ category: mockCat }));
+    });
+
+    it('should handle missing query object in productCategoryController', async () => {
+        const req = { params: { slug: 'electronics' } }; // req.query is undefined
+        const res = { status: jest.fn().mockReturnThis(), send: jest.fn() };
+        const mockCat = { _id: '123', name: 'Electronics' };
+
+        categoryModel.findOne = jest.fn().mockResolvedValue(mockCat);
+        productModel.find = jest.fn().mockReturnThis();
+        productModel.select = jest.fn().mockReturnThis();
+        productModel.skip = jest.fn().mockReturnThis();
+        productModel.limit = jest.fn().mockReturnThis();
+        productModel.populate = jest.fn().mockResolvedValue([]);
+        productModel.countDocuments = jest.fn().mockResolvedValue(0);
+
+        await productCategoryController(req, res);
+
+        expect(productModel.skip).toHaveBeenCalledWith(0); // (1-1) * 6
+        expect(res.status).toHaveBeenCalledWith(200);
+    });
+
+    it('should handle empty query object in productCategoryController', async () => {
+        const req = { params: { slug: 'electronics' }, query: {} }; // req.query is defined but page is missing
+        const res = { status: jest.fn().mockReturnThis(), send: jest.fn() };
+        const mockCat = { _id: '123', name: 'Electronics' };
+
+        categoryModel.findOne = jest.fn().mockResolvedValue(mockCat);
+        productModel.find = jest.fn().mockReturnThis();
+        productModel.select = jest.fn().mockReturnThis();
+        productModel.skip = jest.fn().mockReturnThis();
+        productModel.limit = jest.fn().mockReturnThis();
+        productModel.populate = jest.fn().mockResolvedValue([]);
+        productModel.countDocuments = jest.fn().mockResolvedValue(0);
+
+        await productCategoryController(req, res);
+
+        expect(productModel.skip).toHaveBeenCalledWith(0);
+        expect(res.status).toHaveBeenCalledWith(200);
+    });
+
+    it('should use provided page number in productCategoryController', async () => {
+        const req = { params: { slug: 'electronics' }, query: { page: 2 } };
+        const res = { status: jest.fn().mockReturnThis(), send: jest.fn() };
+        const mockCat = { _id: '123', name: 'Electronics' };
+
+        categoryModel.findOne = jest.fn().mockResolvedValue(mockCat);
+        productModel.find = jest.fn().mockReturnThis();
+        productModel.select = jest.fn().mockReturnThis();
+        productModel.skip = jest.fn().mockReturnThis();
+        productModel.limit = jest.fn().mockReturnThis();
+        productModel.populate = jest.fn().mockResolvedValue([]);
+        productModel.countDocuments = jest.fn().mockResolvedValue(0);
+
+        await productCategoryController(req, res);
+
+        expect(productModel.skip).toHaveBeenCalledWith(6); // (2-1) * 6
+        expect(res.status).toHaveBeenCalledWith(200);
     });
 
     it('should handle errors in productCategoryController', async () => {

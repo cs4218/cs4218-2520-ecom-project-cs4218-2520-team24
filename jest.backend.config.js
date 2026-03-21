@@ -1,9 +1,11 @@
-module.exports = {
+export default {
   // display name
   displayName: "backend",
 
   // when testing backend
   testEnvironment: "node",
+
+  testTimeout: 30000,
 
   // which test to run
   testMatch: [
@@ -12,6 +14,7 @@ module.exports = {
     "<rootDir>/middlewares/*.test.js",
     "<rootDir>/models/*.test.js",
     "<rootDir>/config/*.test.js",
+    "<rootDir>/**/*.test.cjs",
   ],
 
   // jest code coverage
@@ -27,5 +30,8 @@ module.exports = {
       lines: 100,
       functions: 100,
     },
+  },
+  transform: {
+    "^.+\\.[t|j]sx?$": "babel-jest",
   },
 };

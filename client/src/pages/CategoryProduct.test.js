@@ -5,6 +5,10 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import '@testing-library/jest-dom/extend-expect';
 import CategoryProduct from './CategoryProduct';
 import axios from 'axios';
+import toast from 'react-hot-toast';
+
+// Mocking react-hot-toast
+jest.mock('react-hot-toast');
 
 // Mocking axios to avoid ESM issues in Jest
 jest.mock('axios', () => ({
@@ -24,8 +28,9 @@ jest.mock('../context/auth', () => ({
   useAuth: () => [{ user: null, token: "" }, jest.fn()],
 }));
 
+const mockSetCart = jest.fn();
 jest.mock('../context/cart', () => ({
-  useCart: () => [[], jest.fn()],
+  useCart: () => [[], mockSetCart],
 }));
 
 jest.mock('../context/search', () => ({
@@ -128,6 +133,36 @@ describe('CategoryProduct Page', () => {
 
         // 4. Assert that navigate was called with the slug-based URL
         expect(mockedUsedNavigate).toHaveBeenCalledWith("/product/laptop");
+    });
+
+    it('adds product to cart when "ADD TO CART" is clicked', async () => {
+        axios.get.mockResolvedValueOnce({
+            data: {
+                success: true,
+                category: mockCategory,
+                products: mockProducts
+            }
+        });
+
+        // Mock localStorage
+        const setItemSpy = jest.spyOn(Storage.prototype, 'setItem');
+
+        render(
+            <MemoryRouter initialEntries={['/category/electronics']}>
+                <Routes>
+                    <Route path="/category/:slug" element={<CategoryProduct />} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        const addToCartButton = await screen.findByText(/ADD TO CART/i);
+        fireEvent.click(addToCartButton);
+
+        expect(mockSetCart).toHaveBeenCalledWith([mockProducts[0]]);
+        expect(setItemSpy).toHaveBeenCalledWith('cart', JSON.stringify([mockProducts[0]]));
+        expect(toast.success).toHaveBeenCalledWith('Item Added to cart');
+
+        setItemSpy.mockRestore();
     });
 
     it('should not fetch products if slug is missing', () => {

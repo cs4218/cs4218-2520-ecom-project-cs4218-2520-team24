@@ -113,25 +113,26 @@ export const getSingleProductController = async (req, res) => {
   }
 };
 
-// get photo
 export const productPhotoController = async (req, res) => {
   try {
     const product = await productModel.findById(req.params.pid).select("photo");
-    if (product.photo.data) {
+    if (product && product.photo && product.photo.data) {
       res.set("Content-type", product.photo.contentType);
       return res.status(200).send(product.photo.data);
     }
+    res.status(404).send({
+      success: false,
+      message: "Photo not found",
+    });
   } catch (error) {
     console.log(error);
     res.status(500).send({
       success: false,
       message: "Error while getting photo",
-      error,
+      error: error.message,
     });
   }
 };
-
-//delete controller
 export const deleteProductController = async (req, res) => {
   try {
     await productModel.findByIdAndDelete(req.params.pid).select("-photo");
@@ -330,11 +331,23 @@ export const realtedProductController = async (req, res) => {
 export const productCategoryController = async (req, res) => {
   try {
     const category = await categoryModel.findOne({ slug: req.params.slug });
-    const products = await productModel.find({ category }).populate("category");
+    const perPage = 6;
+    const page = req.query && req.query.page ? req.query.page : 1;
+
+    const products = await productModel
+      .find({ category })
+      .select("-photo")
+      .skip((page - 1) * perPage)
+      .limit(perPage)
+      .populate("category");
+
+    const total = await productModel.countDocuments({ category });
+
     res.status(200).send({
       success: true,
       category,
       products,
+      total,
     });
   } catch (error) {
     console.log(error);
