@@ -47,7 +47,7 @@ describe('User Orders Page', () => {
         const mockOrders = [
             {
                 _id: 'o1',
-                status: 'Not Process',
+                status: 'Not Processing',
                 buyer: { name: 'John User' },
                 createAt: new Date().toISOString(),
                 payment: { success: true },
@@ -64,7 +64,7 @@ describe('User Orders Page', () => {
             </MemoryRouter>
         );
 
-        await waitFor(() => expect(getByText('Not Process')).toBeInTheDocument());
+        await waitFor(() => expect(getByText('Not Processing')).toBeInTheDocument());
         expect(getByText('John User')).toBeInTheDocument();
         expect(getByText('Success')).toBeInTheDocument();
         expect(getByText('Product 1')).toBeInTheDocument();
@@ -118,7 +118,7 @@ describe('User Orders Page', () => {
         const mockOrders = [
             {
                 _id: 'o2',
-                status: 'Not Process',
+                status: 'Not Processing',
                 buyer: { name: 'Jane User' },
                 createAt: new Date().toISOString(),
                 payment: { success: false }, // Trigger the "Failed" path
