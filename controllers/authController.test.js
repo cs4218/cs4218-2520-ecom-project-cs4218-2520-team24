@@ -764,7 +764,7 @@ describe("Order Status Controller", () => {
         expect(orderModel.findByIdAndUpdate).toHaveBeenCalledWith(
             "orderId",
             { status: "Delivered" },
-            { new: true }
+            { new: true, runValidators: true }
         );
         expect(res.json).toHaveBeenCalledWith(updatedOrder);
     });

@@ -102,7 +102,7 @@ describe("Backend Integration: Payments & Filters", () => {
     expect(storedOrder).not.toBeNull();
     expect(storedOrder.payment.success).toBe(true);
     expect(storedOrder.products[0]._id.toString()).toBe(testProduct._id.toString());
-    expect(storedOrder.status).toBe("Not Process");
+    expect(storedOrder.status).toBe("Not Processing");
   });
 
   it("B2: should fail payment gracefully without creating an order in DB", async () => {

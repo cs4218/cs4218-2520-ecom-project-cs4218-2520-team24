@@ -13,7 +13,7 @@ it("should create an order with default status", () => {
     
     const order = new Order(orderData);
     
-    expect(order.status).toBe("Not Process");
+    expect(order.status).toBe("Not Processing");
     expect(order.products.length).toBe(1);
     expect(order.payment.success).toBe(true);
   });
@@ -31,7 +31,7 @@ it("should create an order with default status", () => {
   });
 
   it("should allow valid status values", () => {
-    const validStatuses = ["Not Process", "Processing", "Shipped", "deliverd", "cancel"];
+    const validStatuses = ["Not Processing", "Processing", "Shipped", "Delivered", "Cancelled"];
     
     validStatuses.forEach(status => {
       const order = new Order({ status });
