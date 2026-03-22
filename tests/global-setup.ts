@@ -4,6 +4,8 @@ import Category from '../models/categoryModel.js';
 import Product from '../models/productModel.js';
 import http from 'http';
 import { spawn } from 'child_process';
+import userModel from '../models/userModel.js';
+import bcrypt from 'bcrypt';
 
 async function globalSetup() {
   console.log('Starting Global MongoMemoryServer...');
@@ -61,6 +63,32 @@ async function globalSetup() {
     } else {
       console.log('Product already exists: Tablet');
     }
+
+    // 4. Seed Admin User
+      const adminEmail = process.env.ADMIN_EMAIL ?? "a@a.com";
+      const adminPassword = process.env.ADMIN_PASSWORD ?? "password";
+
+      let admin = await userModel.findOne({ email: adminEmail });
+      if (!admin) {
+          const hashedPassword = await bcrypt.hash(adminPassword, 10);
+          await new userModel({
+              name: "Admin",
+              email: adminEmail,
+              password: hashedPassword,
+              phone: "12345678",
+              address: "Test Address",
+              answer: "test",
+              role: 1,
+          }).save();
+          console.log('Seeded Admin User:', adminEmail);
+      } else {
+          const hashedPassword = await bcrypt.hash(adminPassword, 10);
+          await userModel.findByIdAndUpdate(admin._id, {
+              role: 1,
+              password: hashedPassword,
+          });
+          console.log('Updated existing user to admin:', adminEmail);
+      }
     
     console.log('--- SEEDING END ---');
   } finally {

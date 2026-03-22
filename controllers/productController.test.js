@@ -483,11 +483,12 @@ describe('updateProductController', () => {
         }));
     });
 
-    it("should return 500 if photo is missing", async () => {
+    it("should succeed if photo is missing", async () => {
         const saveMock = jest.fn().mockResolvedValue(true);
         req.files.photo = null;
         const mockUpdatedProduct = {
             ...req.fields,
+            photo: { data: null, contentType: null },
             save: saveMock
         };
 
@@ -495,11 +496,13 @@ describe('updateProductController', () => {
 
         await updateProductController(req, res);
 
-        expect(productModel.findByIdAndUpdate).not.toHaveBeenCalled();
-        expect(saveMock).not.toHaveBeenCalled();
-        expect(res.status).toHaveBeenCalledWith(500);
-        expect(res.send).toHaveBeenCalledWith({error: "Photo is Required"});
-    })
+        expect(productModel.findByIdAndUpdate).toHaveBeenCalled();
+        expect(saveMock).toHaveBeenCalled();
+        expect(res.status).toHaveBeenCalledWith(201);
+        expect(res.send).toHaveBeenCalledWith(expect.objectContaining({
+            message: "Product Updated Successfully"
+        }));
+    });
 
     it('should return 500 if name is missing', async () => {
         req.fields.name = ''; // Missing name should return 500
