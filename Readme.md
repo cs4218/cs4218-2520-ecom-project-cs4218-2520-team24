@@ -27,6 +27,12 @@ Nam Dohyun, A0226590A
 - Wrote e2e tests for user flows involving similar products, adding cart from search page, resetting password, pagination in Home and Category page, filtering products with category and price
 - Wrote integration tests testing product related endpoints and reset password endpoints 
 
+Carsten Joe Ng, A0255763W
+- Wrote integration tests testing order updates (controllers/orderStatusIntegration.test.js, controllers/orderDataPopulateIntegration.test.js)
+- Wrote integration tests testing permissioning, ensuring expired/valid jwt tokens belonging to deleted/regular user/admin accounts are gated correctly. (controllers/authGuardsIntegration.test.js)
+- Wrote E2E UI tests for the user journeys regarding order updates (admin updating order status, user seeing updated order status)
+- Wrote E2E UI tests to ensure admins are able to view the admin dashbaord (and it is functional), while regular users may not
+
 ## MSI CI URL
 [Link to Milestone 1 CI](https://github.com/cs4218/cs4218-2520-ecom-project-cs4218-2520-team24/actions/runs/22278931150/job/64445985837)
 
