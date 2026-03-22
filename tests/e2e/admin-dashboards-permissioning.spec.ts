@@ -1,5 +1,4 @@
-// E2E: Admin Dashboards & Permissioning
-// Test: Verify Admin-only menu links and block regular user access
+// Carsten Joe Ng, A0255763W
 
 import { test, expect } from '@playwright/test';
 import mongoose from 'mongoose';
