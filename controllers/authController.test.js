@@ -720,7 +720,7 @@ describe("Get All Orders Controller", () => {
         expect(orderModel.find).toHaveBeenCalledWith({});
         expect(populateProducts).toHaveBeenCalledWith("products", "-photo");
         expect(populateBuyer).toHaveBeenCalledWith("buyer", "name");
-        expect(sortOrders).toHaveBeenCalledWith({ createdAt: "-1" });
+        expect(sortOrders).toHaveBeenCalledWith({ createdAt: -1 });
         expect(res.json).toHaveBeenCalledWith(orders);
     });
 

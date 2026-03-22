@@ -1,4 +1,5 @@
-// Order Status Transition & Database Persistence Integration Tests
+// Carsten Joe Ng, A0255764W
+
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { orderStatusController } from "./authController.js";
