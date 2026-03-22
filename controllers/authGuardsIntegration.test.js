@@ -1,72 +1,37 @@
 // Carsten Joe Ng, A0255764W
+// Auth Guards & Role-Based Authorization Integration Tests
+// Tests middleware functions directly without simulating
+// Verifies admin access and user guard protection with real middleware
 
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import JWT from "jsonwebtoken";
 import userModel from "../models/userModel.js";
+import { requireSignIn, isAdmin } from "../middlewares/authMiddleware.js";
 
 let mongoServer;
 
 jest.setTimeout(60000);
 
 // Helper to create mock response object
-const createResponse = () => {
-  const res = {};
-  res.status = jest.fn(() => res);
-  res.send = jest.fn(() => res);
-  res.json = jest.fn(() => res);
-  return res;
-};
-
-// Simulate middleware handlers for testing
-const requireSignIn = async (req, res, next) => {
-  try {
-    const decode = JWT.verify(
-      req.headers.authorization,
-      process.env.JWT_SECRET
-    );
-    req.user = decode;
-    next();
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-const isAdmin = async (req, res, next) => {
-  try {
-    const user = await userModel.findById(req.user._id);
-    if (user.role !== 1) {
-      return res.status(401).send({
-        success: false,
-        message: "UnAuthorized Access",
-      });
-    } else {
-      next();
-    }
-  } catch (error) {
-    console.log(error);
-    res.status(401).send({
-      success: false,
-      error,
-      message: "Error in admin middleware",
-    });
-  }
-};
-
-// Endpoint handlers for testing
-const userAuthHandler = (req, res) => {
-  res.status(200).send({ ok: true });
-};
-
-const adminAuthHandler = (req, res) => {
-  res.status(200).send({ ok: true });
+const createMockResponse = () => {
+  return {
+    status: jest.fn(function () {
+      return this;
+    }),
+    send: jest.fn(function () {
+      return this;
+    }),
+    json: jest.fn(function () {
+      return this;
+    }),
+  };
 };
 
 // Auth Guards & Role-Based Authorization Integration Tests
-// Tests /user-auth, /admin-auth endpoints and middleware (requireSignIn, isAdmin)
+// Tests middleware functions directly verifying admin access and user guard
 describe("Auth Guards & Role-Based Authorization Integration Tests", () => {
   beforeAll(async () => {
-    // Set JWT secret for all tests
     process.env.JWT_SECRET = "test_jwt_secret_key";
 
     mongoServer = await MongoMemoryServer.create();
@@ -94,7 +59,6 @@ describe("Auth Guards & Role-Based Authorization Integration Tests", () => {
   let regularUserToken;
 
   beforeEach(async () => {
-    // Set JWT secret for testing
     process.env.JWT_SECRET = "test_jwt_secret_key";
 
     // Create admin user
@@ -105,7 +69,7 @@ describe("Auth Guards & Role-Based Authorization Integration Tests", () => {
       phone: "1111111111",
       address: "Admin St",
       answer: "answer",
-      role: 1, // Admin role
+      role: 1,
     }).save();
     adminUserId = adminUser._id;
 
@@ -117,7 +81,7 @@ describe("Auth Guards & Role-Based Authorization Integration Tests", () => {
       phone: "2222222222",
       address: "User St",
       answer: "answer",
-      role: 0, // Regular user role
+      role: 0,
     }).save();
     regularUserId = regularUser._id;
 
@@ -130,122 +94,91 @@ describe("Auth Guards & Role-Based Authorization Integration Tests", () => {
     });
   });
 
-  describe("/user-auth Endpoint - requireSignIn middleware", () => {
-    it("should allow admin user with valid JWT token", async () => {
+  describe("requireSignIn Middleware Tests", () => {
+    it("should allow admin user with valid JWT token and call next()", async () => {
       const req = {
         headers: { authorization: adminToken },
       };
-      const res = createResponse();
+      const res = createMockResponse();
       const next = jest.fn();
 
       await requireSignIn(req, res, next);
-      userAuthHandler(req, res);
 
       expect(next).toHaveBeenCalled();
-      expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.send).toHaveBeenCalledWith({ ok: true });
-    });
-
-    it("should allow regular user with valid JWT token", async () => {
-      const req = {
-        headers: { authorization: regularUserToken },
-      };
-      const res = createResponse();
-      const next = jest.fn();
-
-      await requireSignIn(req, res, next);
-      userAuthHandler(req, res);
-
-      expect(next).toHaveBeenCalled();
-      expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.send).toHaveBeenCalledWith({ ok: true });
-    });
-
-    it("should reject request with missing authorization header", async () => {
-      const req = {
-        headers: {},
-      };
-      const res = createResponse();
-      const next = jest.fn();
-      const consoleSpy = jest
-        .spyOn(console, "log")
-        .mockImplementation(() => {});
-
-      await requireSignIn(req, res, next);
-
-      expect(next).not.toHaveBeenCalled();
-      expect(consoleSpy).toHaveBeenCalled();
-
-      consoleSpy.mockRestore();
-    });
-
-    it("should reject request with invalid JWT token", async () => {
-      const req = {
-        headers: { authorization: "invalid-token-123" },
-      };
-      const res = createResponse();
-      const next = jest.fn();
-      const consoleSpy = jest
-        .spyOn(console, "log")
-        .mockImplementation(() => {});
-
-      await requireSignIn(req, res, next);
-
-      expect(next).not.toHaveBeenCalled();
-      expect(consoleSpy).toHaveBeenCalled();
-
-      consoleSpy.mockRestore();
-    });
-
-    it("should reject request with malformed token", async () => {
-      const req = {
-        headers: { authorization: "Bearer malformed.token" },
-      };
-      const res = createResponse();
-      const next = jest.fn();
-      const consoleSpy = jest
-        .spyOn(console, "log")
-        .mockImplementation(() => {});
-
-      await requireSignIn(req, res, next);
-
-      expect(next).not.toHaveBeenCalled();
-      expect(consoleSpy).toHaveBeenCalled();
-
-      consoleSpy.mockRestore();
-    });
-
-    it("should extract and attach user data to request", async () => {
-      const req = {
-        headers: { authorization: adminToken },
-      };
-      const res = createResponse();
-      const next = jest.fn();
-
-      await requireSignIn(req, res, next);
-
       expect(req.user).toBeDefined();
       expect(req.user._id).toBe(adminUserId.toString());
     });
 
-    it("should attach regular user data correctly", async () => {
+    it("should allow regular user with valid JWT token and call next()", async () => {
       const req = {
         headers: { authorization: regularUserToken },
       };
-      const res = createResponse();
+      const res = createMockResponse();
       const next = jest.fn();
 
       await requireSignIn(req, res, next);
 
+      expect(next).toHaveBeenCalled();
       expect(req.user).toBeDefined();
       expect(req.user._id).toBe(regularUserId.toString());
+    });
+
+    it("should reject missing authorization header", async () => {
+      const req = {
+        headers: {},
+      };
+      const res = createMockResponse();
+      const next = jest.fn();
+      const consoleSpy = jest
+        .spyOn(console, "log")
+        .mockImplementation(() => {});
+
+      await requireSignIn(req, res, next);
+
+      expect(next).not.toHaveBeenCalled();
+      expect(consoleSpy).toHaveBeenCalled();
+      consoleSpy.mockRestore();
+    });
+
+    it("should reject invalid JWT token", async () => {
+      const req = {
+        headers: { authorization: "invalid-token-123" },
+      };
+      const res = createMockResponse();
+      const next = jest.fn();
+      const consoleSpy = jest
+        .spyOn(console, "log")
+        .mockImplementation(() => {});
+
+      await requireSignIn(req, res, next);
+
+      expect(next).not.toHaveBeenCalled();
+      expect(consoleSpy).toHaveBeenCalled();
+      consoleSpy.mockRestore();
+    });
+
+    it("should reject malformed token", async () => {
+      const req = {
+        headers: { authorization: "Bearer malformed.token" },
+      };
+      const res = createMockResponse();
+      const next = jest.fn();
+      const consoleSpy = jest
+        .spyOn(console, "log")
+        .mockImplementation(() => {});
+
+      await requireSignIn(req, res, next);
+
+      expect(next).not.toHaveBeenCalled();
+      expect(consoleSpy).toHaveBeenCalled();
+      consoleSpy.mockRestore();
     });
 
     it("should reject empty authorization header", async () => {
       const req = {
         headers: { authorization: "" },
       };
-      const res = createResponse();
+      const res = createMockResponse();
       const next = jest.fn();
       const consoleSpy = jest
         .spyOn(console, "log")
@@ -255,7 +188,6 @@ describe("Auth Guards & Role-Based Authorization Integration Tests", () => {
 
       expect(next).not.toHaveBeenCalled();
       expect(consoleSpy).toHaveBeenCalled();
-
       consoleSpy.mockRestore();
     });
 
@@ -269,7 +201,7 @@ describe("Auth Guards & Role-Based Authorization Integration Tests", () => {
       const req = {
         headers: { authorization: wrongToken },
       };
-      const res = createResponse();
+      const res = createMockResponse();
       const next = jest.fn();
       const consoleSpy = jest
         .spyOn(console, "log")
@@ -279,52 +211,75 @@ describe("Auth Guards & Role-Based Authorization Integration Tests", () => {
 
       expect(next).not.toHaveBeenCalled();
       expect(consoleSpy).toHaveBeenCalled();
+      consoleSpy.mockRestore();
+    });
 
+    it("should reject expired tokens", async () => {
+      const expiredToken = JWT.sign(
+        { _id: adminUserId },
+        process.env.JWT_SECRET,
+        { expiresIn: "-1s" }
+      );
+
+      const req = {
+        headers: { authorization: expiredToken },
+      };
+      const res = createMockResponse();
+      const next = jest.fn();
+      const consoleSpy = jest
+        .spyOn(console, "log")
+        .mockImplementation(() => {});
+
+      await requireSignIn(req, res, next);
+
+      expect(next).not.toHaveBeenCalled();
+      expect(consoleSpy).toHaveBeenCalled();
       consoleSpy.mockRestore();
     });
   });
 
-  describe("/admin-auth Endpoint - requireSignIn + isAdmin middleware chain", () => {
-    it("should allow admin user to access admin endpoint", async () => {
+  describe("isAdmin Middleware Tests - Admin Access Control", () => {
+    it("should allow admin user (role=1) to proceed", async () => {
       const req = {
         headers: { authorization: adminToken },
         user: null,
       };
-      const res = createResponse();
+      const res = createMockResponse();
       const next = jest.fn();
 
-      // First middleware
+      // Authenticate first
       await requireSignIn(req, res, next);
       expect(req.user).toBeDefined();
 
-      // Reset next for second middleware
+      // Reset mocks for isAdmin
       next.mockClear();
+      res.status.mockClear();
 
-      // Second middleware
+      // Check admin access
       await isAdmin(req, res, next);
 
-      expect(next).toHaveBeenCalled();
+      expect(next).toHaveBeenCalledTimes(1);
       expect(res.status).not.toHaveBeenCalledWith(401);
     });
 
-    it("should block regular user from accessing admin endpoint", async () => {
+    it("should reject regular user (role=0) with 401 status", async () => {
       const req = {
         headers: { authorization: regularUserToken },
         user: null,
       };
-      const res = createResponse();
+      const res = createMockResponse();
       const next = jest.fn();
 
-      // First middleware
+      // Authenticate first
       await requireSignIn(req, res, next);
       expect(req.user).toBeDefined();
 
-      // Reset next and response mocks
+      // Reset mocks for isAdmin
       next.mockClear();
       res.status.mockClear();
       res.send.mockClear();
 
-      // Second middleware
+      // Check admin access - should fail
       await isAdmin(req, res, next);
 
       expect(res.status).toHaveBeenCalledWith(401);
@@ -335,25 +290,36 @@ describe("Auth Guards & Role-Based Authorization Integration Tests", () => {
       expect(next).not.toHaveBeenCalled();
     });
 
-    it("should block request if admin user deleted from database", async () => {
+    it("should verify admin user has role value of 1 in database", async () => {
+      const savedUser = await userModel.findById(adminUserId);
+      expect(savedUser.role).toBe(1);
+    });
+
+    it("should verify regular user has role value of 0 in database", async () => {
+      const savedUser = await userModel.findById(regularUserId);
+      expect(savedUser.role).toBe(0);
+    });
+
+    it("should reject request if user deleted from database", async () => {
       const req = {
         headers: { authorization: adminToken },
         user: null,
       };
-      const res = createResponse();
+      const res = createMockResponse();
       const next = jest.fn();
 
-      // First middleware
+      // Authenticate
       await requireSignIn(req, res, next);
 
-      // Delete admin from database
-      await userModel.findByIdAndDelete(adminUserId);
+      // Delete user from database
+      await userModel.findByIdAndDelete(req.user._id);
 
       // Reset mocks
+      next.mockClear();
       res.status.mockClear();
       res.send.mockClear();
 
-      // Second middleware
+      // Check admin access - should fail
       await isAdmin(req, res, next);
 
       expect(res.status).toHaveBeenCalledWith(401);
@@ -365,61 +331,12 @@ describe("Auth Guards & Role-Based Authorization Integration Tests", () => {
       );
     });
 
-    it("should verify admin user has role value of 1", async () => {
-      const req = {
-        headers: { authorization: adminToken },
-        user: null,
-      };
-      const res = createResponse();
-      const next = jest.fn();
-
-      await requireSignIn(req, res, next);
-
-      // Verify role in database
-      const savedUser = await userModel.findById(adminUserId);
-      expect(savedUser.role).toBe(1);
-    });
-
-    it("should verify regular user has role value of 0", async () => {
-      const req = {
-        headers: { authorization: regularUserToken },
-        user: null,
-      };
-      const res = createResponse();
-      const next = jest.fn();
-
-      await requireSignIn(req, res, next);
-
-      // Verify role in database
-      const savedUser = await userModel.findById(regularUserId);
-      expect(savedUser.role).toBe(0);
-    });
-
-    it("should reject request without prior requireSignIn middleware", async () => {
-      // Directly call isAdmin without requireSignIn
-      const req = {
-        user: null, // No user attached
-      };
-      const res = createResponse();
-      const next = jest.fn();
-      const consoleSpy = jest
-        .spyOn(console, "log")
-        .mockImplementation(() => {});
-
-      await isAdmin(req, res, next);
-
-      expect(res.status).toHaveBeenCalledWith(401);
-      expect(consoleSpy).toHaveBeenCalled();
-
-      consoleSpy.mockRestore();
-    });
-
     it("should not call next() if user is not admin", async () => {
       const req = {
         headers: { authorization: regularUserToken },
         user: null,
       };
-      const res = createResponse();
+      const res = createMockResponse();
       const next = jest.fn();
 
       await requireSignIn(req, res, next);
@@ -430,128 +347,47 @@ describe("Auth Guards & Role-Based Authorization Integration Tests", () => {
       expect(next).not.toHaveBeenCalled();
     });
 
-    it("should call next() only if user is admin and validation passes", async () => {
+    it("should reject if isAdmin called without user attached", async () => {
       const req = {
-        headers: { authorization: adminToken },
         user: null,
       };
-      const res = createResponse();
+      const res = createMockResponse();
       const next = jest.fn();
+      const consoleSpy = jest
+        .spyOn(console, "log")
+        .mockImplementation(() => {});
 
-      await requireSignIn(req, res, next);
-      next.mockClear();
-
-      await isAdmin(req, res, next);
-
-      expect(next).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  describe("Middleware Chain Complete Flow Tests", () => {
-    it("admin user should successfully reach admin handler after middleware chain", async () => {
-      const req = {
-        headers: { authorization: adminToken },
-        user: null,
-      };
-      const res = createResponse();
-      const next = jest.fn();
-
-      // Execute middleware chain
-      await requireSignIn(req, res, next);
-      expect(next).toHaveBeenCalled();
-
-      next.mockClear();
-      await isAdmin(req, res, next);
-      expect(next).toHaveBeenCalled();
-
-      // Call endpoint handler
-      adminAuthHandler(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.send).toHaveBeenCalledWith({ ok: true });
-    });
-
-    it("regular user should fail at isAdmin middleware", async () => {
-      const req = {
-        headers: { authorization: regularUserToken },
-        user: null,
-      };
-      const res = createResponse();
-      const next = jest.fn();
-
-      // Execute middleware chain
-      await requireSignIn(req, res, next);
-      expect(next).toHaveBeenCalled();
-
-      next.mockClear();
       await isAdmin(req, res, next);
 
       expect(res.status).toHaveBeenCalledWith(401);
       expect(next).not.toHaveBeenCalled();
-    });
-
-    it("missing token should fail at requireSignIn middleware", async () => {
-      const req = {
-        headers: {},
-        user: null,
-      };
-      const res = createResponse();
-      const next = jest.fn();
-      const consoleSpy = jest
-        .spyOn(console, "log")
-        .mockImplementation(() => {});
-
-      // Execute middleware chain
-      await requireSignIn(req, res, next);
-
-      expect(next).not.toHaveBeenCalled();
-      expect(res.status).not.toHaveBeenCalled(); // requireSignIn doesn't call res.status on error
-
-      consoleSpy.mockRestore();
-    });
-
-    it("invalid token should fail at requireSignIn middleware", async () => {
-      const req = {
-        headers: { authorization: "invalid-token" },
-        user: null,
-      };
-      const res = createResponse();
-      const next = jest.fn();
-      const consoleSpy = jest
-        .spyOn(console, "log")
-        .mockImplementation(() => {});
-
-      await requireSignIn(req, res, next);
-
-      expect(next).not.toHaveBeenCalled();
-      expect(res.status).not.toHaveBeenCalled();
-
       consoleSpy.mockRestore();
     });
   });
 
-  describe("Role Value Edge Cases", () => {
-    it("should reject user with role value other than 0 or 1", async () => {
-      // Create user with invalid role
+  describe("User Role Edge Cases", () => {
+    it("should reject user with role value 2 (invalid)", async () => {
       const invalidRoleUser = await new userModel({
         name: "Invalid Role User",
         email: "invalid@example.com",
-        password: "hashed789",
+        password: "hashed",
         phone: "3333333333",
         address: "Invalid St",
         answer: "answer",
-        role: 2, // Invalid role
+        role: 2,
       }).save();
 
-      const token = JWT.sign({ _id: invalidRoleUser._id }, process.env.JWT_SECRET, {
-        expiresIn: "7d",
-      });
+      const token = JWT.sign(
+        { _id: invalidRoleUser._id },
+        process.env.JWT_SECRET,
+        { expiresIn: "7d" }
+      );
 
       const req = {
         headers: { authorization: token },
         user: null,
       };
-      const res = createResponse();
+      const res = createMockResponse();
       const next = jest.fn();
 
       await requireSignIn(req, res, next);
@@ -561,12 +397,12 @@ describe("Auth Guards & Role-Based Authorization Integration Tests", () => {
 
       await isAdmin(req, res, next);
 
-      // Should reject because role !== 1
       expect(res.status).toHaveBeenCalledWith(401);
       expect(res.send).toHaveBeenCalledWith({
         success: false,
         message: "UnAuthorized Access",
       });
+      expect(next).not.toHaveBeenCalled();
     });
 
     it("should treat any role !== 1 as non-admin", async () => {
@@ -585,15 +421,17 @@ describe("Auth Guards & Role-Based Authorization Integration Tests", () => {
           role: roleValue,
         }).save();
 
-        const token = JWT.sign({ _id: user._id }, process.env.JWT_SECRET, {
-          expiresIn: "7d",
-        });
+        const token = JWT.sign(
+          { _id: user._id },
+          process.env.JWT_SECRET,
+          { expiresIn: "7d" }
+        );
 
         const req = {
           headers: { authorization: token },
           user: null,
         };
-        const res = createResponse();
+        const res = createMockResponse();
         const next = jest.fn();
 
         await requireSignIn(req, res, next);
@@ -608,8 +446,7 @@ describe("Auth Guards & Role-Based Authorization Integration Tests", () => {
       }
     });
 
-    it("should only accept exactly 1 as admin role", async () => {
-      // Only role 1 should pass
+    it("should only accept exactly role=1 as admin", async () => {
       const adminUser = await new userModel({
         name: "Admin Only",
         email: "admin_only@example.com",
@@ -620,17 +457,17 @@ describe("Auth Guards & Role-Based Authorization Integration Tests", () => {
         role: 1,
       }).save();
 
-      const adminToken = JWT.sign(
+      const adminOnlyToken = JWT.sign(
         { _id: adminUser._id },
         process.env.JWT_SECRET,
         { expiresIn: "7d" }
       );
 
       const req = {
-        headers: { authorization: adminToken },
+        headers: { authorization: adminOnlyToken },
         user: null,
       };
-      const res = createResponse();
+      const res = createMockResponse();
       const next = jest.fn();
 
       await requireSignIn(req, res, next);
@@ -638,23 +475,67 @@ describe("Auth Guards & Role-Based Authorization Integration Tests", () => {
 
       await isAdmin(req, res, next);
 
-      expect(next).toHaveBeenCalled();
+      expect(next).toHaveBeenCalledTimes(1);
       expect(res.status).not.toHaveBeenCalledWith(401);
     });
   });
 
-  describe("Token Expiration & Validity Tests", () => {
-    it("should reject expired tokens", async () => {
-      const expiredToken = JWT.sign(
-        { _id: adminUserId },
-        process.env.JWT_SECRET,
-        { expiresIn: "-1s" } // Already expired
-      );
-
+  describe("Middleware Chain Flow Tests", () => {
+    it("admin user should pass entire middleware chain", async () => {
       const req = {
-        headers: { authorization: expiredToken },
+        headers: { authorization: adminToken },
+        user: null,
       };
-      const res = createResponse();
+      const res = createMockResponse();
+      const next = jest.fn();
+
+      // First middleware
+      await requireSignIn(req, res, next);
+      expect(next).toHaveBeenCalledTimes(1);
+      expect(req.user).toBeDefined();
+
+      // Reset for second middleware
+      next.mockClear();
+
+      // Second middleware
+      await isAdmin(req, res, next);
+      expect(next).toHaveBeenCalledTimes(1);
+      expect(res.status).not.toHaveBeenCalledWith(401);
+    });
+
+    it("regular user should pass requireSignIn but fail at isAdmin", async () => {
+      const req = {
+        headers: { authorization: regularUserToken },
+        user: null,
+      };
+      const res = createMockResponse();
+      const next = jest.fn();
+
+      // First middleware - should pass
+      await requireSignIn(req, res, next);
+      expect(next).toHaveBeenCalledTimes(1);
+      expect(req.user).toBeDefined();
+
+      // Reset for second middleware
+      next.mockClear();
+      res.status.mockClear();
+      res.send.mockClear();
+
+      // Second middleware - should fail
+      await isAdmin(req, res, next);
+      expect(res.status).toHaveBeenCalledWith(401);
+      expect(res.send).toHaveBeenCalledWith({
+        success: false,
+        message: "UnAuthorized Access",
+      });
+      expect(next).not.toHaveBeenCalled();
+    });
+
+    it("user without token should fail at requireSignIn", async () => {
+      const req = {
+        headers: {},
+      };
+      const res = createMockResponse();
       const next = jest.fn();
       const consoleSpy = jest
         .spyOn(console, "log")
@@ -664,136 +545,151 @@ describe("Auth Guards & Role-Based Authorization Integration Tests", () => {
 
       expect(next).not.toHaveBeenCalled();
       expect(consoleSpy).toHaveBeenCalled();
-
       consoleSpy.mockRestore();
     });
 
-    it("should accept valid tokens not yet expired", async () => {
-      const validToken = JWT.sign(
-        { _id: regularUserId },
-        process.env.JWT_SECRET,
-        { expiresIn: "7d" }
-      );
-
+    it("user with invalid token should fail at requireSignIn", async () => {
       const req = {
-        headers: { authorization: validToken },
+        headers: { authorization: "invalid-token" },
       };
-      const res = createResponse();
+      const res = createMockResponse();
       const next = jest.fn();
+      const consoleSpy = jest
+        .spyOn(console, "log")
+        .mockImplementation(() => {});
 
       await requireSignIn(req, res, next);
 
-      expect(next).toHaveBeenCalled();
-      expect(req.user).toBeDefined();
+      expect(next).not.toHaveBeenCalled();
+      expect(consoleSpy).toHaveBeenCalled();
+      consoleSpy.mockRestore();
     });
   });
 
-  describe("User Lookup & Database Access Tests", () => {
-    it("should find correct user from database during isAdmin check", async () => {
+  describe("Database Integrity Tests", () => {
+    it("should find correct user from database during admin check", async () => {
       const req = {
         headers: { authorization: adminToken },
         user: null,
       };
-      const res = createResponse();
+      const res = createMockResponse();
       const next = jest.fn();
 
       await requireSignIn(req, res, next);
 
-      // Verify user is found during isAdmin
       const foundUser = await userModel.findById(req.user._id);
       expect(foundUser).toBeDefined();
       expect(foundUser.role).toBe(1);
+      expect(foundUser.name).toBe("Admin User");
     });
 
-    it("should handle user not found in database gracefully", async () => {
+    it("should find correct user from database for regular user", async () => {
       const req = {
-        headers: { authorization: adminToken },
+        headers: { authorization: regularUserToken },
         user: null,
       };
-      const res = createResponse();
+      const res = createMockResponse();
       const next = jest.fn();
 
       await requireSignIn(req, res, next);
 
-      // Delete user from database
+      const foundUser = await userModel.findById(req.user._id);
+      expect(foundUser).toBeDefined();
+      expect(foundUser.role).toBe(0);
+      expect(foundUser.email).toBe("user@example.com");
+    });
+
+    it("should handle user not found in database", async () => {
+      const req = {
+        headers: { authorization: adminToken },
+        user: null,
+      };
+      const res = createMockResponse();
+      const next = jest.fn();
+
+      await requireSignIn(req, res, next);
+
+      // Delete user after authentication
       await userModel.findByIdAndDelete(req.user._id);
 
       next.mockClear();
       res.status.mockClear();
       res.send.mockClear();
 
-      // isAdmin should handle missing user
       await isAdmin(req, res, next);
 
       expect(res.status).toHaveBeenCalledWith(401);
-    });
-
-    it("should verify user data integrity after retrieval", async () => {
-      const req = {
-        headers: { authorization: regularUserToken },
-        user: null,
-      };
-      const res = createResponse();
-      const next = jest.fn();
-
-      await requireSignIn(req, res, next);
-
-      const retrievedUser = await userModel.findById(req.user._id);
-      expect(retrievedUser.name).toBe("Regular User");
-      expect(retrievedUser.email).toBe("user@example.com");
+      expect(res.send).toHaveBeenCalledWith(
+        expect.objectContaining({
+          success: false,
+          message: "Error in admin middleware",
+        })
+      );
     });
   });
 
-  describe("Multiple Users & Concurrent Requests", () => {
-    it("should handle multiple different users with their own tokens", async () => {
-      const requests = [
-        { token: adminToken, userId: adminUserId, role: 1 },
-        { token: regularUserToken, userId: regularUserId, role: 0 },
-      ];
-
-      for (const { token, userId, role } of requests) {
-        const req = {
-          headers: { authorization: token },
-          user: null,
-        };
-        const res = createResponse();
-        const next = jest.fn();
-
-        await requireSignIn(req, res, next);
-
-        expect(req.user._id).toBe(userId.toString());
-
-        const user = await userModel.findById(req.user._id);
-        expect(user.role).toBe(role);
-      }
-    });
-
-    it("should isolate requests and not cross-contaminate user data", async () => {
-      // Request 1: Admin
-      const req1 = {
+  describe("Concurrent Requests Isolation", () => {
+    it("should handle multiple users with different tokens simultaneously", async () => {
+      const adminReq = {
         headers: { authorization: adminToken },
         user: null,
       };
-      const res1 = createResponse();
-      const next1 = jest.fn();
+      const adminRes = createMockResponse();
+      const adminNext = jest.fn();
 
-      await requireSignIn(req1, res1, next1);
-      const adminUserId1 = req1.user._id;
-
-      // Request 2: Regular user
-      const req2 = {
+      const userReq = {
         headers: { authorization: regularUserToken },
         user: null,
       };
-      const res2 = createResponse();
-      const next2 = jest.fn();
+      const userRes = createMockResponse();
+      const userNext = jest.fn();
 
-      await requireSignIn(req2, res2, next2);
-      const regularUserId2 = req2.user._id;
+      // Authenticate both
+      await requireSignIn(adminReq, adminRes, adminNext);
+      await requireSignIn(userReq, userRes, userNext);
 
-      // Verify isolation
-      expect(adminUserId1).not.toBe(regularUserId2);
-      expect(req1.user).not.toEqual(req2.user);
+      // Verify correct users attached
+      expect(adminReq.user._id).toBe(adminUserId.toString());
+      expect(userReq.user._id).toBe(regularUserId.toString());
+      expect(adminReq.user._id).not.toBe(userReq.user._id);
+    });
+
+    it("should isolate admin and user authorization contexts", async () => {
+      const adminReq = {
+        headers: { authorization: adminToken },
+        user: null,
+      };
+      const adminRes = createMockResponse();
+      const adminNext = jest.fn();
+
+      const userReq = {
+        headers: { authorization: regularUserToken },
+        user: null,
+      };
+      const userRes = createMockResponse();
+      const userNext = jest.fn();
+
+      // Authenticate both
+      await requireSignIn(adminReq, adminRes, adminNext);
+      await requireSignIn(userReq, userRes, userNext);
+
+      // Clear mocks and check admin access
+      adminNext.mockClear();
+      userNext.mockClear();
+      adminRes.status.mockClear();
+      userRes.status.mockClear();
+
+      // Check authorization
+      await isAdmin(adminReq, adminRes, adminNext);
+      await isAdmin(userReq, userRes, userNext);
+
+      // Admin should pass
+      expect(adminNext).toHaveBeenCalled();
+      expect(adminRes.status).not.toHaveBeenCalledWith(401);
+
+      // User should fail
+      expect(userNext).not.toHaveBeenCalled();
+      expect(userRes.status).toHaveBeenCalledWith(401);
     });
   });
 });

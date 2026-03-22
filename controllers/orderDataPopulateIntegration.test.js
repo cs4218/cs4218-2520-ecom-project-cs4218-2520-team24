@@ -413,12 +413,15 @@ describe("Order Data Populate Integration Tests", () => {
       const returnedOrders = res.json.mock.calls[0][0];
 
       // Both orders should have same populated buyer
-      expect(returnedOrders[0].buyer.name).toBe("John Doe");
-      expect(returnedOrders[1].buyer.name).toBe("John Doe");
+      expect(returnedOrders).toHaveLength(2);
+      returnedOrders.forEach(order => {
+        expect(order.buyer.name).toBe("John Doe");
+      });
 
-      // But have different products
-      expect(returnedOrders[0].products[0].name).toBe("Mouse");
-      expect(returnedOrders[1].products[0].name).toBe("Laptop");
+      // Extract product names from orders (order-independent)
+      const productNames = returnedOrders.map(order => order.products[0].name);
+      expect(productNames).toContain("Mouse");
+      expect(productNames).toContain("Laptop");
     });
 
     it("should return empty array when no orders exist", async () => {
