@@ -86,7 +86,7 @@ describe("Auth Integration Tests", () => {
     expect(oldLoginRes.body.success).toBe(false);
     expect(oldLoginRes.body.message).toBe("Invalid password");
   });
-
+  // Choo Jia Rong
   it("should register and then login returning a JWT", async () => {
     const userData = {
       name: "Login User",
@@ -115,7 +115,7 @@ describe("Auth Integration Tests", () => {
     expect(loginRes.body.token).toBeTruthy();
     expect(loginRes.body.user.email).toBe(userData.email);
   });
-
+  // Choo Jia Rong
   it("should reject duplicate registration by email", async () => {
     const userData = {
       name: "Dup User",
@@ -159,7 +159,7 @@ describe("Auth Integration Tests", () => {
     expect(resetRes.body.success).toBe(false);
     expect(resetRes.body.message).toBe("Wrong email or answer");
   });
-
+  // Choo Jia Rong
   it("should update profile with a valid auth token", async () => {
     const userData = {
       name: "Profile User",
@@ -194,7 +194,7 @@ describe("Auth Integration Tests", () => {
     expect(updateRes.body.updatedUser.phone).toBe("9999999999");
     expect(updateRes.body.updatedUser.address).toBe("456 Updated Ave");
   });
-
+  // Choo Jia Rong
   it("should reject profile update when password is too short", async () => {
     const userData = {
       name: "Weak Password User",
