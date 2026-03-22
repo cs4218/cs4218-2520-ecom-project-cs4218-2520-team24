@@ -2,7 +2,7 @@
 import request from "supertest";
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
-import app from "../server.js";
+let app;
 import productModel from "../models/productModel.js";
 import categoryModel from "../models/categoryModel.js";
 
@@ -20,6 +20,12 @@ describe("Product Details & Related Logic Integration Tests", () => {
     // Setup in-memory MongoDB
     mongoServer = await MongoMemoryServer.create();
     const uri = mongoServer.getUri();
+    process.env.MONGO_URL = uri;
+    process.env.BRAINTREE_MERCHANT_ID = process.env.BRAINTREE_MERCHANT_ID || "test";
+    process.env.BRAINTREE_PUBLIC_KEY = process.env.BRAINTREE_PUBLIC_KEY || "test";
+    process.env.BRAINTREE_PRIVATE_KEY = process.env.BRAINTREE_PRIVATE_KEY || "test";
+    const serverModule = await import("../server.js");
+    app = serverModule.default;
     
     // Disconnect if already connected (from server.js initialization)
     if (mongoose.connection.readyState !== 0) {
