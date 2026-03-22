@@ -318,7 +318,9 @@ describe("Product controllers", () => {
       "../controllers/productController.js"
     );
     mockProductModel.findById.mockReturnValueOnce(
-      createSelectMock({ photo: { data: Buffer.from("photo"), contentType: "image/png" } })
+      createSelectMock({
+        photo: { data: Buffer.from("photo"), contentType: "image/png" },
+      })
     );
     const res = createRes();
 

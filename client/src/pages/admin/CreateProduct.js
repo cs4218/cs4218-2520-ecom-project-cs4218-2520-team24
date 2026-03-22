@@ -46,20 +46,21 @@ const CreateProduct = () => {
       productData.append("quantity", quantity);
       productData.append("photo", photo);
       productData.append("category", category);
-      const { data } = axios.post(
+      productData.append("shipping", shipping);
+      const { data } = await axios.post(
         "/api/v1/product/create-product",
         productData
       );
       if (data?.success) {
-        toast.error(data?.message);
-      } else {
         toast.success("Product Created Successfully");
         navigate("/dashboard/admin/products");
+      } else {
+        toast.error(data?.message);
       }
     } catch (error) {
       console.log(error);
-      toast.error("something went wrong");
-    }
+      toast.error(error.response.data.error);
+    } 
   };
 
   return (
@@ -135,6 +136,7 @@ const CreateProduct = () => {
                 <input
                   type="number"
                   value={price}
+                  min="0"
                   placeholder="write a Price"
                   className="form-control"
                   onChange={(e) => setPrice(e.target.value)}
@@ -144,6 +146,7 @@ const CreateProduct = () => {
                 <input
                   type="number"
                   value={quantity}
+                  min="0"
                   placeholder="write a quantity"
                   className="form-control"
                   onChange={(e) => setQuantity(e.target.value)}

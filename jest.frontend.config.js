@@ -19,16 +19,23 @@ export default {
   // ignore all node_modules except styleMock (needed for css imports)
   transformIgnorePatterns: ["/node_modules/(?!(styleMock\\.js)$)"],
 
-  // only run these tests
-  testMatch: ["<rootDir>/client/src/pages/Auth/*.test.js"],
+  // run frontend unit tests
+  testMatch: ["<rootDir>/client/src/**/*.test.js"],
+  testPathIgnorePatterns: ["<rootDir>/client/src/_site/"],
 
   // jest code coverage
   collectCoverage: true,
-  collectCoverageFrom: ["client/src/pages/Auth/**"],
+  coverageDirectory: "coverage/frontend",
+  collectCoverageFrom: [
+    "client/src/pages/**",
+    "client/src/components/**",
+    "client/src/context/**",
+    "client/src/hooks/**"
+  ],
   coverageThreshold: {
     global: {
-      lines: 100,
-      functions: 100,
+      lines: 90,
+      functions: 90,
     },
   },
   setupFilesAfterEnv: ["<rootDir>/client/src/setupTests.js"],

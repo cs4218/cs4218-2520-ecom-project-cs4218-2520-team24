@@ -1,5 +1,29 @@
 # CS4218 Project - Virtual Vault
 
+## Individual Contribution
+Nam Dohyun, A0226590A
+- Wrote unit tests for productController.js 
+- Wrote unit tests for pages/ UI files
+
+Choo Jia Rong, A0257352A
+- Wrote unit tests for authHelper.js and authMiddleware.js
+
+Leong Yu Jun Nicholas, A0257284W
+- Wrote unit tests for component files
+- Wrote unit tests for model files
+- Wrote unit tests for useCategory.js hook and db.js config file
+
+Leroy Chiu, A0273083E
+- Wrote unit tests for categoryController.js
+- Helped to set up CI
+
+Carsten Joe Ng, A0255763W
+ - Wrote unit tests for controller/authController.js
+ - Wrote unit tests for client/src/context
+
+## MSI CI URL
+[Link to Milestone 1 CI](https://github.com/cs4218/cs4218-2520-ecom-project-cs4218-2520-team24/actions/runs/22278931150/job/64445985837)
+
 ## 1. Project Introduction
 
 Virtual Vault is a full-stack MERN (MongoDB, Express.js, React.js, Node.js) e-commerce website, offering seamless connectivity and user-friendly features. The platform provides a robust framework for online shopping. The website is designed to adapt to evolving business needs and can be efficiently extended.
@@ -139,6 +163,8 @@ To begin unit testing with Jest in your project, follow these steps:
      ```bash
      npm run test:backend
      ```
+
+     tesing
 
    - **All the tests**
      ```bash
