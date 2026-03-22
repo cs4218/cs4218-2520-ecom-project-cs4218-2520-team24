@@ -1,3 +1,4 @@
+// Carsten Joe Ng, A0255764W
 import express from "express";
 import request from "supertest";
 
@@ -108,7 +109,7 @@ describe("Auth controllers integration", () => {
 
     expect(response.status).toBe(201);
     expect(response.body.success).toBe(true);
-    expect(response.body.message).toBe("User Register Successfully");
+    expect(response.body.message).toBe("User registered successfully");
     expect(mockHashPassword).toHaveBeenCalledWith("password123");
     expect(mockUserModel).toHaveBeenCalledWith({
       name: "Jane Doe",
@@ -139,27 +140,27 @@ describe("Auth controllers integration", () => {
 
     const res = createRes();
     await registerController({ body: { ...baseReq.body, name: "" } }, res);
-    expect(res.send).toHaveBeenCalledWith({ error: "Name is Required" });
+    expect(res.send).toHaveBeenCalledWith({ error: "Name is required" });
 
     res.send.mockClear();
     await registerController({ body: { ...baseReq.body, email: "" } }, res);
-    expect(res.send).toHaveBeenCalledWith({ message: "Email is Required" });
+    expect(res.send).toHaveBeenCalledWith({ error: "Email is required" });
 
     res.send.mockClear();
     await registerController({ body: { ...baseReq.body, password: "" } }, res);
-    expect(res.send).toHaveBeenCalledWith({ message: "Password is Required" });
+    expect(res.send).toHaveBeenCalledWith({ error: "Password is required" });
 
     res.send.mockClear();
     await registerController({ body: { ...baseReq.body, phone: "" } }, res);
-    expect(res.send).toHaveBeenCalledWith({ message: "Phone no is Required" });
+    expect(res.send).toHaveBeenCalledWith({ error: "Phone number is required" });
 
     res.send.mockClear();
     await registerController({ body: { ...baseReq.body, address: "" } }, res);
-    expect(res.send).toHaveBeenCalledWith({ message: "Address is Required" });
+    expect(res.send).toHaveBeenCalledWith({ error: "Address is required" });
 
     res.send.mockClear();
     await registerController({ body: { ...baseReq.body, answer: "" } }, res);
-    expect(res.send).toHaveBeenCalledWith({ message: "Answer is Required" });
+    expect(res.send).toHaveBeenCalledWith({ error: "Answer is required" });
   });
 
   it("rejects duplicate registration by email", async () => {
@@ -183,7 +184,7 @@ describe("Auth controllers integration", () => {
 
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(false);
-    expect(response.body.message).toBe("Already Register please login");
+    expect(response.body.message).toBe("Email already registered, please log in");
     expect(mockSave).not.toHaveBeenCalled();
   });
 
@@ -213,7 +214,7 @@ describe("Auth controllers integration", () => {
     expect(res.send).toHaveBeenCalledWith(
       expect.objectContaining({
         success: false,
-        message: "Errro in Registeration",
+        message: "Error in registration",
       })
     );
   });
@@ -277,7 +278,7 @@ describe("Auth controllers integration", () => {
     expect(res.status).toHaveBeenCalledWith(404);
     expect(res.send).toHaveBeenCalledWith({
       success: false,
-      message: "Email is not registerd",
+      message: "Email is not registered",
     });
   });
 
@@ -300,7 +301,7 @@ describe("Auth controllers integration", () => {
 
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(false);
-    expect(response.body.message).toBe("Invalid Password");
+    expect(response.body.message).toBe("Invalid password");
   });
 
   it("handles login errors", async () => {
@@ -319,7 +320,7 @@ describe("Auth controllers integration", () => {
     expect(res.send).toHaveBeenCalledWith(
       expect.objectContaining({
         success: false,
-        message: "Error in login",
+        message: "Error while logging in",
       })
     );
   });
@@ -333,7 +334,7 @@ describe("Auth controllers integration", () => {
 
     expect(response.status).toBe(404);
     expect(response.body.success).toBe(false);
-    expect(response.body.message).toBe("Invalid email or password");
+    expect(response.body.message).toBe("Missing email or password");
   });
 
   it("handles forgot password validation and success", async () => {
@@ -344,17 +345,24 @@ describe("Auth controllers integration", () => {
 
     await forgotPasswordController({ body: { answer: "Blue" } }, res);
     expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({ message: "Email is required" });
 
     res.status.mockClear();
+    res.send.mockClear();
     await forgotPasswordController({ body: { email: "jane@example.com" } }, res);
     expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({ message: "Answer is required" });
 
     res.status.mockClear();
+    res.send.mockClear();
     await forgotPasswordController(
       { body: { email: "jane@example.com", answer: "Blue" } },
       res
     );
     expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({
+      message: "New password is required",
+    });
 
     mockUserModel.findOne.mockResolvedValueOnce(null);
     await forgotPasswordController(
@@ -370,7 +378,7 @@ describe("Auth controllers integration", () => {
     expect(res.status).toHaveBeenCalledWith(404);
     expect(res.send).toHaveBeenCalledWith({
       success: false,
-      message: "Wrong Email Or Answer",
+      message: "Wrong email or answer",
     });
 
     mockUserModel.findOne.mockResolvedValueOnce({ _id: "user-1" });
@@ -394,7 +402,7 @@ describe("Auth controllers integration", () => {
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.send).toHaveBeenCalledWith({
       success: true,
-      message: "Password Reset Successfully",
+      message: "Password reset successfully",
     });
   });
 
@@ -436,7 +444,7 @@ describe("Auth controllers integration", () => {
       res
     );
     expect(res.json).toHaveBeenCalledWith({
-      error: "Passsword is required and 6 character long",
+      error: "Password must be at least 6 characters long",
     });
 
     mockUserModel.findById.mockResolvedValueOnce({
@@ -486,7 +494,7 @@ describe("Auth controllers integration", () => {
     expect(res.send).toHaveBeenCalledWith(
       expect.objectContaining({
         success: false,
-        message: "Error WHile Update profile",
+        message: "Error while updating profile",
       })
     );
   });
@@ -519,7 +527,7 @@ describe("Auth controllers integration", () => {
     expect(res.send).toHaveBeenCalledWith(
       expect.objectContaining({
         success: false,
-        message: "Error WHile Geting Orders",
+        message: "Error while getting orders",
       })
     );
   });
@@ -552,7 +560,7 @@ describe("Auth controllers integration", () => {
     expect(res.send).toHaveBeenCalledWith(
       expect.objectContaining({
         success: false,
-        message: "Error WHile Geting Orders",
+        message: "Error while getting orders",
       })
     );
   });
@@ -593,7 +601,7 @@ describe("Auth controllers integration", () => {
     expect(res.send).toHaveBeenCalledWith(
       expect.objectContaining({
         success: false,
-        message: "Error While Updateing Order",
+        message: "Error while updating order status",
       })
     );
   });

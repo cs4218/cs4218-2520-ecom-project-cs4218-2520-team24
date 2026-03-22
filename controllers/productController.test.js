@@ -1,3 +1,4 @@
+// Nam Dohyun, A0226590A
 const mockSave = jest.fn();
 const mockProductModel = jest.fn((data) => ({
   ...data,
@@ -9,7 +10,7 @@ mockProductModel.findOne = jest.fn();
 mockProductModel.findById = jest.fn();
 mockProductModel.findByIdAndDelete = jest.fn();
 mockProductModel.findByIdAndUpdate = jest.fn();
-mockProductModel.estimatedDocumentCount = jest.fn();
+mockProductModel.countDocuments = jest.fn();
 
 const mockCategoryModel = jest.fn();
 mockCategoryModel.findOne = jest.fn();
@@ -133,7 +134,23 @@ describe("Product controllers", () => {
     res.status.mockClear();
     res.send.mockClear();
     await createProductController(
-      { fields: { name: "Product", description: "Desc", price: 10 }, files: {} },
+      {
+        fields: { name: "Product", description: "Desc", price: -1 },
+        files: {},
+      },
+      res
+    );
+    expect(res.send).toHaveBeenCalledWith({
+      error: "Price must be greater than 0",
+    });
+
+    res.status.mockClear();
+    res.send.mockClear();
+    await createProductController(
+      {
+        fields: { name: "Product", description: "Desc", price: 10 },
+        files: {},
+      },
       res
     );
     expect(res.send).toHaveBeenCalledWith({ error: "Category is Required" });
@@ -163,6 +180,42 @@ describe("Product controllers", () => {
           description: "Desc",
           price: 10,
           category: "cat",
+          quantity: -1,
+        },
+        files: {},
+      },
+      res
+    );
+    expect(res.send).toHaveBeenCalledWith({
+      error: "Quantity must be greater than 0",
+    });
+
+    res.status.mockClear();
+    res.send.mockClear();
+    await createProductController(
+      {
+        fields: {
+          name: "Product",
+          description: "Desc",
+          price: 10,
+          category: "cat",
+          quantity: 5,
+        },
+        files: {},
+      },
+      res
+    );
+    expect(res.send).toHaveBeenCalledWith({ error: "Photo is Required" });
+
+    res.status.mockClear();
+    res.send.mockClear();
+    await createProductController(
+      {
+        fields: {
+          name: "Product",
+          description: "Desc",
+          price: 10,
+          category: "cat",
           quantity: 5,
         },
         files: { photo: { size: 1000001 } },
@@ -172,6 +225,23 @@ describe("Product controllers", () => {
     expect(res.send).toHaveBeenCalledWith({
       error: "photo is Required and should be less then 1mb",
     });
+
+    res.status.mockClear();
+    res.send.mockClear();
+    await createProductController(
+      {
+        fields: {
+          name: "Product",
+          description: "Desc",
+          price: 10,
+          category: "cat",
+          quantity: 5,
+        },
+        files: { photo: { size: 100, path: "photo.png", type: "image/png" } },
+      },
+      res
+    );
+    expect(res.send).toHaveBeenCalledWith({ error: "Shipping is Required" });
   });
 
   it("creates a product with photo", async () => {
@@ -188,6 +258,7 @@ describe("Product controllers", () => {
           price: 10,
           category: "cat",
           quantity: 5,
+          shipping: true,
         },
         files: { photo: { size: 100, path: "photo.png", type: "image/png" } },
       },
@@ -222,8 +293,9 @@ describe("Product controllers", () => {
           price: 10,
           category: "cat",
           quantity: 5,
+          shipping: true,
         },
-        files: {},
+        files: { photo: { size: 100, path: "photo.png", type: "image/png" } },
       },
       res
     );
@@ -232,7 +304,7 @@ describe("Product controllers", () => {
     expect(res.send).toHaveBeenCalledWith(
       expect.objectContaining({
         success: false,
-        message: "Error in crearing product",
+        message: "Error in creating product",
       })
     );
   });
@@ -250,7 +322,7 @@ describe("Product controllers", () => {
     expect(res.send).toHaveBeenCalledWith(
       expect.objectContaining({
         success: true,
-        message: "ALlProducts ",
+        message: "All Products",
       })
     );
   });
@@ -270,7 +342,7 @@ describe("Product controllers", () => {
     expect(res.send).toHaveBeenCalledWith(
       expect.objectContaining({
         success: false,
-        message: "Erorr in getting products",
+        message: "Error in getting products",
       })
     );
   });
@@ -308,7 +380,7 @@ describe("Product controllers", () => {
     expect(res.send).toHaveBeenCalledWith(
       expect.objectContaining({
         success: false,
-        message: "Eror while getitng single product",
+        message: "Error while getting single product",
       })
     );
   });
@@ -342,7 +414,11 @@ describe("Product controllers", () => {
 
     await productPhotoController({ params: { pid: "p1" } }, res);
 
-    expect(res.set).not.toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.send).toHaveBeenCalledWith({
+      success: false,
+      message: "Photo not found",
+    });
   });
 
   it("handles product photo errors", async () => {
@@ -360,7 +436,7 @@ describe("Product controllers", () => {
     expect(res.send).toHaveBeenCalledWith(
       expect.objectContaining({
         success: false,
-        message: "Erorr while getting photo",
+        message: "Error while getting photo",
       })
     );
   });
@@ -456,6 +532,40 @@ describe("Product controllers", () => {
           category: "cat",
           quantity: 5,
         },
+        files: {},
+      },
+      res
+    );
+    expect(res.send).toHaveBeenCalledWith({ error: "Shipping is Required" });
+
+    res.send.mockClear();
+    await updateProductController(
+      {
+        fields: {
+          name: "Product",
+          description: "Desc",
+          price: 10,
+          category: "cat",
+          quantity: 5,
+          shipping: true,
+        },
+        files: {},
+      },
+      res
+    );
+    expect(res.send).toHaveBeenCalledWith({ error: "Photo is Required" });
+
+    res.send.mockClear();
+    await updateProductController(
+      {
+        fields: {
+          name: "Product",
+          description: "Desc",
+          price: 10,
+          category: "cat",
+          quantity: 5,
+          shipping: true,
+        },
         files: { photo: { size: 1000001 } },
       },
       res
@@ -482,6 +592,7 @@ describe("Product controllers", () => {
           price: 10,
           category: "cat",
           quantity: 5,
+          shipping: true,
         },
         files: { photo: { size: 100, path: "photo.png", type: "image/png" } },
       },
@@ -515,8 +626,9 @@ describe("Product controllers", () => {
           price: 10,
           category: "cat",
           quantity: 5,
+          shipping: true,
         },
-        files: {},
+        files: { photo: { size: 100, path: "photo.png", type: "image/png" } },
       },
       res
     );
@@ -525,7 +637,7 @@ describe("Product controllers", () => {
     expect(res.send).toHaveBeenCalledWith(
       expect.objectContaining({
         success: false,
-        message: "Error in Updte product",
+        message: "Error in Update Product",
       })
     );
   });
@@ -534,7 +646,8 @@ describe("Product controllers", () => {
     const { productFiltersController } = await import(
       "../controllers/productController.js"
     );
-    mockProductModel.find.mockResolvedValueOnce([{ _id: "p1" }]);
+    mockProductModel.countDocuments.mockResolvedValueOnce(2);
+    mockProductModel.find.mockReturnValueOnce(createQueryMock([{ _id: "p1" }]));
     const res = createRes();
 
     await productFiltersController(
@@ -546,6 +659,7 @@ describe("Product controllers", () => {
     expect(res.send).toHaveBeenCalledWith(
       expect.objectContaining({
         success: true,
+        total: 2,
       })
     );
   });
@@ -554,7 +668,8 @@ describe("Product controllers", () => {
     const { productFiltersController } = await import(
       "../controllers/productController.js"
     );
-    mockProductModel.find.mockResolvedValueOnce([{ _id: "p1" }]);
+    mockProductModel.countDocuments.mockResolvedValueOnce(1);
+    mockProductModel.find.mockReturnValueOnce(createQueryMock([{ _id: "p1" }]));
     const res = createRes();
 
     await productFiltersController({ body: { checked: [], radio: [] } }, res);
@@ -566,7 +681,7 @@ describe("Product controllers", () => {
     const { productFiltersController } = await import(
       "../controllers/productController.js"
     );
-    mockProductModel.find.mockRejectedValueOnce(new Error("db"));
+    mockProductModel.countDocuments.mockRejectedValueOnce(new Error("db"));
     const res = createRes();
 
     await productFiltersController({ body: { checked: [], radio: [] } }, res);
@@ -575,7 +690,7 @@ describe("Product controllers", () => {
     expect(res.send).toHaveBeenCalledWith(
       expect.objectContaining({
         success: false,
-        message: "Error WHile Filtering Products",
+        message: "Error While Filtering Products",
       })
     );
   });
@@ -657,7 +772,7 @@ describe("Product controllers", () => {
     expect(res.send).toHaveBeenCalledWith(
       expect.objectContaining({
         success: false,
-        message: "error in per page ctrl",
+        message: "Error In Per Page Ctrl",
       })
     );
   });
@@ -741,6 +856,7 @@ describe("Product controllers", () => {
     );
     mockCategoryModel.findOne.mockResolvedValueOnce({ _id: "c1" });
     mockProductModel.find.mockReturnValueOnce(createQueryMock([{ _id: "p1" }]));
+    mockProductModel.countDocuments.mockResolvedValueOnce(1);
     const res = createRes();
 
     await productCategoryController({ params: { slug: "cat" } }, res);
@@ -787,14 +903,16 @@ describe("Product controllers", () => {
     const { braintreeTokenController } = await import(
       "../controllers/productController.js"
     );
+    const tokenError = new Error("token");
     mockClientTokenGenerate.mockImplementationOnce((_, cb) => {
-      cb(new Error("token"));
+      cb(tokenError);
     });
     const res = createRes();
 
     await braintreeTokenController({}, res);
 
     expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith(tokenError);
   });
 
   it("catches braintree token exceptions", async () => {
@@ -808,16 +926,20 @@ describe("Product controllers", () => {
 
     await braintreeTokenController({}, res);
 
-    expect(res.send).not.toHaveBeenCalledWith(expect.anything());
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: false,
+        message: "Error in Braintree Token",
+      })
+    );
   });
 
   it("processes braintree payment", async () => {
     const { brainTreePaymentController } = await import(
       "../controllers/productController.js"
     );
-    mockTransactionSale.mockImplementationOnce((_, cb) => {
-      cb(null, { id: "txn" });
-    });
+    mockTransactionSale.mockResolvedValueOnce({ success: true, id: "txn" });
     const res = createRes();
 
     await brainTreePaymentController(
@@ -837,14 +959,30 @@ describe("Product controllers", () => {
     expect(res.json).toHaveBeenCalledWith({ ok: true });
   });
 
+  it("handles braintree payment failure responses", async () => {
+    const { brainTreePaymentController } = await import(
+      "../controllers/productController.js"
+    );
+    mockTransactionSale.mockResolvedValueOnce({
+      success: false,
+      message: "declined",
+    });
+    const res = createRes();
+
+    await brainTreePaymentController(
+      { body: { nonce: "nonce", cart: [{ price: 10 }] }, user: { _id: "user-1" } },
+      res
+    );
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({ message: "declined" });
+  });
+
   it("handles braintree payment errors", async () => {
     const { brainTreePaymentController } = await import(
       "../controllers/productController.js"
     );
-    const error = new Error("payment");
-    mockTransactionSale.mockImplementationOnce((_, cb) => {
-      cb(error, null);
-    });
+    mockTransactionSale.mockRejectedValueOnce(new Error("boom"));
     const res = createRes();
 
     await brainTreePaymentController(
@@ -853,23 +991,11 @@ describe("Product controllers", () => {
     );
 
     expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.send).toHaveBeenCalledWith(error);
-  });
-
-  it("catches braintree payment exceptions", async () => {
-    const { brainTreePaymentController } = await import(
-      "../controllers/productController.js"
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: false,
+        message: "Error in BrainTree Payment",
+      })
     );
-    mockTransactionSale.mockImplementationOnce(() => {
-      throw new Error("boom");
-    });
-    const res = createRes();
-
-    await brainTreePaymentController(
-      { body: { nonce: "nonce", cart: [{ price: 10 }] }, user: { _id: "user-1" } },
-      res
-    );
-
-    expect(res.status).not.toHaveBeenCalledWith(500);
   });
 });

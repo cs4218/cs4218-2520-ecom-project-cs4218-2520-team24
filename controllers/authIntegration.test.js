@@ -1,7 +1,7 @@
 import request from "supertest";
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
-import app from "../server.js";
+let app;
 import userModel from "../models/userModel.js";
 
 let mongoServer;
@@ -12,6 +12,13 @@ describe("Auth Integration Tests", () => {
   beforeAll(async () => {
     mongoServer = await MongoMemoryServer.create();
     const uri = mongoServer.getUri();
+    process.env.MONGO_URL = uri;
+    process.env.JWT_SECRET = process.env.JWT_SECRET || "test-secret";
+    process.env.BRAINTREE_MERCHANT_ID = process.env.BRAINTREE_MERCHANT_ID || "test";
+    process.env.BRAINTREE_PUBLIC_KEY = process.env.BRAINTREE_PUBLIC_KEY || "test";
+    process.env.BRAINTREE_PRIVATE_KEY = process.env.BRAINTREE_PRIVATE_KEY || "test";
+    const serverModule = await import("../server.js");
+    app = serverModule.default;
     if (mongoose.connection.readyState !== 0) {
       await mongoose.disconnect();
     }

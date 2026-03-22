@@ -1,3 +1,4 @@
+// Leroy Chiu, A0273083E
 const mockSave = jest.fn();
 const mockCategoryModel = jest.fn(() => ({ save: mockSave }));
 mockCategoryModel.findOne = jest.fn();
@@ -13,125 +14,245 @@ jest.mock("../models/categoryModel.js", () => ({
 }));
 
 jest.mock("slugify", () => ({
+  __esModule: true,
+  default: mockSlugify,
+}));
+
+const createRes = () => {
+  const res = {};
+  res.status = jest.fn().mockReturnValue(res);
+  res.send = jest.fn().mockReturnValue(res);
+  return res;
+};
+
+describe("Category controllers", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("validates category creation", async () => {
+    const { createCategoryController } = await import(
+      "../controllers/categoryController.js"
+    );
+    const res = createRes();
+
+    await createCategoryController({ body: {} }, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({ error: "Name is required" });
+  });
+
+  it("returns existing category", async () => {
+    const { createCategoryController } = await import(
+      "../controllers/categoryController.js"
+    );
+    mockCategoryModel.findOne.mockResolvedValueOnce({
+      _id: "cat-1",
+      name: "Books",
+    });
+    const res = createRes();
+
+    await createCategoryController({ body: { name: "Books" } }, res);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send).toHaveBeenCalledWith({
+      success: true,
+      message: "Category already exists",
+    });
+  });
+
+  it("creates a category", async () => {
+    const { createCategoryController } = await import(
+      "../controllers/categoryController.js"
+    );
+    mockCategoryModel.findOne.mockResolvedValueOnce(null);
+    mockSave.mockResolvedValueOnce({
+      _id: "cat-1",
+      name: "Books",
+      slug: "slug-Books",
+    });
+    const res = createRes();
+
+    await createCategoryController({ body: { name: "Books" } }, res);
+
+    expect(mockSlugify).toHaveBeenCalledWith("Books");
+    expect(res.status).toHaveBeenCalledWith(201);
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: true,
+        message: "New category created",
+      })
     );
   });
 
-  it("returns all categories", async () => {
-    const { categoryControlller } = await import(
-                message: "Error while getting all categories",
-            })
-        );
-        expect(consoleSpy).toHaveBeenCalled();
-        consoleSpy.mockRestore();
+  it("handles create category errors", async () => {
+    const { createCategoryController } = await import(
+      "../controllers/categoryController.js"
+    );
+    mockCategoryModel.findOne.mockRejectedValueOnce(new Error("db"));
+    const res = createRes();
+
+    await createCategoryController({ body: { name: "Books" } }, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: false,
+        message: "Error in category",
+      })
+    );
+  });
+
+  it("updates a category", async () => {
+    const { updateCategoryController } = await import(
+      "../controllers/categoryController.js"
+    );
+    mockCategoryModel.findByIdAndUpdate.mockResolvedValueOnce({
+      _id: "cat-1",
+      name: "Books",
     });
-});
+    const res = createRes();
 
-describe('singleCategoryController', () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
-    });
+    await updateCategoryController(
+      { params: { id: "cat-1" }, body: { name: "Books" } },
+      res
+    );
 
-    it("should return single category successfully", async () => {
-        categoryModel.findOne.mockResolvedValue({
-            name: "Books",
-            slug: "books"
-        });
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: true,
+        message: "Category Updated Successfully",
+      })
+    );
+  });
 
-        const req = {
-            params: {slug: "books"}
-        };
-        const res = {
-            status: jest.fn().mockReturnThis(),
-            send: jest.fn(),
-        };
+  it("handles update category errors", async () => {
+    const { updateCategoryController } = await import(
+      "../controllers/categoryController.js"
+    );
+    mockCategoryModel.findByIdAndUpdate.mockRejectedValueOnce(new Error("db"));
+    const res = createRes();
 
-        await singleCategoryController(req, res);
+    await updateCategoryController(
+      { params: { id: "cat-1" }, body: { name: "Books" } },
+      res
+    );
 
-        expect(categoryModel.findOne).toHaveBeenCalledWith({slug: "books"});
-        expect(res.status).toHaveBeenCalledWith(200);
-        expect(res.send).toHaveBeenCalledWith(
-            expect.objectContaining({
-                success: true,
-                message: "Get single category successfully",
-            })
-        );
-    });
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: false,
+        message: "Error while updating category",
+      })
+    );
+  });
 
-    it("should handle errors when failing to get a single category", async () => {
-        const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {}); 
-       categoryModel.findOne.mockRejectedValue(new Error("Single Category Error"));
+  it("lists all categories", async () => {
+    const { categoryController } = await import(
+      "../controllers/categoryController.js"
+    );
+    mockCategoryModel.find.mockResolvedValueOnce([{ _id: "cat-1" }]);
+    const res = createRes();
 
-        const req = {
-            params: {slug: "books"}
-        };
-        const res = {
-            status: jest.fn().mockReturnThis(),
-            send: jest.fn(),
-        };
+    await categoryController({}, res);
 
-        await singleCategoryController(req, res);
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: true,
+        message: "All Categories Listed",
+      })
+    );
+  });
 
-        expect(res.status).toHaveBeenCalledWith(500);
-        expect(res.send).toHaveBeenCalledWith(
-            expect.objectContaining({
-                success: false,
-                message: "Error while getting single category",
-            })
-        );
-        expect(consoleSpy).toHaveBeenCalled();
-        consoleSpy.mockRestore();
-    });
-});
+  it("handles list categories errors", async () => {
+    const { categoryController } = await import(
+      "../controllers/categoryController.js"
+    );
+    mockCategoryModel.find.mockRejectedValueOnce(new Error("db"));
+    const res = createRes();
 
-describe('deleteCategoryController', () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
-    });
-    it("should delete category successfully", async () => {
-        const mockCategory = { _id: "20" };
-        categoryModel.findByIdAndDelete.mockResolvedValue(mockCategory);
+    await categoryController({}, res);
 
-        const req = {
-            params: {id: "20"}
-        };
-        const res = {
-            status: jest.fn().mockReturnThis(),
-            send: jest.fn(),
-        };
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: false,
+        message: "Error while getting all categories",
+      })
+    );
+  });
 
-        await deleteCategoryController(req, res);
+  it("returns a single category", async () => {
+    const { singleCategoryController } = await import(
+      "../controllers/categoryController.js"
+    );
+    mockCategoryModel.findOne.mockResolvedValueOnce({ _id: "cat-1" });
+    const res = createRes();
 
-        expect(categoryModel.findByIdAndDelete).toHaveBeenCalledWith("20");
-        expect(res.status).toHaveBeenCalledWith(200);
-        expect(res.send).toHaveBeenCalledWith({
-            category: mockCategory,
-            success: true,
-            message: "Category deleted successfully",
-        });
-    });
+    await singleCategoryController({ params: { slug: "books" } }, res);
 
-    it("should handle errors when failing to delete category", async () => {
-        const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-        categoryModel.findByIdAndDelete.mockRejectedValue(new Error("Deletion error"));
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: true,
+        message: "Get single category successfully",
+      })
+    );
+  });
 
-        const req = {
-            params: {id: "20"}
-        };
-        const res = {
-            status: jest.fn().mockReturnThis(),
-            send: jest.fn(),
-        };
+  it("handles single category errors", async () => {
+    const { singleCategoryController } = await import(
+      "../controllers/categoryController.js"
+    );
+    mockCategoryModel.findOne.mockRejectedValueOnce(new Error("db"));
+    const res = createRes();
 
-        await deleteCategoryController(req, res);
+    await singleCategoryController({ params: { slug: "books" } }, res);
 
-        expect(res.status).toHaveBeenCalledWith(500);
-        expect(res.send).toHaveBeenCalledWith(
-            expect.objectContaining({
-                success: false,
-                message: "Error while deleting category",
-            })
-        );
-        expect(consoleSpy).toHaveBeenCalled();
-        consoleSpy.mockRestore();
-    });
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: false,
+        message: "Error while getting single category",
+      })
+    );
+  });
+
+  it("deletes a category", async () => {
+    const { deleteCategoryController } = await import(
+      "../controllers/categoryController.js"
+    );
+    mockCategoryModel.findByIdAndDelete.mockResolvedValueOnce({ _id: "cat-1" });
+    const res = createRes();
+
+    await deleteCategoryController({ params: { id: "cat-1" } }, res);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: true,
+        message: "Category deleted successfully",
+      })
+    );
+  });
+
+  it("handles delete category errors", async () => {
+    const { deleteCategoryController } = await import(
+      "../controllers/categoryController.js"
+    );
+    mockCategoryModel.findByIdAndDelete.mockRejectedValueOnce(new Error("db"));
+    const res = createRes();
+
+    await deleteCategoryController({ params: { id: "cat-1" } }, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: false,
+        message: "Error while deleting category",
+      })
+    );
+  });
 });
