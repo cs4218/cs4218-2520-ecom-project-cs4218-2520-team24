@@ -17,7 +17,7 @@ async function globalSetup() {
   await mongoose.connect(uri);
   try {
     console.log('--- SEEDING START ---');
-    
+
     // 1. Seed Category
     let category = await Category.findOne({ slug: 'electronics' });
     if (!category) {
@@ -94,16 +94,20 @@ async function globalSetup() {
   } finally {
     await mongoose.disconnect();
   }
-    console.log('🚀 Launching WebServer...');
-    // 1. USE SHELL INJECTION (The most robust way)
-    const serverProcess = spawn(`MONGO_URL=${uri} npm run dev`, {
-      shell: true,
-      stdio: 'inherit',
-      detached: true 
-    });
+    if (process.env.PW_EXTERNAL_SERVER === 'true') {
+      console.log('ℹ️  Using external dev server for Playwright.');
+    } else {
+      console.log('🚀 Launching WebServer...');
+      // 1. USE SHELL INJECTION (The most robust way)
+      const serverProcess = spawn(`MONGO_URL=${uri} npm run dev`, {
+        shell: true,
+        stdio: 'inherit',
+        detached: true
+      });
 
-    // Store the PID globally for teardown
-    (global as any).__SERVER_PID = serverProcess.pid;
+      // Store the PID globally for teardown
+      (global as any).__SERVER_PID = serverProcess.pid;
+    }
     await Promise.all([
       waitForServer('http://localhost:3000'), // Check UI
       waitForServer('http://localhost:6060/api/v1/category/get-category') // Check API

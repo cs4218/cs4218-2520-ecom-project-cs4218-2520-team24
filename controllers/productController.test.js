@@ -483,7 +483,6 @@ describe("Product controllers", () => {
     );
     const res = createRes();
     const params = { pid: "p1" };
-
     await updateProductController({ params, fields: {}, files: {} }, res);
     expect(res.send).toHaveBeenCalledWith({ error: "Name is Required" });
 
@@ -599,6 +598,35 @@ describe("Product controllers", () => {
         message: "Product Updated Successfully",
       })
     );
+  });
+
+  it("updates a product without photo", async () => {
+    const { updateProductController } = await import(
+      "../controllers/productController.js"
+    );
+    const product = { photo: { data: null, contentType: null }, save: mockSave };
+    mockProductModel.findByIdAndUpdate.mockResolvedValueOnce(product);
+    const res = createRes();
+
+    await updateProductController(
+      {
+        params: { pid: "p1" },
+        fields: {
+          name: "Product",
+          description: "Desc",
+          price: 10,
+          category: "cat",
+          quantity: 5,
+          shipping: true,
+        },
+        files: {},
+      },
+      res
+    );
+
+    expect(mockReadFileSync).not.toHaveBeenCalled();
+    expect(mockSave).toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(201);
   });
 
   it("handles update product errors", async () => {
