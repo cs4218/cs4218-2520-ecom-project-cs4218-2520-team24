@@ -482,27 +482,20 @@ describe("Product controllers", () => {
       "../controllers/productController.js"
     );
     const res = createRes();
-
-    await updateProductController(
-      { params: { pid: "p1" }, fields: {}, files: {} },
-      res
-    );
+    const params = { pid: "p1" };
+    await updateProductController({ params, fields: {}, files: {} }, res);
     expect(res.send).toHaveBeenCalledWith({ error: "Name is Required" });
 
     res.send.mockClear();
     await updateProductController(
-      { params: { pid: "p1" }, fields: { name: "Product" }, files: {} },
+      { params, fields: { name: "Product" }, files: {} },
       res
     );
     expect(res.send).toHaveBeenCalledWith({ error: "Description is Required" });
 
     res.send.mockClear();
     await updateProductController(
-      {
-        params: { pid: "p1" },
-        fields: { name: "Product", description: "Desc" },
-        files: {},
-      },
+      { params, fields: { name: "Product", description: "Desc" }, files: {} },
       res
     );
     expect(res.send).toHaveBeenCalledWith({ error: "Price is Required" });
@@ -510,7 +503,7 @@ describe("Product controllers", () => {
     res.send.mockClear();
     await updateProductController(
       {
-        params: { pid: "p1" },
+        params,
         fields: { name: "Product", description: "Desc", price: 10 },
         files: {},
       },
@@ -521,7 +514,7 @@ describe("Product controllers", () => {
     res.send.mockClear();
     await updateProductController(
       {
-        params: { pid: "p1" },
+        params,
         fields: {
           name: "Product",
           description: "Desc",
@@ -537,7 +530,7 @@ describe("Product controllers", () => {
     res.send.mockClear();
     await updateProductController(
       {
-        params: { pid: "p1" },
+        params,
         fields: {
           name: "Product",
           description: "Desc",
@@ -554,7 +547,7 @@ describe("Product controllers", () => {
     res.send.mockClear();
     await updateProductController(
       {
-        params: { pid: "p1" },
+        params,
         fields: {
           name: "Product",
           description: "Desc",
