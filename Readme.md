@@ -39,6 +39,12 @@ Leroy Chiu, A0273083E
 - Wrote E2E UI tests to ensure admins are able to create a new category, create a new product, as well as validate product inventory management from the admin dashboard, including searching, updating, and deleting products through the UI.
 - Wrote E2E UI tests for the Contact Us page.
 
+Leong Yu Jun Nicholas, A0257284W
+- Wrote integration tests for the payment workflow, Braintree token generation and product filter endpoint with various filter combinations
+- Wrote frontend integration tests for CartPage with real context providers, covering cart-UI sync, item removal, authentication redirects, and localStorage hydration
+- Wrote E2E UI tests for the complete checkout-to-payment flow, guest checkout experience, cart persistence, price correctness, and address navigation
+- Wrote E2E UI tests for cart UX, Privacy Policy page, and 404 error page
+
 ## MSI CI URL
 [Link to Milestone 1 CI](https://github.com/cs4218/cs4218-2520-ecom-project-cs4218-2520-team24/actions/runs/22278931150/job/64445985837)
 
