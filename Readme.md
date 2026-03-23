@@ -45,6 +45,11 @@ Leong Yu Jun Nicholas, A0257284W
 - Wrote E2E UI tests for the complete checkout-to-payment flow, guest checkout experience, cart persistence, price correctness, and address navigation
 - Wrote E2E UI tests for cart UX, Privacy Policy page, and 404 error page
 
+Choo Jia Rong, A0257352A
+- Wrote integration tests for user authentication and profile management. (AuthContext.integration.test.js, authIntegration.test.js)
+- Wrote E2E UI tests for User onboarding & auth pages to navigate through registration and login. (user-onboarding-auth.spec.ts)
+- Wrote E2E UI tests for Profile management & forgot password to verify data persistence after updating user details (profile-forgot-password.spec.ts)
+
 ## MSI CI URL
 [Link to Milestone 1 CI](https://github.com/cs4218/cs4218-2520-ecom-project-cs4218-2520-team24/actions/runs/22278931150/job/64445985837)
 
