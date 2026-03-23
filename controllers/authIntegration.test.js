@@ -1,3 +1,4 @@
+// Nam Dohyun
 import request from "supertest";
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
@@ -34,6 +35,7 @@ describe("Auth Integration Tests", () => {
     await userModel.deleteMany({});
   });
 
+  // Nam Dohyun
   it("should perform full forgot password flow: register -> reset -> login", async () => {
     const userData = {
       name: "John Doe",
@@ -137,6 +139,7 @@ describe("Auth Integration Tests", () => {
     expect(dupRes.body.message).toBe("Email already registered, please log in");
   });
 
+  // Nam Dohyun
   it("should fail forgot password if answer is incorrect", async () => {
     const userData = {
       name: "Jane Doe",
