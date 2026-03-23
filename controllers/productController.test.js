@@ -483,26 +483,37 @@ describe("Product controllers", () => {
     );
     const res = createRes();
 
-    await updateProductController({ fields: {}, files: {} }, res);
+    await updateProductController(
+      { params: { pid: "p1" }, fields: {}, files: {} },
+      res
+    );
     expect(res.send).toHaveBeenCalledWith({ error: "Name is Required" });
 
     res.send.mockClear();
     await updateProductController(
-      { fields: { name: "Product" }, files: {} },
+      { params: { pid: "p1" }, fields: { name: "Product" }, files: {} },
       res
     );
     expect(res.send).toHaveBeenCalledWith({ error: "Description is Required" });
 
     res.send.mockClear();
     await updateProductController(
-      { fields: { name: "Product", description: "Desc" }, files: {} },
+      {
+        params: { pid: "p1" },
+        fields: { name: "Product", description: "Desc" },
+        files: {},
+      },
       res
     );
     expect(res.send).toHaveBeenCalledWith({ error: "Price is Required" });
 
     res.send.mockClear();
     await updateProductController(
-      { fields: { name: "Product", description: "Desc", price: 10 }, files: {} },
+      {
+        params: { pid: "p1" },
+        fields: { name: "Product", description: "Desc", price: 10 },
+        files: {},
+      },
       res
     );
     expect(res.send).toHaveBeenCalledWith({ error: "Category is Required" });
@@ -510,6 +521,7 @@ describe("Product controllers", () => {
     res.send.mockClear();
     await updateProductController(
       {
+        params: { pid: "p1" },
         fields: {
           name: "Product",
           description: "Desc",
@@ -525,6 +537,7 @@ describe("Product controllers", () => {
     res.send.mockClear();
     await updateProductController(
       {
+        params: { pid: "p1" },
         fields: {
           name: "Product",
           description: "Desc",
@@ -541,23 +554,7 @@ describe("Product controllers", () => {
     res.send.mockClear();
     await updateProductController(
       {
-        fields: {
-          name: "Product",
-          description: "Desc",
-          price: 10,
-          category: "cat",
-          quantity: 5,
-          shipping: true,
-        },
-        files: {},
-      },
-      res
-    );
-    expect(res.send).toHaveBeenCalledWith({ error: "Photo is Required" });
-
-    res.send.mockClear();
-    await updateProductController(
-      {
+        params: { pid: "p1" },
         fields: {
           name: "Product",
           description: "Desc",
@@ -608,6 +605,35 @@ describe("Product controllers", () => {
         message: "Product Updated Successfully",
       })
     );
+  });
+
+  it("updates a product without photo", async () => {
+    const { updateProductController } = await import(
+      "../controllers/productController.js"
+    );
+    const product = { photo: { data: null, contentType: null }, save: mockSave };
+    mockProductModel.findByIdAndUpdate.mockResolvedValueOnce(product);
+    const res = createRes();
+
+    await updateProductController(
+      {
+        params: { pid: "p1" },
+        fields: {
+          name: "Product",
+          description: "Desc",
+          price: 10,
+          category: "cat",
+          quantity: 5,
+          shipping: true,
+        },
+        files: {},
+      },
+      res
+    );
+
+    expect(mockReadFileSync).not.toHaveBeenCalled();
+    expect(mockSave).toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(201);
   });
 
   it("handles update product errors", async () => {
