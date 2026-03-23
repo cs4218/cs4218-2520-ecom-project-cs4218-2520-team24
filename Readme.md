@@ -33,6 +33,12 @@ Carsten Joe Ng, A0255763W
 - Wrote E2E UI tests for the user journeys regarding order updates (admin updating order status, user seeing updated order status)
 - Wrote E2E UI tests to ensure admins are able to view the admin dashbaord (and it is functional), while regular users may not
 
+Leroy Chiu, A0273083E
+- Wrote integration tests validating Category CRUD API lifecycle, Product Admin CRUD and photo upload workflows.
+- Wrote integration tests for public asset and category retrieval endpoints, ensuring correct response data, headers, and database queries for product images and category-by-slug access.
+- Wrote E2E UI tests to ensure admins are able to create a new category, create a new product, as well as validate product inventory management from the admin dashboard, including searching, updating, and deleting products through the UI.
+- Wrote E2E UI tests for the Contact Us page.
+
 ## MSI CI URL
 [Link to Milestone 1 CI](https://github.com/cs4218/cs4218-2520-ecom-project-cs4218-2520-team24/actions/runs/22278931150/job/64445985837)
 
