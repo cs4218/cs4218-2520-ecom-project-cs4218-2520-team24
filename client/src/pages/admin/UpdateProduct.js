@@ -69,7 +69,9 @@ const UpdateProduct = () => {
       productData.append("description", description);
       productData.append("price", price);
       productData.append("quantity", quantity);
-      photo && productData.append("photo", photo);
+        if (photo && photo instanceof File) {
+            productData.append("photo", photo);
+        }
       productData.append("category", category);
       productData.append("shipping", shipping);
       const { data } = await axios.put(
