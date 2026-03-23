@@ -1,6 +1,6 @@
 # CS4218 Project - Virtual Vault
 
-## Individual Contribution
+## MS1 Individual Contribution
 Nam Dohyun, A0226590A
 - Wrote unit tests for productController.js 
 - Wrote unit tests for pages/ UI files
@@ -20,6 +20,24 @@ Leroy Chiu, A0273083E
 Carsten Joe Ng, A0255763W
  - Wrote unit tests for controller/authController.js
  - Wrote unit tests for client/src/context
+
+## MS2 Individual Contribution
+Nam Dohyun, A0226590A
+- Set up global-setup.ts and global-teardown.ts for e2e tests in isolated DB environment
+- Wrote e2e tests for user flows involving similar products, adding cart from search page, resetting password, pagination in Home and Category page, filtering products with category and price
+- Wrote integration tests testing product related endpoints and reset password endpoints 
+
+Carsten Joe Ng, A0255763W
+- Wrote integration tests testing order updates (controllers/orderStatusIntegration.test.js, controllers/orderDataPopulateIntegration.test.js)
+- Wrote integration tests testing permissioning, ensuring expired/valid jwt tokens belonging to deleted/regular user/admin accounts are gated correctly. (controllers/authGuardsIntegration.test.js)
+- Wrote E2E UI tests for the user journeys regarding order updates (admin updating order status, user seeing updated order status)
+- Wrote E2E UI tests to ensure admins are able to view the admin dashbaord (and it is functional), while regular users may not
+
+Leroy Chiu, A0273083E
+- Wrote integration tests validating Category CRUD API lifecycle, Product Admin CRUD and photo upload workflows.
+- Wrote integration tests for public asset and category retrieval endpoints, ensuring correct response data, headers, and database queries for product images and category-by-slug access.
+- Wrote E2E UI tests to ensure admins are able to create a new category, create a new product, as well as validate product inventory management from the admin dashboard, including searching, updating, and deleting products through the UI.
+- Wrote E2E UI tests for the Contact Us page.
 
 ## MSI CI URL
 [Link to Milestone 1 CI](https://github.com/cs4218/cs4218-2520-ecom-project-cs4218-2520-team24/actions/runs/22278931150/job/64445985837)

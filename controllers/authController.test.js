@@ -580,7 +580,7 @@ describe("Auth controllers integration", () => {
     expect(mockOrderModel.findByIdAndUpdate).toHaveBeenCalledWith(
       "order-1",
       { status: "PAID" },
-      { new: true }
+      { new: true, runValidators: true }
     );
     expect(res.json).toHaveBeenCalledWith({ _id: "order-1" });
   });
