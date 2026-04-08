@@ -3,53 +3,28 @@
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 
-// Scenario: Spike Testing - Flash Sale Browsing Peak
+// Scenario: Spike Testing - Flash Sale Browsing Peak (Global Step-Up Pattern)
 // Testing the sudden traffic surge hitting homepage listings, categories, pagination, and search.
+// This uses a single continuous `stages` array to observe cumulative system degradation over time.
 export const options = {
-  scenarios: {
-    // Wave 1: The 200 limit testing
-    spike_200_users: {
-      executor: 'ramping-vus',
-      startVUs: 10,
-      stages: [
-        { duration: '30s', target: 10 },   // warm baseline
-        { duration: '10s', target: 200 },  // spike 1
-        { duration: '30s', target: 200 },  // hold
-        { duration: '10s', target: 0 },   // drop to 0 to end scope
-      ],
-      gracefulRampDown: '5s',
-    },
-    // Wave 2: The 500 limit testing
-    spike_500_users: {
-      executor: 'ramping-vus',
-      startVUs: 0,
-      startTime: '85s', // Starts after 200 wave finishes + 5s buffer
-      stages: [
-        { duration: '10s', target: 500 },  // spike 2
-        { duration: '30s', target: 500 },  // hold
-        { duration: '10s', target: 0 },    // drop to 0
-      ],
-      gracefulRampDown: '5s',
-    },
-    // Wave 3: The massive 1000 limit testing
-    spike_1000_users: {
-      executor: 'ramping-vus',
-      startVUs: 0,
-      startTime: '140s', // Starts after 500 wave finishes + 5s buffer
-      stages: [
-        { duration: '10s', target: 1000 }, // spike 3
-        { duration: '30s', target: 1000 }, // hold
-        { duration: '10s', target: 0 },    // cooldown
-      ],
-      gracefulRampDown: '5s',
-    },
-  },
+  stages: [
+    { duration: '30s', target: 10 },   // warm baseline
+    { duration: '10s', target: 200 },  // spike 1
+    { duration: '30s', target: 200 },  // hold
+    { duration: '10s', target: 10 },   // recover
+    { duration: '30s', target: 10 },   // observe recovery
+    { duration: '10s', target: 500 },  // spike 2
+    { duration: '30s', target: 500 },  // hold
+    { duration: '10s', target: 10 },   // recover
+    { duration: '30s', target: 10 },   // observe recovery
+    { duration: '10s', target: 1000 }, // spike 3
+    { duration: '30s', target: 1000 }, // hold
+    { duration: '10s', target: 0 },    // cooldown
+  ],
   thresholds: {
-    // We get separate reporting scopes this way!
-    'http_req_duration{scenario:spike_200_users}': ['p(95)<2000'],
-    'http_req_duration{scenario:spike_500_users}': ['p(95)<4000'], 
-    'http_req_duration{scenario:spike_1000_users}': ['p(95)<6000'],
-    http_req_failed: ['rate<0.05'],
+    // Global thresholds evaluating the cumulative stress
+    http_req_duration: ['p(95)<2000'],
+    http_req_failed: ['rate<0.05'], // < 5% errors
   },
 };
 
@@ -70,22 +45,22 @@ export default function () {
   check(homeResponses['productCount'], { 'Product count loaded successfully': (r) => r.status === 200 });
   check(homeResponses['productList'], { 'Product list page 1 loaded successfully': (r) => r.status === 200 });
   
-  sleep(1); // User scrolls the page for 1s
+  sleep(1);
 
   // 2. Simulate User clicking "Load More" (Pagination fetch)
   const paginationRes = http.get(`${BASE_URL}/product/product-list/2`);
   check(paginationRes, { 'Pagination page 2 loaded': (r) => r.status === 200 });
 
-  sleep(1); // User considers searching
+  sleep(1);
 
   // 3. Simulate User performing a generic Search
   const searchRes = http.get(`${BASE_URL}/product/search/a`);
   check(searchRes, { 'Search completed successfully': (r) => r.status === 200 });
 
-  // 4. Simulate a User filtering on categories/price ranges (POST request)
+  // 4. Simulate a User filtering on categories/price ranges
   const filterPayload = JSON.stringify({
-    checked: [], // Insert mock category IDs if necessary
-    radio: [0, 100], // Mock price array
+    checked: [], 
+    radio: [0, 100], 
   });
   
   const filterParams = { headers: { 'Content-Type': 'application/json' } };
