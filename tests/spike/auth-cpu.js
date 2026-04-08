@@ -1,8 +1,7 @@
+// Leong Yu Jun Nicholas A0257284W
+
 import http from 'k6/http';
 import { check, sleep } from 'k6';
-
-// Name: [Your Name Here]
-// Student ID: [Your Student ID Here]
 
 // Scenario: Spike Testing - Authentication CPU Throttling
 // Pattern: "Sustained High-Load Attack + Background Traffic"
