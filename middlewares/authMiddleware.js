@@ -12,6 +12,11 @@ export const requireSignIn = async (req, res, next) => {
         next();
     } catch (error) {
         console.log(error);
+        // Fix: Return an error response instead of letting the request hang forever!
+        return res.status(401).send({
+            success: false,
+            message: "Authentication failed or token missing.",
+        });
     }
 };
 
