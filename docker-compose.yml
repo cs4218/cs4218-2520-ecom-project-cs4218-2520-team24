@@ -10,8 +10,8 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 256M
-                    cpus: "0.5"
+                    memory: 1024M
+                    cpus: "1"
         depends_on:
             - cadvisor
             - mongodb
@@ -68,11 +68,24 @@ services:
         deploy:
             resources:
                 limits:
-                    cpus: '1.0'
-                    memory: 1G
-        command: ["--wiredTigerCacheSizeGB", "0.5"]
+                    cpus: "1"
+                    memory: 1024M
+        command: ["--wiredTigerCacheSizeGB", "0.5", "--maxConns", "10"]
         volumes:
             - mongodb_data:/data/db
+
+    mongodb-exporter:
+        image: percona/mongodb_exporter:0.40.0
+        ports:
+            - "9216:9216"
+        environment:
+            - MONGODB_URI=mongodb://mongodb:27017/admin
+        command:
+            - "--collect-all"
+            - "--compatible-mode"
+            - "--mongodb.uri=mongodb://mongodb:27017/admin"
+        depends_on:
+            - mongodb
 
 volumes:
     mongodb_data:

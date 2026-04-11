@@ -17,3 +17,8 @@ scrape_configs:
           - targets: ["cadvisor:8080"]
       scrape_interval: 5s
       metrics_path: "/metrics"
+
+    - job_name: "mongodb"
+      static_configs:
+          - targets: ["mongodb-exporter:9216"]
+      scrape_interval: 10s

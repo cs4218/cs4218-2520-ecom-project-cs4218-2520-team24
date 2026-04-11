@@ -91,7 +91,7 @@
                 },
                 {
                     "datasource": { "type": "prometheus", "uid": "prometheus" },
-                    "expr": "100 * (container_memory_usage_bytes{name=\"ecom-app\"} / container_spec_memory_limit_bytes{name=\"ecom-app\"})",
+                    "expr": "100 * (container_memory_working_set_bytes{name=\"ecom-app\"} / container_spec_memory_limit_bytes{name=\"ecom-app\"})",
                     "legendFormat": "Memory Usage %",
                     "refId": "B"
                 }
@@ -139,7 +139,7 @@
             "targets": [
                 {
                     "datasource": { "type": "prometheus", "uid": "prometheus" },
-                    "expr": "sum by (path) (rate(http_requests_total{job=\"app\", status_code=~\"5..\"}[1m]))",
+                    "expr": "sum by (path) (rate(http_requests_total{job=\"app\", status_code=~\"5..\"}[1m])) or vector(0)",
                     "legendFormat": "{{path}}",
                     "refId": "A"
                 }
@@ -166,9 +166,55 @@
             "targets": [
                 {
                     "datasource": { "type": "prometheus", "uid": "prometheus" },
-                    "expr": "100 * sum by (path) (rate(http_requests_total{job=\"app\", status_code=~\"5..\"}[1m])) / sum by (path) (rate(http_requests_total{job=\"app\"}[1m]))",
-                    "legendFormat": "{{path}}",
+                    "expr": "100 * sum(rate(http_requests_total{job=\"app\", status_code=~\"5..\"}[1m])) / sum(rate(http_requests_total{job=\"app\"}[1m])) or vector(0)",
+                    "legendFormat": "Overall Error Rate %",
                     "refId": "A"
+                },
+                {
+                    "datasource": { "type": "prometheus", "uid": "prometheus" },
+                    "expr": "sum(rate(http_requests_total{job=\"app\", status_code=~\"5..\"}[1m])) or vector(0)",
+                    "legendFormat": "Total 5xx Errors/sec",
+                    "refId": "B"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "percent",
+                    "min": 0,
+                    "max": 100
+                },
+                "overrides": [
+                    {
+                        "matcher": { "id": "byName", "options": "Total 5xx Errors/sec" },
+                        "properties": [
+                            { "id": "unit", "value": "reqps" },
+                            { "id": "custom.axisPlacement", "value": "right" }
+                        ]
+                    }
+                ]
+            },
+            "options": {
+                "tooltip": { "mode": "multi", "sort": "desc" }
+            }
+        },
+        {
+            "id": 8,
+            "title": "6. MongoDB Resource Usage",
+            "type": "timeseries",
+            "gridPos": { "h": 8, "w": 24, "x": 0, "y": 44 },
+            "datasource": { "type": "prometheus", "uid": "prometheus" },
+            "targets": [
+                {
+                    "datasource": { "type": "prometheus", "uid": "prometheus" },
+                    "expr": "100 * sum(rate(container_cpu_usage_seconds_total{name=\"cs4218-2520-ecom-project-cs4218-2520-team24_mongodb_1\"}[1m])) / scalar(max(container_spec_cpu_quota{name=\"cs4218-2520-ecom-project-cs4218-2520-team24_mongodb_1\"}) / max(container_spec_cpu_period{name=\"cs4218-2520-ecom-project-cs4218-2520-team24_mongodb_1\"}))",
+                    "legendFormat": "MongoDB CPU %",
+                    "refId": "A"
+                },
+                {
+                    "datasource": { "type": "prometheus", "uid": "prometheus" },
+                    "expr": "100 * (container_memory_working_set_bytes{name=\"cs4218-2520-ecom-project-cs4218-2520-team24_mongodb_1\"} / container_spec_memory_limit_bytes{name=\"cs4218-2520-ecom-project-cs4218-2520-team24_mongodb_1\"})",
+                    "legendFormat": "MongoDB Memory %",
+                    "refId": "B"
                 }
             ],
             "fieldConfig": {
@@ -177,10 +223,34 @@
                     "min": 0,
                     "max": 100
                 }
-            },
-            "options": {
-                "tooltip": { "mode": "multi", "sort": "desc" }
             }
+        },
+        {
+            "id": 9,
+            "title": "7. MongoDB Performance Metrics",
+            "type": "timeseries",
+            "gridPos": { "h": 8, "w": 24, "x": 0, "y": 52 },
+            "datasource": { "type": "prometheus", "uid": "prometheus" },
+            "targets": [
+                {
+                    "datasource": { "type": "prometheus", "uid": "prometheus" },
+                    "expr": "sum by (type) (rate(mongodb_op_counters_total[1m]))",
+                    "legendFormat": "{{type}} Operations/sec",
+                    "refId": "A"
+                },
+                {
+                    "datasource": { "type": "prometheus", "uid": "prometheus" },
+                    "expr": "mongodb_mongod_wiredtiger_cache_bytes{type=\"total\"} / 1024 / 1024",
+                    "legendFormat": "WiredTiger Cache Used (MB)",
+                    "refId": "B"
+                },
+                {
+                    "datasource": { "type": "prometheus", "uid": "prometheus" },
+                    "expr": "mongodb_connections{state=\"current\"}",
+                    "legendFormat": "Active Connections",
+                    "refId": "C"
+                }
+            ]
         }
     ],
     "schemaVersion": 36,
