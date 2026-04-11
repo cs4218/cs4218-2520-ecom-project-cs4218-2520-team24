@@ -1,0 +1,188 @@
+{
+    "id": null,
+    "title": "E-commerce Stress Testing Dashboard - Full Optimized",
+    "tags": ["stress-testing", "performance"],
+    "timezone": "browser",
+    "panels": [
+        {
+            "id": 6,
+            "title": "Peak Performance Summary (Max RPS)",
+            "type": "stat",
+            "gridPos": { "h": 4, "w": 24, "x": 0, "y": 0 },
+            "datasource": { "type": "prometheus", "uid": "prometheus" },
+            "targets": [
+                {
+                    "datasource": { "type": "prometheus", "uid": "prometheus" },
+                    "expr": "max_over_time(sum(rate(http_requests_total{job=\"app\"}[1m]))[30m:])",
+                    "legendFormat": "Max RPS Achieved",
+                    "refId": "A"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "color": { "mode": "thresholds" },
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            { "color": "green", "value": null },
+                            { "color": "red", "value": 800 }
+                        ]
+                    },
+                    "unit": "reqps"
+                }
+            }
+        },
+        {
+            "id": 1,
+            "title": "1. The Elbow Curve - RPS & P95 Latency",
+            "type": "timeseries",
+            "gridPos": { "h": 8, "w": 24, "x": 0, "y": 4 },
+            "datasource": { "type": "prometheus", "uid": "prometheus" },
+            "targets": [
+                {
+                    "datasource": { "type": "prometheus", "uid": "prometheus" },
+                    "expr": "sum(rate(http_requests_total{job=\"app\"}[1m]))",
+                    "legendFormat": "RPS",
+                    "refId": "A"
+                },
+                {
+                    "datasource": { "type": "prometheus", "uid": "prometheus" },
+                    "expr": "histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket{job=\"app\"}[1m])))",
+                    "legendFormat": "P95 Latency (s)",
+                    "refId": "B"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {},
+                "overrides": [
+                    {
+                        "matcher": { "id": "byName", "options": "RPS" },
+                        "properties": [
+                            { "id": "custom.axisPlacement", "value": "left" },
+                            { "id": "unit", "value": "reqps" },
+                            { "id": "custom.axisLabel", "value": "Requests/sec" },
+                            { "id": "color", "value": { "mode": "fixed", "fixedColor": "green" } }
+                        ]
+                    },
+                    {
+                        "matcher": { "id": "byName", "options": "P95 Latency (s)" },
+                        "properties": [
+                            { "id": "custom.axisPlacement", "value": "right" },
+                            { "id": "unit", "value": "s" },
+                            { "id": "custom.axisLabel", "value": "Latency (seconds)" },
+                            { "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "id": 2,
+            "title": "2. Resource Saturation - CPU & Memory",
+            "type": "timeseries",
+            "gridPos": { "h": 8, "w": 24, "x": 0, "y": 12 },
+            "datasource": { "type": "prometheus", "uid": "prometheus" },
+            "targets": [
+                {
+                    "datasource": { "type": "prometheus", "uid": "prometheus" },
+                    "expr": "100 * sum(rate(container_cpu_usage_seconds_total{name=\"ecom-app\"}[1m])) / scalar(max(container_spec_cpu_quota{name=\"ecom-app\"}) / max(container_spec_cpu_period{name=\"ecom-app\"}))",
+                    "legendFormat": "CPU Usage %",
+                    "refId": "A"
+                },
+                {
+                    "datasource": { "type": "prometheus", "uid": "prometheus" },
+                    "expr": "100 * (container_memory_usage_bytes{name=\"ecom-app\"} / container_spec_memory_limit_bytes{name=\"ecom-app\"})",
+                    "legendFormat": "Memory Usage %",
+                    "refId": "B"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "percent",
+                    "min": 0,
+                    "max": 100
+                }
+            }
+        },
+        {
+            "id": 3,
+            "title": "3. Node.js Internal Health",
+            "type": "timeseries",
+            "gridPos": { "h": 8, "w": 24, "x": 0, "y": 20 },
+            "datasource": { "type": "prometheus", "uid": "prometheus" },
+            "targets": [
+                {
+                    "datasource": { "type": "prometheus", "uid": "prometheus" },
+                    "expr": "nodejs_eventloop_lag_seconds{job=\"app\"}",
+                    "legendFormat": "Event Loop Lag",
+                    "refId": "A"
+                },
+                {
+                    "datasource": { "type": "prometheus", "uid": "prometheus" },
+                    "expr": "sum(rate(nodejs_gc_duration_seconds_sum{job=\"app\"}[1m]))",
+                    "legendFormat": "GC Pressure",
+                    "refId": "B"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "s"
+                }
+            }
+        },
+        {
+            "id": 5,
+            "title": "4. Failure Modes - 5xx Errors by Endpoint",
+            "type": "timeseries",
+            "gridPos": { "h": 8, "w": 24, "x": 0, "y": 28 },
+            "datasource": { "type": "prometheus", "uid": "prometheus" },
+            "targets": [
+                {
+                    "datasource": { "type": "prometheus", "uid": "prometheus" },
+                    "expr": "sum by (path) (rate(http_requests_total{job=\"app\", status_code=~\"5..\"}[1m]))",
+                    "legendFormat": "{{path}}",
+                    "refId": "A"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "reqps",
+                    "custom": {
+                        "stacking": { "mode": "normal" },
+                        "fillOpacity": 30
+                    }
+                }
+            },
+            "options": {
+                "tooltip": { "mode": "multi", "sort": "desc" }
+            }
+        },
+        {
+            "id": 7,
+            "title": "5. Error Rate % by Endpoint",
+            "type": "timeseries",
+            "gridPos": { "h": 8, "w": 24, "x": 0, "y": 36 },
+            "datasource": { "type": "prometheus", "uid": "prometheus" },
+            "targets": [
+                {
+                    "datasource": { "type": "prometheus", "uid": "prometheus" },
+                    "expr": "100 * sum by (path) (rate(http_requests_total{job=\"app\", status_code=~\"5..\"}[1m])) / sum by (path) (rate(http_requests_total{job=\"app\"}[1m]))",
+                    "legendFormat": "{{path}}",
+                    "refId": "A"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "percent",
+                    "min": 0,
+                    "max": 100
+                }
+            },
+            "options": {
+                "tooltip": { "mode": "multi", "sort": "desc" }
+            }
+        }
+    ],
+    "schemaVersion": 36,
+    "version": 4
+}

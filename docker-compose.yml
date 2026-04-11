@@ -1,0 +1,80 @@
+services:
+    app:
+        build: .
+        container_name: ecom-app
+        ports: ["3000:3000"]
+        environment:
+            - NODE_ENV=production
+            - PORT=3000
+            - MONGO_URL=mongodb://mongodb:27017/ecom
+        deploy:
+            resources:
+                limits:
+                    memory: 256M
+                    cpus: "0.5"
+        depends_on:
+            - cadvisor
+            - mongodb
+
+    cadvisor:
+        image: gcr.io/cadvisor/cadvisor:v0.49.1 # Use a version that supports Cgroup v2
+        privileged: true
+        ports:
+            - "8080:8080"
+        volumes:
+            - /:/rootfs:ro
+            - /var/run:/var/run:ro
+            - /sys:/sys:ro
+            - /var/lib/docker/:/var/lib/docker:ro
+            - /dev/disk/:/dev/disk:ro
+            - /var/run/docker.sock:/var/run/docker.sock:ro
+            # CRITICAL FOR MACOS/CGROUP V2:
+            - /sys/fs/cgroup:/sys/fs/cgroup:ro
+        command:
+            - "--docker_only=true"
+            - "--housekeeping_interval=10s"
+            - "--max_housekeeping_interval=15s"
+
+    prometheus:
+        image: prom/prometheus:latest
+        volumes:
+            - ./prometheus.yml:/etc/prometheus/prometheus.yml
+            - prometheus_data:/prometheus
+        ports: ["9090:9090"]
+        command:
+            - "--config.file=/etc/prometheus/prometheus.yml"
+            - "--storage.tsdb.path=/prometheus"
+        depends_on:
+            - app
+            - cadvisor
+
+    grafana:
+        image: grafana/grafana:latest
+        ports: ["3001:3000"]
+        environment:
+            - GF_SECURITY_ADMIN_PASSWORD=admin
+            - GF_SECURITY_ADMIN_USER=admin
+        volumes:
+            - grafana_data:/var/lib/grafana
+            - ./grafana/provisioning:/etc/grafana/provisioning
+            - ./grafana/dashboards:/var/lib/grafana/dashboards
+        depends_on:
+            - prometheus
+
+    mongodb:
+        image: mongo:latest
+        ports:
+            - "27017:27017"
+        deploy:
+            resources:
+                limits:
+                    cpus: '1.0'
+                    memory: 1G
+        command: ["--wiredTigerCacheSizeGB", "0.5"]
+        volumes:
+            - mongodb_data:/data/db
+
+volumes:
+    mongodb_data:
+    prometheus_data:
+    grafana_data:
