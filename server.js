@@ -15,6 +15,7 @@ dotenv.config();
 connectDB();
 
 const app = express();
+app.disable("x-powered-by");
 
 //middlewares
 app.use(cors());
