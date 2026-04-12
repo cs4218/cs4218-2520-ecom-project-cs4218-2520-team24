@@ -376,9 +376,29 @@ export const braintreeTokenController = async (req, res) => {
 
 //payment
 export const brainTreePaymentController = async (req, res) => {
+    console.log('LOAD_TEST env:', process.env.LOAD_TEST);
+    console.log('req.body:', req.body);
+    console.log('req.user:', req.user);
   try {
     const { nonce, cart } = req.body;
     const total = cart.reduce((acc, i) => acc + i.price, 0);
+
+      // Mock payment for load testing
+      if (process.env.LOAD_TEST === 'true') {
+          try {
+              console.log('attempting mock save');
+              await new orderModel({
+                  products: cart.map(item => item._id),
+                  payment: { mock: true, amount: total },
+                  buyer: req.user._id,
+              }).save();
+              console.log('mock saved');
+              return res.json({ ok: true });
+          } catch (saveError) {
+              console.log('Mock save failed:', saveError.message);
+              return res.status(400).send({ message: saveError.message });
+          }
+      }
 
     // Using await here ensures the try/catch stays "active"
     const result = await gateway.transaction.sale({
