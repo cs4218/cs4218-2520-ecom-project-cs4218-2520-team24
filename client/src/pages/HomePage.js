@@ -9,6 +9,10 @@ import Layout from "./../components/Layout";
 import { AiOutlineReload } from "react-icons/ai";
 import "../styles/Homepages.css";
 
+export const pageActions = {
+  reloadPage: () => window.location.reload(),
+};
+
 const HomePage = () => {
   const navigate = useNavigate();
   const [cart, setCart] = useCart();
@@ -42,7 +46,13 @@ const HomePage = () => {
       setLoading(true);
       const { data } = await axios.get(`/api/v1/product/product-list/${page}`);
       setLoading(false);
-      setProducts(data.products);
+      console.log("page: ", page)
+      if (page === 1) {
+        setProducts(data.products);
+        getTotal();
+      } else {
+        setProducts((prev) => [...prev, ...data.products]);
+      }
     } catch (error) {
       setLoading(false);
       console.log(error);
@@ -59,22 +69,6 @@ const HomePage = () => {
     }
   };
 
-  useEffect(() => {
-    if (page === 1) return;
-    loadMore();
-  }, [page]);
-  //load more
-  const loadMore = async () => {
-    try {
-      setLoading(true);
-      const { data } = await axios.get(`/api/v1/product/product-list/${page}`);
-      setLoading(false);
-      setProducts([...products, ...data?.products]);
-    } catch (error) {
-      console.log(error);
-      setLoading(false);
-    }
-  };
 
   // filter by cat
   const handleFilter = (value, id) => {
@@ -84,15 +78,16 @@ const HomePage = () => {
     } else {
       all = all.filter((c) => c !== id);
     }
+    setProducts([]);
     setChecked(all);
+    setPage(1);
   };
-  useEffect(() => {
-    if (!checked.length || !radio.length) getAllProducts();
-  }, [checked.length, radio.length]);
 
   useEffect(() => {
     if (checked.length || radio.length) filterProduct();
-  }, [checked, radio]);
+    else getAllProducts();
+  }, [checked, radio, page]);
+
 
   //get filterd product
   const filterProduct = async () => {
@@ -100,8 +95,14 @@ const HomePage = () => {
       const { data } = await axios.post("/api/v1/product/product-filters", {
         checked,
         radio,
+        page,
       });
-      setProducts(data?.products);
+      if (page === 1) {
+        setProducts(data?.products);
+      } else {
+        setProducts((prev) => [...prev, ...data?.products]);
+      }
+      setTotal(data?.total);
     } catch (error) {
       console.log(error);
     }
@@ -132,7 +133,11 @@ const HomePage = () => {
           {/* price filter */}
           <h4 className="text-center mt-4">Filter By Price</h4>
           <div className="d-flex flex-column">
-            <Radio.Group onChange={(e) => setRadio(e.target.value)}>
+            <Radio.Group onChange={(e) => {
+              setProducts([]);
+              setRadio(e.target.value);
+              setPage(1);
+            }}>
               {Prices?.map((p) => (
                 <div key={p._id}>
                   <Radio value={p.array}>{p.name}</Radio>
@@ -143,7 +148,7 @@ const HomePage = () => {
           <div className="d-flex flex-column">
             <button
               className="btn btn-danger"
-              onClick={() => window.location.reload()}
+              onClick={() => pageActions.reloadPage()}
             >
               RESET FILTERS
             </button>
@@ -203,7 +208,7 @@ const HomePage = () => {
                 className="btn loadmore"
                 onClick={(e) => {
                   e.preventDefault();
-                  setPage(page + 1);
+                  setPage((prevPage) => prevPage + 1);
                 }}
               >
                 {loading ? (
@@ -211,7 +216,7 @@ const HomePage = () => {
                 ) : (
                   <>
                     {" "}
-                    Loadmore <AiOutlineReload />
+                    Load More <AiOutlineReload />
                   </>
                 )}
               </button>

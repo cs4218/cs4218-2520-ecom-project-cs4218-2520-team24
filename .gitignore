@@ -3,3 +3,12 @@ node_modules
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# Ignore IDE config files
+.idea
+.vscode
+
+.env
+
+sonar-project.properties
+.scannerwork/

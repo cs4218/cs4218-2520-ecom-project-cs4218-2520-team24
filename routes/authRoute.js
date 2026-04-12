@@ -24,8 +24,9 @@ router.post("/login", loginController);
 //Forgot Password || POST
 router.post("/forgot-password", forgotPasswordController);
 
+// Nam Dohyun, A0226590A
 //test routes
-router.get("/test", requireSignIn, isAdmin, testController);
+// router.get("/test", requireSignIn, isAdmin, testController);
 
 //protected User route auth
 router.get("/user-auth", requireSignIn, (req, res) => {

@@ -1,5 +1,58 @@
 # CS4218 Project - Virtual Vault
 
+## MS1 Individual Contribution
+Nam Dohyun, A0226590A
+- Wrote unit tests for productController.js 
+- Wrote unit tests for pages/ UI files
+
+Choo Jia Rong, A0257352A
+- Wrote unit tests for authHelper.js and authMiddleware.js
+
+Leong Yu Jun Nicholas, A0257284W
+- Wrote unit tests for component files
+- Wrote unit tests for model files
+- Wrote unit tests for useCategory.js hook and db.js config file
+
+Leroy Chiu, A0273083E
+- Wrote unit tests for categoryController.js
+- Helped to set up CI
+
+Carsten Joe Ng, A0255763W
+ - Wrote unit tests for controller/authController.js
+ - Wrote unit tests for client/src/context
+
+## MS2 Individual Contribution
+Nam Dohyun, A0226590A
+- Set up global-setup.ts and global-teardown.ts for e2e tests in isolated DB environment
+- Wrote e2e tests for user flows involving similar products, adding cart from search page, resetting password, pagination in Home and Category page, filtering products with category and price
+- Wrote integration tests testing product related endpoints and reset password endpoints 
+
+Carsten Joe Ng, A0255763W
+- Wrote integration tests testing order updates (controllers/orderStatusIntegration.test.js, controllers/orderDataPopulateIntegration.test.js)
+- Wrote integration tests testing permissioning, ensuring expired/valid jwt tokens belonging to deleted/regular user/admin accounts are gated correctly. (controllers/authGuardsIntegration.test.js)
+- Wrote E2E UI tests for the user journeys regarding order updates (admin updating order status, user seeing updated order status)
+- Wrote E2E UI tests to ensure admins are able to view the admin dashbaord (and it is functional), while regular users may not
+
+Leroy Chiu, A0273083E
+- Wrote integration tests validating Category CRUD API lifecycle, Product Admin CRUD and photo upload workflows.
+- Wrote integration tests for public asset and category retrieval endpoints, ensuring correct response data, headers, and database queries for product images and category-by-slug access.
+- Wrote E2E UI tests to ensure admins are able to create a new category, create a new product, as well as validate product inventory management from the admin dashboard, including searching, updating, and deleting products through the UI.
+- Wrote E2E UI tests for the Contact Us page.
+
+Leong Yu Jun Nicholas, A0257284W
+- Wrote integration tests for the payment workflow, Braintree token generation and product filter endpoint with various filter combinations
+- Wrote frontend integration tests for CartPage with real context providers, covering cart-UI sync, item removal, authentication redirects, and localStorage hydration
+- Wrote E2E UI tests for the complete checkout-to-payment flow, guest checkout experience, cart persistence, price correctness, and address navigation
+- Wrote E2E UI tests for cart UX, Privacy Policy page, and 404 error page
+
+Choo Jia Rong, A0257352A
+- Wrote integration tests for user authentication and profile management. (AuthContext.integration.test.js, authIntegration.test.js)
+- Wrote E2E UI tests for User onboarding & auth pages to navigate through registration and login. (user-onboarding-auth.spec.ts)
+- Wrote E2E UI tests for Profile management & forgot password to verify data persistence after updating user details (profile-forgot-password.spec.ts)
+
+## MSI CI URL
+[Link to Milestone 1 CI](https://github.com/cs4218/cs4218-2520-ecom-project-cs4218-2520-team24/actions/runs/22278931150/job/64445985837)
+
 ## 1. Project Introduction
 
 Virtual Vault is a full-stack MERN (MongoDB, Express.js, React.js, Node.js) e-commerce website, offering seamless connectivity and user-friendly features. The platform provides a robust framework for online shopping. The website is designed to adapt to evolving business needs and can be efficiently extended.
@@ -139,6 +192,8 @@ To begin unit testing with Jest in your project, follow these steps:
      ```bash
      npm run test:backend
      ```
+
+     tesing
 
    - **All the tests**
      ```bash
