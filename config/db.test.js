@@ -25,14 +25,18 @@ describe("Database Connection", () => {
     const mockConnection = {
       connection: {
         host: "localhost",
+        port: 27017,
       },
     };
     mongoose.connect.mockResolvedValueOnce(mockConnection);
 
     await connectDB();
 
-    expect(mongoose.connect).toHaveBeenCalledWith("mongodb://localhost:27017/testdb");
-    expect(consoleLogSpy).toHaveBeenCalledWith(`Connected To Mongodb Database localhost`.bgMagenta.white);
+    expect(mongoose.connect).toHaveBeenCalledWith("mongodb://localhost:27017/testdb", expect.objectContaining({
+      bufferCommands: false,
+      serverSelectionTimeoutMS: 5000,
+    }));
+    expect(consoleLogSpy).toHaveBeenCalledWith(`Connected To Mongodb Database localhost:27017`.bgMagenta.white);
   });
 
   it("should handle connection errors gracefully", async () => {
@@ -42,18 +46,18 @@ describe("Database Connection", () => {
 
     await connectDB();
 
-    expect(mongoose.connect).toHaveBeenCalledWith("mongodb://localhost:27017/testdb");
+    expect(mongoose.connect).toHaveBeenCalledWith("mongodb://localhost:27017/testdb", expect.any(Object));
     expect(consoleLogSpy).toHaveBeenCalledWith(`Error in Mongodb Error: Connection failed`.bgRed.white);
   });
 
   it("should use process.env.MONGO_URL for connection", async () => {
     process.env.MONGO_URL = "mongodb://custom-url:27017/customdb";
-    mongoose.connect.mockResolvedValueOnce({ connection: { host: "custom-host" } });
+    mongoose.connect.mockResolvedValueOnce({ connection: { host: "custom-host", port: 27017 } });
 
     await connectDB();
 
-    expect(mongoose.connect).toHaveBeenCalledWith("mongodb://custom-url:27017/customdb");
-    expect(consoleLogSpy).toHaveBeenCalledWith(`Connected To Mongodb Database custom-host`.bgMagenta.white);
+    expect(mongoose.connect).toHaveBeenCalledWith("mongodb://custom-url:27017/customdb", expect.any(Object));
+    expect(consoleLogSpy).toHaveBeenCalledWith(`Connected To Mongodb Database custom-host:27017`.bgMagenta.white);
   });
 
   it("should handle missing MONGO_URL gracefully", async () => {
@@ -62,6 +66,6 @@ describe("Database Connection", () => {
 
     await connectDB();
 
-    expect(mongoose.connect).toHaveBeenCalledWith(undefined);
+    expect(mongoose.connect).toHaveBeenCalledWith(undefined, expect.any(Object));
   });
 });
