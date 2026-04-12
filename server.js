@@ -16,6 +16,7 @@ dotenv.config();
 connectDB();
 
 const app = express();
+app.disable("x-powered-by");
 
 // Prometheus metrics
 const collectDefaultMetrics = client.collectDefaultMetrics;

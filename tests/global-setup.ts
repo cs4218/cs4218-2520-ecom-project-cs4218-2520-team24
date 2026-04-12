@@ -109,7 +109,10 @@ async function globalSetup() {
       (global as any).__SERVER_PID = serverProcess.pid;
     }
     await Promise.all([
-      waitForServer('http://localhost:3000'), // Check UI
+      Promise.any([
+        waitForServer('http://localhost:3000'),
+        waitForServer('http://localhost:3001')
+      ]),
       waitForServer('http://localhost:6060/api/v1/category/get-category') // Check API
     ]);
     console.log('✅ System Ready. Handing over to Playwright...');
