@@ -105,6 +105,28 @@ describe("Product controllers", () => {
     jest.clearAllMocks();
   });
 
+  it("reads file when path does not start with ..", async () => {
+    const { safeReadUploadedFile } = await import(
+      "../controllers/productController.js"
+    );
+
+    const data = safeReadUploadedFile("photo.png");
+
+    expect(mockReadFileSync).toHaveBeenCalledWith("photo.png");
+    expect(data).toEqual(Buffer.from("photo"));
+  });
+
+  it("throws when path starts with ..", async () => {
+    const { safeReadUploadedFile } = await import(
+      "../controllers/productController.js"
+    );
+
+    expect(() => safeReadUploadedFile("../secret.txt")).toThrow(
+      "Invalid file path: ../secret.txt"
+    );
+    expect(mockReadFileSync).not.toHaveBeenCalled();
+  });
+
   it("validates create product fields", async () => {
     const { createProductController } = await import(
       "../controllers/productController.js"

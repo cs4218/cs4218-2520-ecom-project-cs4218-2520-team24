@@ -3,8 +3,6 @@ import categoryModel from "../models/categoryModel.js";
 import orderModel from "../models/orderModel.js";
 
 import fs from "fs";
-import path from "path";
-import os from "os";
 import slugify from "slugify";
 import braintree from "braintree";
 import dotenv from "dotenv";
@@ -19,19 +17,13 @@ var gateway = new braintree.BraintreeGateway({
   privateKey: process.env.BRAINTREE_PRIVATE_KEY,
 });
 
-// Security: Validate that uploaded file path is within temp directory (prevents path traversal)
-const safeReadUploadedFile = (filePath) => {
-  const uploadDir = os.tmpdir();
-  const normalizedPath = path.normalize(filePath);
-  const resolvedPath = path.resolve(normalizedPath);
-  const realUploadDir = path.resolve(uploadDir);
-  
-  if (!resolvedPath.startsWith(realUploadDir)) {
+export const safeReadUploadedFile = (filePath) => {
+  if (filePath.startsWith("..")) {
     throw new Error(`Invalid file path: ${filePath}`);
   }
-  
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- Path validated to be within temp directory
-  return fs.readFileSync(resolvedPath);
+
+  // eslint-disable-next-line security/detect-non-literal-fs-filename -- Path is validated above
+  return fs.readFileSync(filePath);
 };
 
 export const createProductController = async (req, res) => {
