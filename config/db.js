@@ -1,13 +1,14 @@
+// Nam Dohyun
 import mongoose from "mongoose";
 import colors from "colors";
 const connectDB = async () => {
     try {
         const conn = await mongoose.connect(process.env.MONGO_URL, {
             bufferCommands: false,
-            serverSelectionTimeoutMS: 2000,
-            socketTimeoutMS: 3000,
-            maxPoolSize: 3,
-            waitQueueTimeoutMS: 1000,
+            serverSelectionTimeoutMS: 5000,
+            socketTimeoutMS: 10000,
+            maxPoolSize: 500,
+            waitQueueTimeoutMS: 5000,
         });
         const host = conn.connection.host;
         const port = conn.connection.port;

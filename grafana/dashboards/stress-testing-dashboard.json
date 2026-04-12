@@ -113,13 +113,13 @@
             "targets": [
                 {
                     "datasource": { "type": "prometheus", "uid": "prometheus" },
-                    "expr": "nodejs_eventloop_lag_seconds{job=\"app\"}",
+                    "expr": "nodejs_nodejs_eventloop_lag_seconds{job=\"app\"}",
                     "legendFormat": "Event Loop Lag",
                     "refId": "A"
                 },
                 {
                     "datasource": { "type": "prometheus", "uid": "prometheus" },
-                    "expr": "sum(rate(nodejs_gc_duration_seconds_sum{job=\"app\"}[1m]))",
+                    "expr": "sum(rate(nodejs_nodejs_gc_duration_seconds_sum{job=\"app\"}[1m]))",
                     "legendFormat": "GC Pressure",
                     "refId": "B"
                 }
@@ -131,10 +131,58 @@
             }
         },
         {
-            "id": 5,
-            "title": "4. Failure Modes - 5xx Errors by Endpoint",
+            "id": 11,
+            "title": "4. Event Loop Lag Percentiles",
             "type": "timeseries",
             "gridPos": { "h": 8, "w": 24, "x": 0, "y": 28 },
+            "datasource": { "type": "prometheus", "uid": "prometheus" },
+            "targets": [
+                {
+                    "datasource": { "type": "prometheus", "uid": "prometheus" },
+                    "expr": "nodejs_nodejs_eventloop_lag_mean_seconds{job=\"app\"}",
+                    "legendFormat": "Mean",
+                    "refId": "A"
+                },
+                {
+                    "datasource": { "type": "prometheus", "uid": "prometheus" },
+                    "expr": "nodejs_nodejs_eventloop_lag_p50_seconds{job=\"app\"}",
+                    "legendFormat": "P50",
+                    "refId": "B"
+                },
+                {
+                    "datasource": { "type": "prometheus", "uid": "prometheus" },
+                    "expr": "nodejs_nodejs_eventloop_lag_p90_seconds{job=\"app\"}",
+                    "legendFormat": "P90",
+                    "refId": "C"
+                },
+                {
+                    "datasource": { "type": "prometheus", "uid": "prometheus" },
+                    "expr": "nodejs_nodejs_eventloop_lag_p99_seconds{job=\"app\"}",
+                    "legendFormat": "P99",
+                    "refId": "D"
+                },
+                {
+                    "datasource": { "type": "prometheus", "uid": "prometheus" },
+                    "expr": "nodejs_nodejs_eventloop_lag_max_seconds{job=\"app\"}",
+                    "legendFormat": "Max",
+                    "refId": "E"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "s",
+                    "min": 0
+                }
+            },
+            "options": {
+                "tooltip": { "mode": "multi", "sort": "desc" }
+            }
+        },
+        {
+            "id": 5,
+            "title": "5. Failure Modes - 5xx Errors by Endpoint",
+            "type": "timeseries",
+            "gridPos": { "h": 8, "w": 24, "x": 0, "y": 36 },
             "datasource": { "type": "prometheus", "uid": "prometheus" },
             "targets": [
                 {
@@ -159,9 +207,9 @@
         },
         {
             "id": 7,
-            "title": "5. Error Rate % by Endpoint",
+            "title": "6. Error Rate % by Endpoint",
             "type": "timeseries",
-            "gridPos": { "h": 8, "w": 24, "x": 0, "y": 36 },
+            "gridPos": { "h": 8, "w": 24, "x": 0, "y": 44 },
             "datasource": { "type": "prometheus", "uid": "prometheus" },
             "targets": [
                 {
@@ -199,9 +247,9 @@
         },
         {
             "id": 8,
-            "title": "6. MongoDB Resource Usage",
+            "title": "7. MongoDB Resource Usage",
             "type": "timeseries",
-            "gridPos": { "h": 8, "w": 24, "x": 0, "y": 44 },
+            "gridPos": { "h": 8, "w": 24, "x": 0, "y": 52 },
             "datasource": { "type": "prometheus", "uid": "prometheus" },
             "targets": [
                 {
@@ -227,9 +275,9 @@
         },
         {
             "id": 9,
-            "title": "7. MongoDB Performance Metrics",
+            "title": "8. MongoDB Performance Metrics",
             "type": "timeseries",
-            "gridPos": { "h": 8, "w": 24, "x": 0, "y": 52 },
+            "gridPos": { "h": 8, "w": 24, "x": 0, "y": 60 },
             "datasource": { "type": "prometheus", "uid": "prometheus" },
             "targets": [
                 {
@@ -251,6 +299,34 @@
                     "refId": "C"
                 }
             ]
+        },
+        {
+            "id": 10,
+            "title": "9. MongoDB Active Connections",
+            "type": "timeseries",
+            "gridPos": { "h": 8, "w": 24, "x": 0, "y": 68 },
+            "datasource": { "type": "prometheus", "uid": "prometheus" },
+            "targets": [
+                {
+                    "datasource": { "type": "prometheus", "uid": "prometheus" },
+                    "expr": "mongodb_ss_connections{conn_type=\"current\"}",
+                    "legendFormat": "Active Connections (current)",
+                    "refId": "A"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "short",
+                    "min": 0,
+                    "custom": {
+                        "fillOpacity": 15
+                    },
+                    "color": { "mode": "fixed", "fixedColor": "orange" }
+                }
+            },
+            "options": {
+                "tooltip": { "mode": "single" }
+            }
         }
     ],
     "schemaVersion": 36,

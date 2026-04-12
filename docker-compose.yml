@@ -1,3 +1,4 @@
+# Nam Dohyun
 services:
     app:
         build: .
@@ -70,7 +71,7 @@ services:
                 limits:
                     cpus: "1"
                     memory: 1024M
-        command: ["--wiredTigerCacheSizeGB", "0.5", "--maxConns", "10"]
+        command: ["--wiredTigerCacheSizeGB", "0.5", "--maxConns", "500"]
         volumes:
             - mongodb_data:/data/db
 

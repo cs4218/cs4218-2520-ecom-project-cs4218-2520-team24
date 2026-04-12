@@ -1,3 +1,4 @@
+# Nam Dohyun
 #!/bin/bash
 
 # Single test runner - run individual stress test configurations
@@ -56,7 +57,7 @@ sed -i.bak -E "s/--wiredTigerCacheSizeGB\", \"[0-9.]+/--wiredTigerCacheSizeGB\",
 
 echo "Restarting services with new resource limits..."
 docker compose --compatibility down -v > /dev/null 2>&1 || true
-docker compose --compatibility up -d --scale app=1
+docker compose --compatibility up -d --force-recreate --build --scale app=1
 
 echo "Waiting 45 seconds for services to initialize..."
 sleep 45
