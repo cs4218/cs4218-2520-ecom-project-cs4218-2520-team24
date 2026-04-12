@@ -51,6 +51,11 @@ Choo Jia Rong, A0257352A
 - Wrote E2E UI tests for Profile management & forgot password to verify data persistence after updating user details (profile-forgot-password.spec.ts)
 
 ## MS3 Individual Contribution
+
+Leroy Chiu, A0273083E
+- Did load testing of various components individually (authentication, browsing, checkout).
+- Did load testing of one scenario with the 3 components combined together.
+
 Leong Yu Jun Nicholas, A0257284W
 - Wrote non-functional tests for spike testing scenarios using k6, covering authentication CPU throttling (`auth-cpu.js`), checkout payment flow (`checkout-payment.js`), and flash sale stepping load scenarios (`flash-sale.js`, `flash-sale-stepup.js`).
 

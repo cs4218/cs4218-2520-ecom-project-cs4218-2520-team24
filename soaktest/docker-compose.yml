@@ -1,0 +1,41 @@
+services:
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--web.enable-remote-write-receiver"
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+
+  k6:
+    image: grafana/k6:latest
+    container_name: k6
+    volumes:
+      - ./soak.js:/scripts/soak.js:ro
+    entrypoint: ["k6", "run", "-o", "experimental-prometheus-rw", "/scripts/soak.js"]
+    environment:
+      - K6_PROMETHEUS_RW_SERVER_URL=http://prometheus:9090/api/v1/write
+      - K6_PROMETHEUS_RW_TREND_AS_NATIVE_HISTOGRAM=true
+      - K6_PROMETHEUS_RW_TREND_STATS=p(90),p(95),p(99),avg,min,max
+      - BASE_URL=http://host.docker.internal:6060/api/v1
+      - USER_EMAIL=user@example.com
+      - USER_PASS=password
+      - ADMIN_EMAIL=admin@example.com
+      - ADMIN_PASS=password
+    depends_on:
+      - prometheus
+
+volumes:
+  grafana-data:

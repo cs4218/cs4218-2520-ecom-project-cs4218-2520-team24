@@ -41,7 +41,14 @@ test.describe('E2E: Profile management and forgot password', () => {
     await page.getByPlaceholder('Enter Your Name').fill(updatedName);
     await page.getByPlaceholder('Enter Your Phone').fill(updatedPhone);
     await page.getByPlaceholder('Enter Your Address').fill(updatedAddress);
-    await page.getByRole('button', { name: /update/i }).click();
+    await Promise.all([
+      page.waitForResponse((response) =>
+        response.url().includes('/api/v1/auth/profile') &&
+        response.request().method() === 'PUT' &&
+        response.ok()
+      ),
+      page.getByRole('button', { name: /update/i }).click(),
+    ]);
 
     await page.reload();
 
