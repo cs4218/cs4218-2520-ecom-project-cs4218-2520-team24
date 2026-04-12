@@ -9,6 +9,7 @@
     "@testing-library/user-event": "^13.5.0",
     "antd": "^5.15.0",
     "axios": "^1.6.7",
+    "bootstrap": "^5.3.2",
     "braintree-web-drop-in-react": "^1.2.1",
     "markbind-cli": "^6.3.1",
     "moment": "^2.30.1",
@@ -26,7 +27,11 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "lint:security": "eslint src --config .eslintrc.security.cjs --no-eslintrc",
     "eject": "react-scripts eject"
+  },
+  "devDependencies": {
+    "eslint-plugin-security": "^3.0.1"
   },
   "eslintConfig": {
     "extends": [

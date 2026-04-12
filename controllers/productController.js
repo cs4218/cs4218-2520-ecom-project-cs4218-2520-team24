@@ -3,6 +3,8 @@ import categoryModel from "../models/categoryModel.js";
 import orderModel from "../models/orderModel.js";
 
 import fs from "fs";
+import path from "path";
+import os from "os";
 import slugify from "slugify";
 import braintree from "braintree";
 import dotenv from "dotenv";
@@ -16,6 +18,21 @@ var gateway = new braintree.BraintreeGateway({
   publicKey: process.env.BRAINTREE_PUBLIC_KEY,
   privateKey: process.env.BRAINTREE_PRIVATE_KEY,
 });
+
+// Security: Validate that uploaded file path is within temp directory (prevents path traversal)
+const safeReadUploadedFile = (filePath) => {
+  const uploadDir = os.tmpdir();
+  const normalizedPath = path.normalize(filePath);
+  const resolvedPath = path.resolve(normalizedPath);
+  const realUploadDir = path.resolve(uploadDir);
+  
+  if (!resolvedPath.startsWith(realUploadDir)) {
+    throw new Error(`Invalid file path: ${filePath}`);
+  }
+  
+  // eslint-disable-next-line security/detect-non-literal-fs-filename -- Path validated to be within temp directory
+  return fs.readFileSync(resolvedPath);
+};
 
 export const createProductController = async (req, res) => {
   try {
@@ -49,7 +66,7 @@ export const createProductController = async (req, res) => {
     }
 
     const products = new productModel({ ...req.fields, slug: slugify(name) });
-    products.photo.data = fs.readFileSync(photo.path);
+    products.photo.data = safeReadUploadedFile(photo.path);
     products.photo.contentType = photo.type;
     await products.save();
     res.status(201).send({
@@ -180,7 +197,7 @@ export const updateProductController = async (req, res) => {
       { new: true }
     );
     if (photo) {
-        products.photo.data = fs.readFileSync(photo.path);
+        products.photo.data = safeReadUploadedFile(photo.path);
         products.photo.contentType = photo.type;
     }
     await products.save();
