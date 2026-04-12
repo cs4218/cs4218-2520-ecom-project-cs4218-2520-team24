@@ -50,6 +50,10 @@ Choo Jia Rong, A0257352A
 - Wrote E2E UI tests for User onboarding & auth pages to navigate through registration and login. (user-onboarding-auth.spec.ts)
 - Wrote E2E UI tests for Profile management & forgot password to verify data persistence after updating user details (profile-forgot-password.spec.ts)
 
+## MS3 Individual Contribution
+Leong Yu Jun Nicholas, A0257284W
+- Wrote non-functional tests for spike testing scenarios using k6, covering authentication CPU throttling (`auth-cpu.js`), checkout payment flow (`checkout-payment.js`), and flash sale stepping load scenarios (`flash-sale.js`, `flash-sale-stepup.js`).
+
 ## MSI CI URL
 [Link to Milestone 1 CI](https://github.com/cs4218/cs4218-2520-ecom-project-cs4218-2520-team24/actions/runs/22278931150/job/64445985837)
 
