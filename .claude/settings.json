@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(curl -s 'http://localhost:9090/api/v1/query?query=container_memory_working_set_bytes')",
+      "Bash(python3 -c \"import sys,json; [print\\(r['metric'].get\\('name',''\\)\\) for r in json.load\\(sys.stdin\\)['data']['result']]\")",
+      "Bash(python3 -c \"import sys,json; r=json.load\\(sys.stdin\\)['data']['result']; print\\(len\\(r\\), 'results'\\)\")",
+      "Bash(curl -s 'http://localhost:9090/api/v1/query' --data-urlencode 'query=sum\\(rate\\(http_requests_total{job=\"app\"}[1m]\\)\\)')",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('RPS:', d['data']['result'][0]['value'][1]\\)\")",
+      "Bash(curl -s 'http://localhost:9090/api/v1/query' --data-urlencode 'query=sum\\(rate\\(http_requests_total{job=\"app\"}[2m]\\)\\)')",
+      "Bash(curl -s 'http://localhost:9090/api/v1/query' --data-urlencode 'query=http_requests_total')",
+      "Bash(curl -s 'http://localhost:9090/api/v1/targets')",
+      "Bash(python3 -c \" import sys, json data = json.load\\(sys.stdin\\) for t in data['data']['activeTargets']: print\\(f\\\\\"{t['labels']['job']:15} {t['health']:5} last_scrape={t.get\\('lastScrape',''\\)} err={t.get\\('lastError',''\\)}\\\\\"\\)\")",
+      "Bash(curl -s 'http://localhost:9090/api/v1/query' --data-urlencode 'query=http_requests_total{job=\"app\"}')",
+      "Bash(python3 -c \" import sys,json d = json.load\\(sys.stdin\\) for r in d['data']['result'][:5]: print\\(f\\\\\"{r['metric'].get\\('method',''\\)} {r['metric'].get\\('path',''\\):40} status={r['metric'].get\\('status_code',''\\)} count={r['value'][1]}\\\\\"\\)\")",
+      "Bash(curl -s 'http://localhost:9090/api/v1/query' --data-urlencode 'query={__name__=~\"http.*\"}')",
+      "Bash(curl -s 'http://localhost:9090/api/v1/query' --data-urlencode 'query={__name__=~\"nodejs.*\",job=\"app\"}')",
+      "Bash(python3 -c \" import sys,json d = json.load\\(sys.stdin\\) print\\(f'{len\\(d[\\\\\"data\\\\\"][\\\\\"result\\\\\"]\\)} nodejs metrics found'\\) for r in d['data']['result'][:3]: print\\(r['metric']['__name__']\\)\")",
+      "Bash(curl -s http://localhost:3000/)",
+      "Bash(curl -s 'http://localhost:9090/api/v1/label/__name__/values')",
+      "Bash(python3 -c \" import sys,json d = json.load\\(sys.stdin\\) names = [n for n in d['data'] if n.startswith\\('http'\\) or n.startswith\\('nodejs'\\)] print\\(names[:10]\\)\")",
+      "Bash(python3 -c \" import sys,json d = json.load\\(sys.stdin\\) for r in d['data']['result']: m = r['metric'] print\\(f\\\\\"{m.get\\('method',''\\)} {m.get\\('path',''\\):40} {m.get\\('status_code',''\\):3} = {r['value'][1]}\\\\\"\\)\")",
+      "Bash(curl -s 'http://localhost:9090/api/v1/query' --data-urlencode 'query=histogram_quantile\\(0.95, sum by \\(le\\) \\(rate\\(http_request_duration_seconds_bucket{job=\"app\"}[2m]\\)\\)\\)')",
+      "Bash(curl -s 'http://localhost:3000/api/v1/product/product-list/1')",
+      "Bash(curl -s http://localhost:3000/api/v1/product/product-list/1)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('RPS:', d['data']['result'][0]['value'][1] if d['data']['result'] else 'no data'\\)\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('P95:', d['data']['result'][0]['value'][1] if d['data']['result'] else 'no data'\\)\")",
+      "Bash(python3 -c ':*)",
+      "Bash(curl -s 'http://localhost:9090/api/v1/query' --data-urlencode 'query=100 * sum\\(rate\\(http_requests_total{job=\"app\", status_code=~\"5..\"}[2m]\\)\\) / sum\\(rate\\(http_requests_total{job=\"app\"}[2m]\\)\\)')",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(f\\\\\"Error Rate: {float\\(d['data']['result'][0]['value'][1]\\):.1f}%\\\\\"\\)\")",
+      "Bash(curl -s --max-time 5 http://localhost:3000/metrics)",
+      "Bash(docker exec:*)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('dependencies:', json.dumps\\({k:v for k,v in d.get\\('dependencies',{}\\).items\\(\\) if 'prom' in k}, indent=2\\)\\); print\\('devDependencies:', json.dumps\\({k:v for k,v in d.get\\('devDependencies',{}\\).items\\(\\) if 'prom' in k}, indent=2\\)\\)\")"
+    ]
+  }
+}

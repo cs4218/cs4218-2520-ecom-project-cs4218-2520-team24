@@ -1,5 +1,3 @@
-// Leroy Chiu, A0273083E
-
 import { test, expect } from '@playwright/test';
 import path from "path";
 
@@ -107,5 +105,4 @@ test.describe('Admin: Product Inventory Management', () => {
         await expect(page).toHaveURL(/\/dashboard\/admin\/products/, { timeout: 10_000 });
         await expect(page.getByText(productName)).not.toBeVisible();
     });
-
 });

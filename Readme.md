@@ -50,6 +50,11 @@ Choo Jia Rong, A0257352A
 - Wrote E2E UI tests for User onboarding & auth pages to navigate through registration and login. (user-onboarding-auth.spec.ts)
 - Wrote E2E UI tests for Profile management & forgot password to verify data persistence after updating user details (profile-forgot-password.spec.ts)
 
+## MS3 Individual Contributions
+Leroy Chiu, A0273083E
+- Did load testing of various components individually (authentication, browsing, checkout).
+- Did load testing of one scenario with the 3 components combined together.
+
 ## MSI CI URL
 [Link to Milestone 1 CI](https://github.com/cs4218/cs4218-2520-ecom-project-cs4218-2520-team24/actions/runs/22278931150/job/64445985837)
 

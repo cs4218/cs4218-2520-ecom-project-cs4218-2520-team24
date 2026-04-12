@@ -1017,4 +1017,54 @@ describe("Product controllers", () => {
       })
     );
   });
+
+  it("handles LOAD_TEST mock payment success", async () => {
+      process.env.LOAD_TEST = 'true';
+
+      const { brainTreePaymentController } = await import(
+          "../controllers/productController.js"
+          );
+
+      const res = createRes();
+
+      await brainTreePaymentController(
+            {
+                body: { cart: [{ _id: "p1", price: 10 }] },
+                user: { _id: "user-1" },
+            },
+            res
+      );
+
+      expect(mockOrderSave).toHaveBeenCalled();
+      expect(res.json).toHaveBeenCalledWith({ ok: true });
+
+      process.env.LOAD_TEST = undefined;
+  });
+
+    it("handles LOAD_TEST mock save failure", async () => {
+        process.env.LOAD_TEST = 'true';
+
+        const { brainTreePaymentController } = await import(
+            "../controllers/productController.js"
+            );
+
+        mockOrderSave.mockRejectedValueOnce(new Error("save failed"));
+
+        const res = createRes();
+
+        await brainTreePaymentController(
+            {
+                body: { cart: [{ _id: "p1", price: 10 }] },
+                user: { _id: "user-1" },
+            },
+            res
+        );
+
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.send).toHaveBeenCalledWith({
+            message: "save failed",
+        });
+
+        process.env.LOAD_TEST = undefined;
+    });
 });
