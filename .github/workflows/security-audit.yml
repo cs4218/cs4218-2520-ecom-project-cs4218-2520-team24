@@ -7,7 +7,7 @@ on:
 
 jobs:
   audit:
-    name: Backend + client audit (critical)
+    name: backend + client audit [critical only]
     runs-on: ubuntu-latest
 
     steps:
