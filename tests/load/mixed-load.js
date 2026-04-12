@@ -178,8 +178,7 @@ export function checkoutScenario(data) {
     paymentLatency.add(paymentRes.timings.duration);
 
     const success = check(paymentRes, {
-        'payment goes through': (r) => r.status !== 0,
-        'payment has no error': (r) => r.status !== 500,
+        'payment success': (r) => r.status === 200,
     });
 
     checkoutSuccessRate.add(success ? 1 : 0);
