@@ -99,7 +99,7 @@ async function globalSetup() {
     } else {
       console.log('🚀 Launching WebServer...');
       // 1. USE SHELL INJECTION (The most robust way)
-      const serverProcess = spawn(`MONGO_URL=${uri} npm run dev`, {
+      const serverProcess = spawn(`PLAYWRIGHT=true MONGO_URL="${uri}" npm run dev`, {
         shell: true,
         stdio: 'inherit',
         detached: true
