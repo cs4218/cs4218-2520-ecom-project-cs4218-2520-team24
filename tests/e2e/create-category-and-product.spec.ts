@@ -25,7 +25,14 @@ test.describe('Admin: Create Category → Product Flow', () => {
 
         await page.goto("/dashboard/admin/create-category");
         await page.getByPlaceholder("Enter new category").fill(categoryName);
-        await page.getByRole("button", { name: "Submit" }).click();
+        await Promise.all([
+            page.waitForResponse((response) =>
+                response.url().includes('/api/v1/category/create-category') &&
+                response.request().method() === 'POST' &&
+                response.ok()
+            ),
+            page.getByRole("button", { name: "Submit" }).click(),
+        ]);
         await expect(page.getByRole("cell", { name: categoryName })).toBeVisible();
 
         await page.goto("/categories");
@@ -39,7 +46,14 @@ test.describe('Admin: Create Category → Product Flow', () => {
         await loginAs(page, ADMIN_EMAIL, ADMIN_PASSWORD);
         await page.goto("/dashboard/admin/create-category");
         await page.getByPlaceholder("Enter new category").fill(categoryName);
-        await page.getByRole("button", { name: "Submit" }).click();
+        await Promise.all([
+            page.waitForResponse((response) =>
+                response.url().includes('/api/v1/category/create-category') &&
+                response.request().method() === 'POST' &&
+                response.ok()
+            ),
+            page.getByRole("button", { name: "Submit" }).click(),
+        ]);
         await expect(page.getByRole("cell", { name: categoryName })).toBeVisible();
 
         await page.goto("/dashboard/admin/create-product");
@@ -52,11 +66,23 @@ test.describe('Admin: Create Category → Product Flow', () => {
         await page.getByPlaceholder("write a quantity").fill("15");
         await page.locator(".ant-select-selector").nth(1).click();
         await page.getByTitle("Yes").click();
-        await page.getByRole("button", { name: "CREATE PRODUCT" }).click();
+        await Promise.all([
+            page.waitForResponse((response) =>
+                response.url().includes('/api/v1/product/create-product') &&
+                response.request().method() === 'POST' &&
+                response.ok()
+            ),
+            page.getByRole("button", { name: "CREATE PRODUCT" }).click(),
+        ]);
         await expect(page).toHaveURL(/\/admin\/products/, { timeout: 10_000 });
 
         await page.goto("/");
-        await expect(page.getByText(productName)).toBeVisible();
+        await page.waitForResponse((response) =>
+            response.url().includes('/api/v1/product/product-list/1') &&
+            response.request().method() === 'GET' &&
+            response.ok()
+        );
+        await expect(page.getByRole('heading', { name: productName })).toBeVisible({ timeout: 10_000 });
     });
 
 });
