@@ -9,6 +9,10 @@ import Layout from "./../components/Layout";
 import { AiOutlineReload } from "react-icons/ai";
 import "../styles/Homepages.css";
 
+export const pageActions = {
+  reloadPage: () => window.location.reload(),
+};
+
 const HomePage = () => {
   const navigate = useNavigate();
   const [cart, setCart] = useCart();
@@ -144,7 +148,7 @@ const HomePage = () => {
           <div className="d-flex flex-column">
             <button
               className="btn btn-danger"
-              onClick={() => window.location.reload()}
+              onClick={() => pageActions.reloadPage()}
             >
               RESET FILTERS
             </button>

@@ -230,7 +230,7 @@ export const getAllOrdersController = async (req, res) => {
       .find({})
       .populate("products", "-photo")
       .populate("buyer", "name")
-      .sort({ createdAt: "-1" });
+      .sort({ createdAt: -1 });
     res.json(orders);
   } catch (error) {
     console.log(error);
@@ -250,7 +250,7 @@ export const orderStatusController = async (req, res) => {
     const orders = await orderModel.findByIdAndUpdate(
       orderId,
       { status },
-      { new: true }
+      { new: true, runValidators: true }
     );
     res.json(orders);
   } catch (error) {

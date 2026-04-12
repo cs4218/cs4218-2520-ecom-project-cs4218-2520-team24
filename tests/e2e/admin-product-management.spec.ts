@@ -1,179 +1,108 @@
 import { test, expect } from '@playwright/test';
-import mongoose from 'mongoose';
-import path from 'path';
-import slugify from 'slugify';
-import { getMongoUri } from '../mongodb-manager';
-import User from '../../models/userModel.js';
-import Category from '../../models/categoryModel.js';
-import Product from '../../models/productModel.js';
-import { hashPassword } from '../../helpers/authHelper.js';
+import path from "path";
 
-const imagePath = path.resolve(process.cwd(), 'client/public/images/a1.png');
+test.describe.configure({ mode: 'serial' });
+test.describe('Admin: Product Inventory Management', () => {
 
-test.describe('Admin Product Management', () => {
-  const testId = Date.now().toString().slice(-6);
-  const adminEmail = `admin-test-${testId}@example.com`;
-  const adminName = `Admin Test ${testId}`;
-  const adminPassword = `AdminPass!${testId}`;
-  const categoryName = `Admin Product Category ${testId}`;
-  const categorySlug = `admin-product-category-${testId}`;
-  const productName = `Admin Created Product ${testId}`;
-  const updatedProductName = `Updated Product ${testId}`;
-  const updatedProductSlug = slugify(updatedProductName, { lower: false });
-  const initialDescription = 'Initial product description for admin create flow.';
-  const updatedDescription = 'Updated product description after admin edit.';
-  const initialPrice = '49';
-  const updatedPrice = '79';
-  const initialQuantity = '10';
-  const updatedQuantity = '20';
-  const initialShipping = 'Yes';
-  const updatedShipping = 'No';
-  let categoryId: string;
-  let adminUserId: string;
+    const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "a@a.com";
+    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "password";
 
-  test.beforeAll(async () => {
-    const mongoUri = getMongoUri();
-    if (!mongoUri) throw new Error('MONGO_URI is not defined');
-
-    await mongoose.connect(mongoUri);
-
-    const category = await Category.findOneAndUpdate(
-      { slug: categorySlug },
-      { name: categoryName, slug: categorySlug },
-      { upsert: true, new: true }
-    );
-    categoryId = category._id.toString();
-
-    const hashedPassword = await hashPassword(adminPassword);
-    const existingUser = await User.findOne({ email: adminEmail });
-    if (existingUser) {
-      adminUserId = existingUser._id.toString();
-      await User.findByIdAndUpdate(existingUser._id, {
-        password: hashedPassword,
-        role: 1,
-      });
-    } else {
-      const user = await new User({
-        name: `Admin Test ${testId}`,
-        email: adminEmail,
-        password: hashedPassword,
-        phone: '1234567890',
-        address: '123 Test Address',
-        answer: 'Test',
-        role: 1,
-      }).save();
-      adminUserId = user._id.toString();
+    async function loginAs(page, email, password) {
+        await page.goto("/login");
+        await page.getByPlaceholder("Enter Your Email").fill(email);
+        await page.getByPlaceholder("Enter Your Password").fill(password);
+        await page.getByRole("button", { name: "LOGIN" }).click();
+        await expect(page).not.toHaveURL(/\/login/, { timeout: 10_000 });
     }
 
-    await mongoose.disconnect();
-  });
+    async function createCategoryAndProduct(page, categoryName, productName) {
+        // Create category
+        await page.goto("/dashboard/admin/create-category");
+        await page.getByPlaceholder("Enter new category").fill(categoryName);
+        await page.getByRole("button", { name: "Submit" }).click();
+        await expect(page.locator('table').getByRole("cell", { name: categoryName })).toBeVisible();
 
-  test.afterAll(async () => {
-    const mongoUri = getMongoUri();
-    if (!mongoUri) return;
-    await mongoose.connect(mongoUri);
-    await Product.deleteMany({ slug: { $in: [
-      `admin-created-product-${testId}`,
-      updatedProductSlug,
-    ] } });
-    await Category.findOneAndDelete({ slug: categorySlug });
-    await User.findByIdAndDelete(adminUserId);
-    await mongoose.disconnect();
-  });
+        // Create product
+        await page.goto("/dashboard/admin/create-product");
+        await page.locator(".ant-select-selector").first().click();
+        await page.getByTitle(categoryName).click();
+        await page.setInputFiles('input[type="file"]', path.join(process.cwd(), "client/public/images/a1.png"));
+        await page.getByPlaceholder("write a name").fill(productName);
+        await page.getByPlaceholder("write a description").fill("A test product description");
+        await page.getByPlaceholder("write a Price").fill("50");
+        await page.getByPlaceholder("write a quantity").fill("10");
+        await page.locator(".ant-select-selector").nth(1).click();
+        await page.getByTitle("Yes").click();
+        await page.getByRole("button", { name: "CREATE PRODUCT" }).click();
+        await expect(page).toHaveURL(/\/admin\/products/, { timeout: 10_000 });
+    }
 
-  test('Create, update, and verify a product as admin', async ({ page }) => {
-    // 1. Open a fresh browser session and navigate to the application home page.
-    await page.goto('/');
-    await expect(page.getByRole('heading', { name: /all products/i })).toBeVisible();
-
-    // 2. Navigate to the login page via the UI or directly to "/login".
-    await page.goto('/login');
-    await expect(page.getByRole('button', { name: /login/i })).toBeVisible();
-
-    // 3. Sign in using valid admin credentials.
-    await page.getByPlaceholder(/enter your email/i).fill(adminEmail);
-    await page.getByPlaceholder(/enter your password/i).fill(adminPassword);
-    await page.getByRole('button', { name: /login/i }).click();
-    await expect(page).toHaveURL(/\/$/);
-
-    // 4. Open the admin dashboard by using the user dropdown and dashboard link.
-    await page.locator('.nav-item.dropdown .dropdown-toggle').filter({ hasText: adminName }).click();
-    await page.getByRole('link', { name: /dashboard/i }).click();
-    await expect(page.getByRole('link', { name: /create product/i })).toBeVisible();
-    await expect(page.getByRole('link', { name: /products/i })).toBeVisible();
-
-    // 5. From the admin menu, click Create Product.
-    await page.getByRole('link', { name: /create product/i }).click();
-    await expect(page.getByRole('heading', { name: /create product/i })).toBeVisible();
-    await expect(page.getByRole('button', { name: /create product/i })).toBeVisible();
-
-    // 6. Fill in the Create Product form with valid details.
-    const categorySelect = page.locator('.ant-select-selector').nth(0);
-    await categorySelect.click();
-    await page.locator('.ant-select-item-option-content').filter({ hasText: categoryName }).click();
-
-    await page.setInputFiles('input[type="file"]', imagePath);
-
-    await page.getByPlaceholder(/write a name/i).fill(productName);
-    await page.getByPlaceholder(/write a description/i).fill(initialDescription);
-    await page.getByPlaceholder(/write a price/i).fill(initialPrice);
-    await page.getByPlaceholder(/write a quantity/i).fill(initialQuantity);
-    const shippingSelect = page.locator('.ant-select-selector').nth(1);
-    await shippingSelect.click();
-    await page.locator('.ant-select-item-option-content').filter({ hasText: /yes/i }).first().click();
-
-    // 7. Submit the Create Product form.
-    await page.getByRole('button', { name: /create product/i }).click();
-    await expect(page).toHaveURL(/dashboard\/admin\/products/);
-    await expect(page.getByRole('heading', { name: /all products list/i })).toBeVisible();
-
-    // 8. On the admin products list, verify the new product appears.
-    const createdCard = page.locator('.card').filter({
-      has: page.getByRole('heading', { name: productName }),
+    test.beforeEach(async ({ page }) => {
+        await loginAs(page, ADMIN_EMAIL, ADMIN_PASSWORD);
     });
-    await expect(createdCard).toBeVisible();
 
-    // 9. Open the new product’s admin update page from the products list.
-    await createdCard.click();
-    await expect(page.getByRole('heading', { name: /update product/i })).toBeVisible();
-    await expect(page.getByPlaceholder(/write a name/i)).toHaveValue(productName);
+    test("admin can search for a product in the admin products list", async ({ page }) => {
+        const categoryName = `cat_${Date.now()}`;
+        const productName = `prod_${Date.now()}`;
 
-    // 10. Change product details.
-    await page.getByPlaceholder(/write a name/i).fill(updatedProductName);
-    await page.getByPlaceholder(/write a description/i).fill(updatedDescription);
-    await page.getByPlaceholder(/write a price/i).fill(updatedPrice);
-    await page.getByPlaceholder(/write a quantity/i).fill(updatedQuantity);
-    const updateShippingSelect = page.locator('.ant-select-selector').nth(1);
-    await updateShippingSelect.click();
-    await page.locator('.ant-select-item-option-content').filter({ hasText: /no/i }).first().click();
-    await page.setInputFiles('input[type="file"]', imagePath);
+        await createCategoryAndProduct(page, categoryName, productName);
 
-    // 11. Submit the Update Product form.
-    await page.getByRole('button', { name: /update product/i }).click();
-    await expect(page).toHaveURL(/dashboard\/admin\/products/);
-    await expect(page.getByRole('heading', { name: /all products list/i })).toBeVisible();
+        // Navigate to products list
+        await page.goto("/dashboard/admin/products");
 
-    const updatedCard = page.locator('.card').filter({
-      has: page.getByRole('heading', { name: updatedProductName }),
+        // Use the site search to find the product
+        await page.getByRole("searchbox").fill(productName);
+        await page.getByRole("button", { name: "Search" }).click();
+
+        // Verify product appears in search results
+        await expect(page.getByText(productName).first()).toBeVisible();
     });
-    await expect(updatedCard).toBeVisible();
 
-    // 12. Navigate to the public frontend catalog by going to the home page or category view.
-    await page.goto('/');
-    await expect(page.getByRole('heading', { name: /all products/i })).toBeVisible();
+    test("admin can update a product's details", async ({ page }) => {
+        const categoryName = `cat_${Date.now()}`;
+        const productName = `prod_${Date.now()}`;
+        const updatedName = `updated_${Date.now()}`;
 
-    // 13. Locate the updated product in the frontend catalog.
-    const publicCard = page.locator('.card').filter({
-      has: page.getByRole('heading', { name: updatedProductName }),
+        await createCategoryAndProduct(page, categoryName, productName);
+
+        // Navigate to products list and click Update on the product
+        await page.goto("/dashboard/admin/products");
+        await page.getByRole("link", { name: new RegExp(productName) }).first().click();
+        await expect(page).toHaveURL(/\/dashboard\/admin\/product\//, { timeout: 10_000 });
+
+        // Update the product name and price
+        await page.getByPlaceholder("write a name").clear();
+        await page.getByPlaceholder("write a name").fill(updatedName);
+        await page.getByPlaceholder("write a Price").clear();
+        await page.getByPlaceholder("write a Price").fill("99");
+
+        await page.getByRole("button", { name: /update product/i }).click();
+        await expect(page).toHaveURL(/\/dashboard\/admin\/products/, { timeout: 10_000 });
+
+        // Verify updated product appears in the list
+        await expect(page.getByText(updatedName).first()).toBeVisible();
     });
-    await expect(publicCard).toBeVisible();
-    await expect(publicCard).toContainText('$79.00');
 
-    // 14. Open the product details page from the frontend catalog.
-    await publicCard.getByRole('button', { name: /more details/i }).click();
-    await expect(page).toHaveURL(new RegExp(`/product/${updatedProductSlug}`));
-    await expect(page.getByText(new RegExp(`Name : ${updatedProductName}`))).toBeVisible();
-    await expect(page.getByText(new RegExp(`Description : ${updatedDescription}`))).toBeVisible();
-    await expect(page.getByText(/Price :/)).toContainText('$79.00');
-  });
+    test("admin can delete a product", async ({ page }) => {
+        const categoryName = `cat_${Date.now()}`;
+        const productName = `prod_${Date.now()}`;
+
+        await createCategoryAndProduct(page, categoryName, productName);
+
+        // Navigate to products list
+        await page.goto("/dashboard/admin/products");
+        await expect(page.getByText(productName).first()).toBeVisible();
+
+        // Click into the product update page
+        await page.getByRole("link", { name: new RegExp(productName) }).first().click();
+        await expect(page).toHaveURL(/\/dashboard\/admin\/product\//, { timeout: 10_000 });
+
+        // Click delete and confirm the browser dialog
+        page.once('dialog', dialog => dialog.accept('yes'));
+        await page.getByRole("button", { name: /delete product/i }).click();
+
+        // Verify redirect back to products list and product is gone
+        await expect(page).toHaveURL(/\/dashboard\/admin\/products/, { timeout: 10_000 });
+        await expect(page.getByText(productName)).not.toBeVisible();
+    });
 });

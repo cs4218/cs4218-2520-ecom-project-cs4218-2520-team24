@@ -150,7 +150,7 @@ export const deleteProductController = async (req, res) => {
   }
 };
 
-//upate product
+//update product
 export const updateProductController = async (req, res) => {
   try {
     const { name, description, price, category, quantity, shipping } =
@@ -170,12 +170,8 @@ export const updateProductController = async (req, res) => {
         return res.status(500).send({ error: "Quantity is Required" });
       case !shipping:
         return res.status(500).send({ error: "Shipping is Required" });
-      case !photo:
-        return res.status(500).send({ error: "Photo is Required" });
       case photo && photo.size > 1000000:
-        return res
-          .status(500)
-          .send({ error: "photo is Required and should be less then 1mb" });
+        return res.status(500).send({ error: "photo is Required and should be less then 1mb" });
     }
 
     const products = await productModel.findByIdAndUpdate(
@@ -183,8 +179,10 @@ export const updateProductController = async (req, res) => {
       { ...req.fields, slug: slugify(name) },
       { new: true }
     );
-    products.photo.data = fs.readFileSync(photo.path);
-    products.photo.contentType = photo.type;
+    if (photo) {
+        products.photo.data = fs.readFileSync(photo.path);
+        products.photo.contentType = photo.type;
+    }
     await products.save();
     res.status(201).send({
       success: true,
@@ -378,9 +376,29 @@ export const braintreeTokenController = async (req, res) => {
 
 //payment
 export const brainTreePaymentController = async (req, res) => {
+    console.log('LOAD_TEST env:', process.env.LOAD_TEST);
+    console.log('req.body:', req.body);
+    console.log('req.user:', req.user);
   try {
     const { nonce, cart } = req.body;
     const total = cart.reduce((acc, i) => acc + i.price, 0);
+
+      // Mock payment for load testing
+      if (process.env.LOAD_TEST === 'true') {
+          try {
+              console.log('attempting mock save');
+              await new orderModel({
+                  products: cart.map(item => item._id),
+                  payment: { mock: true, amount: total },
+                  buyer: req.user._id,
+              }).save();
+              console.log('mock saved');
+              return res.json({ ok: true });
+          } catch (saveError) {
+              console.log('Mock save failed:', saveError.message);
+              return res.status(400).send({ message: saveError.message });
+          }
+      }
 
     // Using await here ensures the try/catch stays "active"
     const result = await gateway.transaction.sale({

@@ -72,7 +72,7 @@ describe('AdminOrders Page', () => {
     const mockOrders = [
         {
             _id: 'o1',
-            status: 'Not Process',
+            status: 'Not Processing',
             buyer: { name: 'Buyer 1' },
             createAt: new Date().toISOString(),
             payment: { success: true },
@@ -95,7 +95,7 @@ describe('AdminOrders Page', () => {
 
         // Change status
         await act(async () => {
-            fireEvent.change(getByDisplayValue('Not Process'), { target: { value: 'Shipped' } });
+            fireEvent.change(getByDisplayValue('Not Processing'), { target: { value: 'Shipped' } });
         });
         
         await waitFor(() => expect(axios.put).toHaveBeenCalledWith('/api/v1/auth/order-status/o1', {
@@ -152,10 +152,10 @@ describe('AdminOrders Page', () => {
         );
 
         // Ensure orders are loaded first
-        await waitFor(() => expect(getByDisplayValue('Not Process')).toBeInTheDocument());
+        await waitFor(() => expect(getByDisplayValue('Not Processing')).toBeInTheDocument());
 
         // Trigger the status change
-        fireEvent.change(getByDisplayValue('Not Process'), { target: { value: 'Shipped' } });
+        fireEvent.change(getByDisplayValue('Not Processing'), { target: { value: 'Shipped' } });
 
         await waitFor(() => {
             expect(axios.put).toHaveBeenCalled();
@@ -172,7 +172,7 @@ describe('AdminOrders Page', () => {
         const mockFailedOrder = [
             {
                 _id: 'failed_order_1', // Ensure unique ID
-                status: 'Not Process',
+                status: 'Not Processing',
                 buyer: { name: 'Buyer 2' },
                 createAt: new Date().toISOString(),
                 payment: { success: false },
@@ -202,7 +202,7 @@ describe('AdminOrders Page', () => {
         const mockSuccessOrder = [
             {
                 _id: 'o3',
-                status: 'Not Process',
+                status: 'Not Processing',
                 buyer: { name: 'Buyer 3' },
                 createAt: new Date().toISOString(),
                 payment: { success: true }, // This triggers the "Success" branch

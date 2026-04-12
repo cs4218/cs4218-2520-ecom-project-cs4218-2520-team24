@@ -4,6 +4,7 @@ import { render, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import '@testing-library/jest-dom/extend-expect';
 import HomePage from './HomePage';
+import * as HomePageModule from './HomePage';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
@@ -158,17 +159,13 @@ describe('HomePage Component', () => {
             </MemoryRouter>
         );
 
-        // Mock window.location.reload
-        const originalLocation = window.location;
-        delete window.location;
-        window.location = { reload: jest.fn() };
+        const reloadSpy = jest.spyOn(HomePageModule.pageActions, 'reloadPage').mockImplementation(() => {});
 
         await waitFor(() => expect(getByText('Test Product 1')).toBeInTheDocument());
 
         fireEvent.click(getByText('RESET FILTERS'));
-        expect(window.location.reload).toHaveBeenCalled();
-
-        window.location = originalLocation;
+        expect(reloadSpy).toHaveBeenCalled();
+        reloadSpy.mockRestore();
     });
     
     it('should handle error when fetching categories fails', async () => {

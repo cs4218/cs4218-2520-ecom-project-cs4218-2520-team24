@@ -2,11 +2,16 @@
 import request from "supertest";
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
-import app from "../server.js";
+let app;
 import productModel from "../models/productModel.js";
 import categoryModel from "../models/categoryModel.js";
 
 let mongoServer;
+
+jest.mock("../middlewares/authMiddleware.js", () => ({
+    requireSignIn: (req, res, next) => next(),
+    isAdmin: (req, res, next) => next(),
+}));
 
 jest.setTimeout(60000);
 
@@ -15,6 +20,12 @@ describe("Product Details & Related Logic Integration Tests", () => {
     // Setup in-memory MongoDB
     mongoServer = await MongoMemoryServer.create();
     const uri = mongoServer.getUri();
+    process.env.MONGO_URL = uri;
+    process.env.BRAINTREE_MERCHANT_ID = process.env.BRAINTREE_MERCHANT_ID || "test";
+    process.env.BRAINTREE_PUBLIC_KEY = process.env.BRAINTREE_PUBLIC_KEY || "test";
+    process.env.BRAINTREE_PRIVATE_KEY = process.env.BRAINTREE_PRIVATE_KEY || "test";
+    const serverModule = await import("../server.js");
+    app = serverModule.default;
     
     // Disconnect if already connected (from server.js initialization)
     if (mongoose.connection.readyState !== 0) {
@@ -329,5 +340,99 @@ describe("Product Details & Related Logic Integration Tests", () => {
       expect(res.body.success).toBe(false);
       expect(res.body.message).toBe("Error while getting photo");
     });
+  });
+
+  // Leroy Chiu, A0273083E
+  describe("Product Admin CRUD & Photo Upload Integration Tests", () => {
+      it("should create a product with image and store buffer in DB", async () => {
+          const res = await request(app)
+              .post("/api/v1/product/create-product")
+              .field("name", "Camera")
+              .field("description", "DSLR Camera")
+              .field("price", 500)
+              .field("category", seededCategory._id.toString())
+              .field("quantity", 10)
+              .field("shipping", true)
+              .attach("photo", Buffer.from("fake image"), "camera.jpg");
+
+          expect(res.status).toBe(201);
+          expect(res.body.success).toBe(true);
+
+          const product = await productModel.findOne({ name: "Camera" });
+
+          expect(product).not.toBeNull();
+          expect(product.photo.data).toBeDefined();
+          expect(product.photo.contentType).toBe("image/jpeg");
+      });
+
+      it("should fail if photo is missing", async () => {
+          const res = await request(app)
+              .post("/api/v1/product/create-product")
+              .field("name", "No Photo")
+              .field("description", "Test")
+              .field("price", 100)
+              .field("category", seededCategory._id.toString())
+              .field("quantity", 5)
+              .field("shipping", true);
+
+          expect(res.status).toBe(500);
+          expect(res.body.error).toBe("Photo is Required");
+      });
+
+      it("should update product and replace image buffer", async () => {
+          seededProduct.photo = {
+              data: Buffer.from("fake-photo"),
+              contentType: "image/jpeg",
+          };
+          await seededProduct.save();
+
+          const oldProduct = await productModel.findById(seededProduct._id);
+
+          const res = await request(app)
+              .put(`/api/v1/product/update-product/${seededProduct._id}`)
+              .field("name", "Updated Name")
+              .field("description", seededProduct.description)
+              .field("price", seededProduct.price)
+              .field("category", seededCategory._id.toString())
+              .field("quantity", seededProduct.quantity)
+              .field("shipping", true)
+              .attach("photo", Buffer.from("new image"), "new.jpg");
+
+          expect(res.status).toBe(201);
+
+          const updated = await productModel.findById(seededProduct._id);
+
+          expect(updated.name).toBe("Updated Name");
+
+          // Ensure image changed
+          expect(updated.photo.data.toString()).not.toBe(
+              oldProduct.photo.data.toString()
+          );
+      });
+
+      it("should delete product from database", async () => {
+          const res = await request(app)
+              .delete(`/api/v1/product/delete-product/${seededProduct._id}`);
+
+          expect(res.status).toBe(200);
+
+          const deleted = await productModel.findById(seededProduct._id);
+          expect(deleted).toBeNull();
+      });
+
+      it("should return product photo as binary", async () => {
+          seededProduct.photo = {
+              data: Buffer.from("fake-photo"),
+              contentType: "image/jpeg",
+          };
+          await seededProduct.save();
+
+          const res = await request(app)
+              .get(`/api/v1/product/product-photo/${seededProduct._id}`);
+
+          expect(res.status).toBe(200);
+          expect(res.headers["content-type"]).toBe("image/jpeg");
+          expect(res.body).toBeDefined();
+      });
   });
 });
