@@ -58,7 +58,7 @@ Leroy Chiu, A0273083E
 Carsten Joe Ng, A0255763W
  - Audited npm packages and added npm audit check to github actions
  - Configured ESLint for security scans and added it to github actions
- - Used ZAProxy to scan for vulnerabilties and fixed various headers-based vulnerabilities
+ - Used ZAProxy to scan for vulnerabilties and fixed various headers-based vulnerabilities (session.lobs file was not uploaded it was too big for Github)
 
 ## MSI CI URL
 [Link to Milestone 1 CI](https://github.com/cs4218/cs4218-2520-ecom-project-cs4218-2520-team24/actions/runs/22278931150/job/64445985837)
