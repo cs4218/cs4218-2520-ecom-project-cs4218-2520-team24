@@ -50,10 +50,15 @@ Choo Jia Rong, A0257352A
 - Wrote E2E UI tests for User onboarding & auth pages to navigate through registration and login. (user-onboarding-auth.spec.ts)
 - Wrote E2E UI tests for Profile management & forgot password to verify data persistence after updating user details (profile-forgot-password.spec.ts)
 
-## MS3 Individual Contributions
+## MS3 Individual Contribution
+
 Leroy Chiu, A0273083E
 - Did load testing of various components individually (authentication, browsing, checkout).
 - Did load testing of one scenario with the 3 components combined together.
+
+Leong Yu Jun Nicholas, A0257284W
+- Wrote non-functional tests for spike testing scenarios using k6, covering authentication CPU throttling (`auth-cpu.js`), checkout payment flow (`checkout-payment.js`), and flash sale stepping load scenarios (`flash-sale.js`, `flash-sale-stepup.js`).
+- Integrated `mcp-k6` to enable AI-driven performance testing, automating load test generation and architectural bug resolution.
 
 Carsten Joe Ng, A0255763W
  - Audited npm packages and added npm audit check to github actions
