@@ -58,6 +58,18 @@ Leroy Chiu, A0273083E
 
 Leong Yu Jun Nicholas, A0257284W
 - Wrote non-functional tests for spike testing scenarios using k6, covering authentication CPU throttling (`auth-cpu.js`), checkout payment flow (`checkout-payment.js`), and flash sale stepping load scenarios (`flash-sale.js`, `flash-sale-stepup.js`).
+- Integrated `mcp-k6` to enable AI-driven performance testing, automating load test generation and architectural bug resolution.
+
+Carsten Joe Ng, A0255763W
+ - Audited npm packages and added npm audit check to github actions
+ - Configured ESLint for security scans and added it to github actions
+ - Used ZAProxy to scan for vulnerabilties and fixed various headers-based vulnerabilities (session.lobs file was not uploaded it was too big for Github)
+
+Nam Dohyun, A0226590A
+- Did stress testing of up to 1000 virtual users, where the error rate reached 100%
+- Dockerized the project and included prometheus, grafana, and cadvisor images for monitoring metrics, while assigning resource limits to the application and database containers for isolated testing resources
+- Made grafana dashboard used to track stress testing metrics
+- Made k6 test script for stress testing
 
 ## MSI CI URL
 [Link to Milestone 1 CI](https://github.com/cs4218/cs4218-2520-ecom-project-cs4218-2520-team24/actions/runs/22278931150/job/64445985837)

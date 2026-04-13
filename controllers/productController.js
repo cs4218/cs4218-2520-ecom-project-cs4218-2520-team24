@@ -17,6 +17,15 @@ var gateway = new braintree.BraintreeGateway({
   privateKey: process.env.BRAINTREE_PRIVATE_KEY,
 });
 
+export const safeReadUploadedFile = (filePath) => {
+  if (filePath.startsWith("..")) {
+    throw new Error(`Invalid file path: ${filePath}`);
+  }
+
+  // eslint-disable-next-line security/detect-non-literal-fs-filename -- Path is validated above
+  return fs.readFileSync(filePath);
+};
+
 export const createProductController = async (req, res) => {
   try {
     const { name, description, price, category, quantity, shipping } =
@@ -49,7 +58,7 @@ export const createProductController = async (req, res) => {
     }
 
     const products = new productModel({ ...req.fields, slug: slugify(name) });
-    products.photo.data = fs.readFileSync(photo.path);
+    products.photo.data = safeReadUploadedFile(photo.path);
     products.photo.contentType = photo.type;
     await products.save();
     res.status(201).send({
@@ -180,7 +189,7 @@ export const updateProductController = async (req, res) => {
       { new: true }
     );
     if (photo) {
-        products.photo.data = fs.readFileSync(photo.path);
+        products.photo.data = safeReadUploadedFile(photo.path);
         products.photo.contentType = photo.type;
     }
     await products.save();

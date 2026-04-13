@@ -7,7 +7,7 @@ on:
 
 jobs:
   audit:
-    name: backend + client audit [critical only]
+    name: backend + client npm audit [critical only]
     runs-on: ubuntu-latest
 
     steps:
@@ -34,3 +34,32 @@ jobs:
 
       - name: Run client npm audit (critical only)
         run: npm audit --audit-level=critical --prefix client
+  
+  eslint:
+    name: ESLint security checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '24.13.1'
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            client/package-lock.json
+
+      - name: Install backend dependencies
+        run: npm ci
+
+      - name: Install client dependencies
+        run: npm ci --prefix client
+
+      - name: Run backend ESLint security checks
+        run: npm run lint:security
+
+      - name: Run frontend ESLint security checks
+        run: npm run lint:security --prefix client
