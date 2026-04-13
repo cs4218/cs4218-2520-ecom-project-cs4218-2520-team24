@@ -71,6 +71,11 @@ Nam Dohyun, A0226590A
 - Made grafana dashboard used to track stress testing metrics
 - Made k6 test script for stress testing
 
+Choo Jia Rong, A0257352A
+- Built the soak testing setup with k6, Prometheus, and Grafana
+- Implemented multi-scenario soak script (browse/search, cart, checkout, admin, auth/profile) with 100 VUs per scenario
+- Created metric-first dashboards for throughput, error rate, p95 latency, and active VUs across scenarios
+
 ## MSI CI URL
 [Link to Milestone 1 CI](https://github.com/cs4218/cs4218-2520-ecom-project-cs4218-2520-team24/actions/runs/22278931150/job/64445985837)
 
